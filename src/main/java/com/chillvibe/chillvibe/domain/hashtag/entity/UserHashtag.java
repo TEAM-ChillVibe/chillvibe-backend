@@ -1,4 +1,4 @@
-package com.chillvibe.chillvibe.domain.post.entity;
+package com.chillvibe.chillvibe.domain.hashtag.entity;
 
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import jakarta.persistence.Entity;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class PostLike {
+public class UserHashtag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +25,11 @@ public class PostLike {
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "post_id")
-  private Post post;
+  @JoinColumn(name = "hashtag_id")
+  private Hashtag hashtag;
 
-  public PostLike(User user, Post post) {
+  public UserHashtag(User user, Hashtag hashtag) {
     this.user = user;
-    this.post = post;
+    this.hashtag = hashtag;
   }
 }
