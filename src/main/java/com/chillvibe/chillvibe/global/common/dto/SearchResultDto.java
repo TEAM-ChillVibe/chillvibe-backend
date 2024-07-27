@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.global.common.dto;
 
-import com.chillvibe.chillvibe.domain.post.dto.PostDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
@@ -16,7 +16,7 @@ public class SearchResultDto {
 
   // 검색 결과의 Track, Post를 반환
   private List<TrackDto> tracks;
-  private List<PostDto> posts;
+  private List<PostSearchDto> posts;
 
   // 무한 스크롤
   // 다음 페이지 요청할 때 사용

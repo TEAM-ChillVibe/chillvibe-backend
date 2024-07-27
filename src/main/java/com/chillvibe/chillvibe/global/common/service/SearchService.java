@@ -1,7 +1,7 @@
 package com.chillvibe.chillvibe.global.common.service;
 
 import com.chillvibe.chillvibe.domain.post.dto.PostSearchResult;
-import com.chillvibe.chillvibe.domain.post.service.PostService;
+import com.chillvibe.chillvibe.domain.post.service.PostSearchService;
 import com.chillvibe.chillvibe.domain.spotify.dto.SpotifySearchResult;
 import com.chillvibe.chillvibe.domain.spotify.service.SpotifyService;
 import com.chillvibe.chillvibe.global.common.dto.SearchResultDto;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 public class SearchService {
 
   private final SpotifyService spotifyService;
-  private final PostService postService;
+  private final PostSearchService postService;
 
-  public SearchService(SpotifyService spotifyService, PostService postService) {
+  public SearchService(SpotifyService spotifyService, PostSearchService postService) {
     this.spotifyService = spotifyService;
     this.postService = postService;
   }
