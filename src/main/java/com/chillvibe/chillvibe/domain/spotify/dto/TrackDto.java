@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public class TrackDto {
 
+  private final String id; // Spotify Track ID
   private final String name;
   private final String artistName;
   private final String albumName;
@@ -13,8 +14,9 @@ public class TrackDto {
   private final String duration;
 
   // 생성자
-  public TrackDto(String name, String artistName, String albumName,
+  public TrackDto(String id, String name, String artistName, String albumName,
       String albumImageUrl, String previewUrl, Integer durationMS) {
+    this.id = id;
     this.name = name;
     this.artistName = artistName;
     this.albumName = albumName;
