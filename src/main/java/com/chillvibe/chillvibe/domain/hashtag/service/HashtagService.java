@@ -9,6 +9,8 @@ import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.UserHashtagRepository;
 import com.chillvibe.chillvibe.domain.post.repository.PostLikeRepository;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,9 @@ public class HashtagService {
 
   // 모든 해시태그 조회
   public List<HashtagDto> getAllHashtags() {
+    if (hashtagRepository.count() == 0) {
+      throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
+    }
     return hashtagRepository.findAll().stream()
         .map(Hashtag::toDto)
         .collect(Collectors.toList());
@@ -40,6 +45,9 @@ public class HashtagService {
 
   // 인기 해시태그 조회
   public List<HashtagDto> getPopularHashtags(int limit) {
+    if (hashtagRepository.count() == 0) {
+      throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
+    }
     List<Hashtag> popularHashtags = hashtagRepository.findTopNByOrderByTotalLikesDesc(limit);
     return popularHashtags.stream()
         .map(Hashtag::toDto)
@@ -47,18 +55,24 @@ public class HashtagService {
   }
 
   // 특정 게시글의 해시태그 조회
-  public List<HashtagDto> getHashtagsOfUser(Long userId) {
-    List<UserHashtag> userHashtags = userHashtagRepository.findByUserId(userId);
-    return userHashtags.stream()
-        .map(userHashtag -> userHashtag.getHashtag().toDto())
+  public List<HashtagDto> getHashtagsOfPost(Long postId) {
+    List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
+    if (postHashtags.isEmpty()) {
+      throw new ApiException(ErrorCode.POST_HASHTAG_NOT_FOUND);
+    }
+    return postHashtags.stream()
+        .map(postHashtag -> postHashtag.getHashtag().toDto())
         .toList();
   }
 
-  // 특정 유저의 프로필 해시태그 조회
-  public List<HashtagDto> getHashtagsOfPost(Long postId) {
-    List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
-    return postHashtags.stream()
-        .map(postHashtag -> postHashtag.getHashtag().toDto())
+  // 특정 유저의 해시태그 조회
+  public List<HashtagDto> getHashtagsOfUser(Long userId) {
+    List<UserHashtag> userHashtags = userHashtagRepository.findByUserId(userId);
+    if (userHashtags.isEmpty()) {
+      throw new ApiException(ErrorCode.USER_HASHTAG_NOT_FOUND);
+    }
+    return userHashtags.stream()
+        .map(userHashtag -> userHashtag.getHashtag().toDto())
         .toList();
   }
 

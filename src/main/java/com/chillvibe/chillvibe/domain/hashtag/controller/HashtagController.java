@@ -20,7 +20,7 @@ public class HashtagController {
   }
 
   // 모든 해시태그 조회
-  @GetMapping
+  @GetMapping("/all")
   public ResponseEntity<List<HashtagDto>> getAllHashtags() {
     List<HashtagDto> hashtags = hashtagService.getAllHashtags();
     return ResponseEntity.ok(hashtags);
