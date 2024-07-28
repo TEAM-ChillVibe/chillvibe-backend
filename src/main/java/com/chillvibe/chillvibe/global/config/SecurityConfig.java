@@ -7,7 +7,6 @@ import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
 import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +32,8 @@ public class SecurityConfig {
       "/login",
       "/logout",
       "/",
-      "/signup"
+      "/signup",
+      "/api/hashtags/**"
   };
 
 
@@ -42,7 +42,8 @@ public class SecurityConfig {
   private final RefreshRepository refreshRepository;
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+      throws Exception {
 
     return configuration.getAuthenticationManager();
   }
@@ -117,7 +118,8 @@ public class SecurityConfig {
     // LoginFilter 등록
     // UsernamePasswordAuthenticationFilter 자리에 필터 장착
     httpSecurity
-        .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+        .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
+            refreshRepository), UsernamePasswordAuthenticationFilter.class);
 
     // CustomLogoutFilter 등록
     // LogoutFilter 앞에 필터 장착
