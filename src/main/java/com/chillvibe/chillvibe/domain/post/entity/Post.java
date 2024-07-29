@@ -1,8 +1,8 @@
 package com.chillvibe.chillvibe.domain.post.entity;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
-import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashTag;
-import com.chillvibe.chillvibe.domain.playlist.entity.PlayList;
+import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
+import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -53,11 +53,11 @@ public class Post {
 
   @ManyToOne
   @JoinColumn(name = "postHashtag_id")
-  private PostHashTag hashtag;
+  private PostHashtag hashtag;
 
   @ManyToMany
   @JoinColumn(name = "playList_id")
-  private PlayList playList;
+  private Playlist playList;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Comment> comment = new ArrayList<>();

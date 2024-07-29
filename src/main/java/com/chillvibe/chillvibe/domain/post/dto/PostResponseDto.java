@@ -1,8 +1,8 @@
 package com.chillvibe.chillvibe.domain.post.dto;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
-import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashTag;
-import com.chillvibe.chillvibe.domain.playlist.entity.PlayList;
+import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
+import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.entity.PostLike;
 import com.chillvibe.chillvibe.domain.user.entity.User;
@@ -18,8 +18,8 @@ public class PostResponseDto {
   private Long id;
   private PostLike postLike;
   private User user;
-  private PostHashTag hashtag;
-  private PlayList playList;
+  private PostHashtag hashtag;
+  private Playlist playlist;
   private Comment comment;
   private String title;
   private String discription;
@@ -28,12 +28,12 @@ public class PostResponseDto {
   private Integer likeCount;
 
 
-  public PostResponseDTO(Post entity){
+  public PostResponseDto(Post entity){
     this.id = getId();
     this.postLike = getPostLike();
     this.user = getUser();
     this.hashtag = getHashtag();
-    this.playList = getPlayList();
+    this.playlist = getPlaylist();
     this.comment = getComment();
     this.title = getTitle();
     this.discription = getDiscription();
