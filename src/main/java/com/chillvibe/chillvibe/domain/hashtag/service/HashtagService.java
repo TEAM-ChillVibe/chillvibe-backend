@@ -33,7 +33,12 @@ public class HashtagService {
     this.postLikeRepository = postLikeRepository;
   }
 
-  // 모든 해시태그 조회
+  /**
+   * 시스템에 존재하는 모든 해시태그를 조회합니다.
+   *
+   * @return 모든 해시태그를 나타내는 HashtagDto 객체의 리스트
+   * @exception ApiException 해시태그가 하나도 존재하지 않을 경우
+   */
   public List<HashtagDto> getAllHashtags() {
     if (hashtagRepository.count() == 0) {
       throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
@@ -43,7 +48,13 @@ public class HashtagService {
         .collect(Collectors.toList());
   }
 
-  // 인기 해시태그 조회
+  /**
+   * 총 좋아요 수를 기준으로 인기 있는 해시태그를 조회합니다.
+   *
+   * @param limit 조회할 최대 해시태그 개수
+   * @return 인기 있는 해시태그를 나타내는 HashtagDto 객체의 리스트
+   * @exception ApiException 해시태그가 하나도 존재하지 않을 경우
+   */
   public List<HashtagDto> getPopularHashtags(int limit) {
     if (hashtagRepository.count() == 0) {
       throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
@@ -54,7 +65,13 @@ public class HashtagService {
         .toList();
   }
 
-  // 특정 게시글의 해시태그 조회
+  /**
+   * 특정 게시글에 속한 해시태그를 조회합니다.
+   *
+   * @param postId 게시글의 ID
+   * @return 게시글의 해시태그를 나타내는 HashtagDto 객체의 리스트
+   * @exception ApiException 게시글에 해시태그가 하나도 존재하지 않을 경우
+   */
   public List<HashtagDto> getHashtagsOfPost(Long postId) {
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
     if (postHashtags.isEmpty()) {
@@ -65,7 +82,13 @@ public class HashtagService {
         .toList();
   }
 
-  // 특정 유저의 해시태그 조회
+  /**
+   * 특정 사용자와 관련된 해시태그를 조회합니다.
+   *
+   * @param userId 사용자의 ID
+   * @return 사용자의 해시태그를 나타내는 HashtagDto 객체의 리스트
+   * @exception ApiException 사용자와 관련된 해시태그가 하나도 존재하지 않을 경우
+   */
   public List<HashtagDto> getHashtagsOfUser(Long userId) {
     List<UserHashtag> userHashtags = userHashtagRepository.findByUserId(userId);
     if (userHashtags.isEmpty()) {
@@ -76,7 +99,12 @@ public class HashtagService {
         .toList();
   }
 
-  // 인기 해시태그 계산 (게시글 좋아요 수를 통해 누적)
+
+  /**
+   * 게시글의 좋아요 수를 기반으로 해당 게시글에 속한 해시태그의 총 좋아요 수를 증가시킵니다.
+   *
+   * @param postId 좋아요 수가 증가한 게시글의 ID
+   */
   @Transactional
   public void increaseHashtagLikes(Long postId) {
     int likeCount = postLikeRepository.countByPostId(postId);
@@ -90,6 +118,11 @@ public class HashtagService {
     }
   }
 
+  /**
+   * 게시글의 좋아요 수를 기반으로 해당 게시글에 속한 해시태그의 총 좋아요 수를 감소시킵니다.
+   *
+   * @param postId 좋아요 수가 감소한 게시글의 ID
+   */
   @Transactional
   public void decreaseHashtagLikes(Long postId) {
     int likeCount = postLikeRepository.countByPostId(postId);
