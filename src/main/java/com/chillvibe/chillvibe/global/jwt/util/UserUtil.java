@@ -7,10 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserUtil {
-
-  private final JwtUtil jwtUtil;
 
   public Long getAuthenticatedUserId() {
 
@@ -23,23 +20,6 @@ public class UserUtil {
       if (principal instanceof CustomUserDetails userDetails) {
 
         return userDetails.getId();
-      }
-    }
-
-    return null;
-  }
-
-  public String getAuthenticatedEmail() {
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication != null) {
-
-      Object principal = authentication.getPrincipal();
-
-      if (principal instanceof CustomUserDetails userDetails) {
-
-        return userDetails.getUsername();
       }
     }
 

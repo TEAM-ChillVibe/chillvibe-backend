@@ -1,9 +1,9 @@
 package com.chillvibe.chillvibe.domain.user.service;
 
-import com.chillvibe.chillvibe.domain.user.dto.JoinDto;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
-  void join(JoinDto joinDto);
-
+  void join(String joinDto, MultipartFile multipartFile);
+  void update(String userUpdateDto, MultipartFile multipartFile);
 }
