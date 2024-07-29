@@ -41,3 +41,6 @@ logs/
 
 # divide public, private application.properties
 application-private.properties.DS_Store
+.DS_Store
+
+
