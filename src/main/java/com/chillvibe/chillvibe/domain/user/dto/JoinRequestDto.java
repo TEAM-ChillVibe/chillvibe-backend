@@ -1,14 +1,12 @@
 package com.chillvibe.chillvibe.domain.user.dto;
 
-import lombok.Data;
 import lombok.Getter;
 
 @Getter
-public class JoinDto {
+public class JoinRequestDto {
 
   private String email;
   private String password;
   private String nickname;
-  private String profileUrl;
   private String introduction;
 }

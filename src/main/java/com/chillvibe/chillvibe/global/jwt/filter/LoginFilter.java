@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.global.jwt.filter;
 
-import com.chillvibe.chillvibe.domain.user.dto.LoginDto;
+import com.chillvibe.chillvibe.domain.user.dto.LoginRequestDto;
 import com.chillvibe.chillvibe.global.jwt.dto.CustomUserDetails;
 import com.chillvibe.chillvibe.global.jwt.entity.Refresh;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +35,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-    LoginDto loginDto = new LoginDto();
+    LoginRequestDto loginDto = new LoginRequestDto();
 
     // 요청 본문에서 JSON 데이터 읽기
     try {
@@ -48,7 +47,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       // 바이트 스트림을 UTF-8 문자열로 변환
       String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
       // JSON 문자열을 LoginDto 객체로 변환
-      loginDto = objectMapper.readValue(messageBody, LoginDto.class);
+      loginDto = objectMapper.readValue(messageBody, LoginRequestDto.class);
 
     } catch (IOException e) {
       throw new RuntimeException(e);
