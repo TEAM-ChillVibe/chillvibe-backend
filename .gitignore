@@ -38,3 +38,6 @@ out/
 
 # Logs directory
 logs/
+
+# divide public, private application.properties
+application-private.properties
