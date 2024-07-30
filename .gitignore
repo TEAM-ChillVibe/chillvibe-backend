@@ -35,3 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Logs directory
+logs/
+
+# divide public, private application.properties
+application-dev.properties
+.DS_Store
+
+
