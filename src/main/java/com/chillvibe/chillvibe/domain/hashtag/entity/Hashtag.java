@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.domain.hashtag.entity;
 
-import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagDto;
+import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,8 +30,8 @@ public class Hashtag extends BaseTimeEntity {
     this.totalLikes = 0;
   }
 
-  public HashtagDto toDto() {
-    return new HashtagDto(this.id, this.name, this.totalLikes);
+  public HashtagResponseDto toDto() {
+    return new HashtagResponseDto(this.id, this.name, this.totalLikes);
   }
 
   // 누적 좋아요 계산 (+)

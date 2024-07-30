@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.domain.hashtag.service;
 
-import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagDto;
+import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
@@ -39,7 +39,7 @@ public class HashtagService {
    * @return 모든 해시태그를 나타내는 HashtagDto 객체의 리스트
    * @exception ApiException 해시태그가 하나도 존재하지 않을 경우
    */
-  public List<HashtagDto> getAllHashtags() {
+  public List<HashtagResponseDto> getAllHashtags() {
     if (hashtagRepository.count() == 0) {
       throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
     }
@@ -55,7 +55,7 @@ public class HashtagService {
    * @return 인기 있는 해시태그를 나타내는 HashtagDto 객체의 리스트
    * @exception ApiException 해시태그가 하나도 존재하지 않을 경우
    */
-  public List<HashtagDto> getPopularHashtags(int limit) {
+  public List<HashtagResponseDto> getPopularHashtags(int limit) {
     if (hashtagRepository.count() == 0) {
       throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
     }
@@ -72,7 +72,7 @@ public class HashtagService {
    * @return 게시글의 해시태그를 나타내는 HashtagDto 객체의 리스트
    * @exception ApiException 게시글에 해시태그가 하나도 존재하지 않을 경우
    */
-  public List<HashtagDto> getHashtagsOfPost(Long postId) {
+  public List<HashtagResponseDto> getHashtagsOfPost(Long postId) {
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
     if (postHashtags.isEmpty()) {
       throw new ApiException(ErrorCode.POST_HASHTAG_NOT_FOUND);
@@ -89,7 +89,7 @@ public class HashtagService {
    * @return 사용자의 해시태그를 나타내는 HashtagDto 객체의 리스트
    * @exception ApiException 사용자와 관련된 해시태그가 하나도 존재하지 않을 경우
    */
-  public List<HashtagDto> getHashtagsOfUser(Long userId) {
+  public List<HashtagResponseDto> getHashtagsOfUser(Long userId) {
     List<UserHashtag> userHashtags = userHashtagRepository.findByUserId(userId);
     if (userHashtags.isEmpty()) {
       throw new ApiException(ErrorCode.USER_HASHTAG_NOT_FOUND);

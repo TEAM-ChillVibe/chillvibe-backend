@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.domain.hashtag.controller;
 
-import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagDto;
+import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +26,8 @@ public class HashtagController {
    * @return 모든 해시태그 목록을 담은 ResponseEntity
    */
   @GetMapping("/all")
-  public ResponseEntity<List<HashtagDto>> getAllHashtags() {
-    List<HashtagDto> hashtags = hashtagService.getAllHashtags();
+  public ResponseEntity<List<HashtagResponseDto>> getAllHashtags() {
+    List<HashtagResponseDto> hashtags = hashtagService.getAllHashtags();
     return ResponseEntity.ok(hashtags);
   }
 
@@ -39,9 +39,9 @@ public class HashtagController {
    * @return 인기 해시태그 목록을 담은 ResponseEntity
    */
   @GetMapping("/popular")
-  public ResponseEntity<List<HashtagDto>> getPopularHashtags(
+  public ResponseEntity<List<HashtagResponseDto>> getPopularHashtags(
       @RequestParam(defaultValue = "10") int limit) {
-    List<HashtagDto> hashtags = hashtagService.getPopularHashtags(limit);
+    List<HashtagResponseDto> hashtags = hashtagService.getPopularHashtags(limit);
     return ResponseEntity.ok(hashtags);
   }
 
@@ -52,8 +52,8 @@ public class HashtagController {
    * @return 해당 게시글의 해시태그 목록을 담은 ResponseEntity
    */
   @GetMapping(params = "postId")
-  public ResponseEntity<List<HashtagDto>> getHashtagsOfPost(@RequestParam Long postId) {
-    List<HashtagDto> hashtags = hashtagService.getHashtagsOfPost(postId);
+  public ResponseEntity<List<HashtagResponseDto>> getHashtagsOfPost(@RequestParam Long postId) {
+    List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfPost(postId);
     return ResponseEntity.ok(hashtags);
   }
 
@@ -64,8 +64,8 @@ public class HashtagController {
    * @return 해당 사용자의 프로필 해시태그 목록을 담은 ResponseEntity
    */
   @GetMapping(params = "userId")
-  public ResponseEntity<List<HashtagDto>> getHashtagsOfUser(@RequestParam Long userId) {
-    List<HashtagDto> hashtags = hashtagService.getHashtagsOfUser(userId);
+  public ResponseEntity<List<HashtagResponseDto>> getHashtagsOfUser(@RequestParam Long userId) {
+    List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfUser(userId);
     return ResponseEntity.ok(hashtags);
   }
 }
