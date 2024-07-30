@@ -40,7 +40,7 @@ out/
 logs/
 
 # divide public, private application.properties
-application-private.properties.DS_Store
+application-dev.properties
 .DS_Store
 
 
