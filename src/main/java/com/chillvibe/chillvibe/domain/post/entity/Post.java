@@ -3,6 +3,7 @@ package com.chillvibe.chillvibe.domain.post.entity;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
+import com.chillvibe.chillvibe.domain.playlist.entity.PlaylistTrack;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,8 +45,8 @@ public class Post {
   @Column(name = "post_id")
   private Long id;
 
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private PostLike postLike;
+  @OneToMany(mappedBy = "post", cascade =  CascadeType.ALL, orphanRemoval = true)
+  private List<PostLike> likes;
 
   @ManyToOne
   @JoinColumn(name = "user_id")
@@ -55,7 +56,7 @@ public class Post {
   @JoinColumn(name = "postHashtag_id")
   private PostHashtag hashtag;
 
-  @ManyToMany
+  @ManyToOne
   @JoinColumn(name = "playList_id")
   private Playlist playList;
 
