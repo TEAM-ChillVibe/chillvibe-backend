@@ -2,7 +2,7 @@ package com.chillvibe.chillvibe.domain.user.entity;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
-import com.chillvibe.chillvibe.domain.playlist.entity.PlayList;
+import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.entity.PostLike;
 import com.chillvibe.chillvibe.domain.user.dto.UserUpdateRequestDto;
