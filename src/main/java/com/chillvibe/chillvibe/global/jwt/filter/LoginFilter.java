@@ -25,7 +25,7 @@ import org.springframework.util.StreamUtils;
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-  private static final long ACCESS_TOKEN_EXPIRATION_MS = 60*60*10L;
+  private static final long ACCESS_TOKEN_EXPIRATION_MS = 60*60*60*10L;
   private static final long REFRESH_TOKEN_EXPIRATION_MS = 60*60*60*24L;
 
   private final AuthenticationManager authenticationManager;

@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.user.entity;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
+import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.entity.PostLike;
@@ -58,20 +59,25 @@ public class User extends BaseTimeEntity {
   @Builder.Default
   private boolean isDelete = false;
 
-//  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<Post> posts = new ArrayList<>();
-//
-//  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<Comment> comments = new ArrayList<>();
-//
-//  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<PostLike> postLikes = new ArrayList<>();
-//
-//  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<PlayList> playlists = new ArrayList<>();
-//
-//  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//  private List<Hashtag> userGenres = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Post> posts = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Comment> comments = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<PostLike> postLikes = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Playlist> playlists = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<UserHashtag> userGenres = new ArrayList<>();
 
   public User updateUser(UserUpdateRequestDto userUpdateRequestDto, String imageUrl) {
     this.nickname = userUpdateRequestDto.getNickname();
