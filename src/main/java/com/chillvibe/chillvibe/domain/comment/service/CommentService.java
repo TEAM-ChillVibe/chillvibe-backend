@@ -66,9 +66,13 @@ public class CommentService {
       throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
     }
 
+    Post post = postRepository.findById(requestDto.getPostId())
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_COMMENT_NOT_FOUND));
+
     Comment comment = new Comment();
     comment.setContent(requestDto.getContent());
     comment.setUser(user);
+    comment.setPost(post);
 
     Comment savedComment = commentRepository.save(comment);
 

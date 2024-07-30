@@ -54,7 +54,7 @@ public class CommentController {
 
   @PutMapping("/{commentId}")
   public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
-      CommentRequestDto requestDto, Principal principal) {
+      @RequestBody CommentRequestDto requestDto, Principal principal) {
     if (commentId == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
