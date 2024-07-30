@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.boot.logging.LogLevel;
 
 /**
- * 에러 코드 enum
- * - 애플리케이션에서 발생할 수 있는 다양한 에러를 코드와 메시지로 정의합니다.
- * - 각 에러 코드는 상태 코드, 코드 값(도메인 별 넘버링), 메시지, 로그 레벨을 포함합니다.
+ * 에러 코드 enum - 애플리케이션에서 발생할 수 있는 다양한 에러를 코드와 메시지로 정의합니다. - 각 에러 코드는 상태 코드, 코드 값(도메인 별 넘버링), 메시지, 로그
+ * 레벨을 포함합니다.
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
@@ -19,8 +18,12 @@ public enum ErrorCode {
   HANDLE_ACCESS_DENIED(403, "C005", "Access denied", LogLevel.ERROR),
   INTERNAL_SERVER_ERROR(500, "C006", "Internal server error", LogLevel.ERROR),
   INVALID_TYPE_VALUE(400, "C007", "Invalid Type Value", LogLevel.ERROR),
+  UNAUTHORIZED_ACCESS(403, "C008", "user id mismatch", LogLevel.ERROR),
 
   // COMMENT
+  COMMENT_NOT_FOUND(404, "C009", "Comment not found", LogLevel.ERROR),
+  USER_COMMENT_NOT_FOUND(404, "C010", "User comment not found", LogLevel.ERROR),
+  POST_COMMENT_NOT_FOUND(404, "C011", "Post comment not found", LogLevel.ERROR),
 
   // HASHTAG
   HASHTAG_NOT_FOUND(404, "H001", "Hashtag not found", LogLevel.ERROR),

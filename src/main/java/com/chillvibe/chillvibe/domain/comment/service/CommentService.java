@@ -8,6 +8,8 @@ import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ public class CommentService {
   @Transactional
   public List<CommentResponseDto> getCommentsByPost(Long postId) {
     Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_COMMENT_NOT_FOUND));
 
     List<Comment> comments = commentRepository.findByPostOrderByCreatedAtDesc(post);
 
@@ -46,7 +48,7 @@ public class CommentService {
   @Transactional
   public List<CommentResponseDto> getCommentsByUser(Long userId) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND));
 
     List<Comment> comments = commentRepository.findByUserOrderByCreatedAtDesc(user);
 
@@ -57,21 +59,67 @@ public class CommentService {
 
   // 댓글 생성
   @Transactional
-  public CommentResponseDto create(CommentRequestDto requestDto, String email) {
+  public CommentResponseDto createComment(CommentRequestDto requestDto, String email) {
     User user = userRepository.findByEmail(email);
 
     if (user == null) {
-      throw new IllegalArgumentException("User not found");
+      throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
     }
+
+    Post post = postRepository.findById(requestDto.getPostId())
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_COMMENT_NOT_FOUND));
 
     Comment comment = new Comment();
     comment.setContent(requestDto.getContent());
     comment.setUser(user);
+    comment.setPost(post);
 
     Comment savedComment = commentRepository.save(comment);
 
     return new CommentResponseDto(savedComment);
   }
 
+  // 댓글 수정
+  @Transactional
+  public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto,
+      String email) {
+    User user = userRepository.findByEmail(email);
+
+    if (user == null) {
+      throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
+    }
+
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(() -> new ApiException(ErrorCode.COMMENT_NOT_FOUND));
+
+    if (comment.getUser().getId() != user.getId()) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    comment.setContent(requestDto.getContent());
+    comment.setUser(user);
+
+    Comment updatedComment = commentRepository.save(comment);
+    return new CommentResponseDto(updatedComment);
+  }
+
+  // 댓글 삭제
+  @Transactional
+  public void deleteComment(Long commentId, String email) {
+    User user = userRepository.findByEmail(email);
+
+    if (user == null) {
+      throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
+    }
+
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(() -> new ApiException(ErrorCode.COMMENT_NOT_FOUND));
+
+    if (comment.getUser().getId() != user.getId()) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    commentRepository.delete(comment);
+  }
 
 }
