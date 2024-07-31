@@ -36,9 +36,9 @@ public class PlaylistController {
 
   // 빈 플레이리스트 생성
   @PostMapping
-  public ResponseEntity<Playlist> createPlaylist(@RequestBody PlaylistRequestDto request) {
+  public ResponseEntity<Long> createPlaylist(@RequestBody PlaylistRequestDto request) {
     Playlist createdPlaylist = playlistService.createEmptyPlaylist(request.getTitle());
-    return ResponseEntity.ok(createdPlaylist);
+    return ResponseEntity.ok(createdPlaylist.getId());
   }
 
   // 본인의 플레이리스트 조회
@@ -72,9 +72,9 @@ public class PlaylistController {
 
   // 플레이리스트에 트랙 추가
   @PostMapping("/{playlistId}/tracks")
-  public ResponseEntity<PlaylistTrackResponseDto> addTrackToPlaylist(@PathVariable Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {
+  public ResponseEntity<Long> addTrackToPlaylist(@PathVariable Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {
     PlaylistTrackResponseDto addedTrack = playlistService.addTrackToPlaylist(playlistId, requestDto);
-    return ResponseEntity.ok(addedTrack);
+    return ResponseEntity.ok(addedTrack.getId());
   }
 
   // 플레이리스트에 트랙 삭제
