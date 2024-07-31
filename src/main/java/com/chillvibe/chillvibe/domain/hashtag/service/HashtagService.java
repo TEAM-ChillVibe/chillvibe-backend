@@ -125,11 +125,16 @@ public class HashtagService {
 
     // 게시글에 포함된 모든 해시태그에 게시글의 좋아요 수를 반영
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
-    for (PostHashtag postHashtag : postHashtags) {
-      Hashtag hashtag = postHashtag.getHashtag();
-      hashtag.increaseTotalLikes(likeCount);
-      hashtagRepository.save(hashtag);
-    }
+
+    List<Hashtag> hashtagsToUpdate = postHashtags.stream()
+        .map(postHashtag -> {
+          Hashtag hashtag = postHashtag.getHashtag();
+          hashtag.increaseTotalLikes(likeCount);
+          return hashtag;
+        })
+        .toList();
+
+    hashtagRepository.saveAll(hashtagsToUpdate);
   }
 
   /**
@@ -141,10 +146,15 @@ public class HashtagService {
   public void decreaseHashtagLikes(Long postId) {
     int likeCount = postLikeRepository.countByPostId(postId);
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
-    for (PostHashtag postHashtag : postHashtags) {
-      Hashtag hashtag = postHashtag.getHashtag();
-      hashtag.decreaseTotalLikes(likeCount);
-      hashtagRepository.save(hashtag);
-    }
+
+    List<Hashtag> hashtagsToUpdate = postHashtags.stream()
+        .map(postHashtag -> {
+          Hashtag hashtag = postHashtag.getHashtag();
+          hashtag.decreaseTotalLikes(likeCount);
+          return hashtag;
+        })
+        .toList();
+
+    hashtagRepository.saveAll(hashtagsToUpdate);
   }
 }
