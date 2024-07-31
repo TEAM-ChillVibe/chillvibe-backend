@@ -44,13 +44,19 @@ public class CommentController {
   @PostMapping
   public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto requestDto,
       Principal principal) {
-    if (principal == null) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
     String email = principal.getName();
     CommentResponseDto responseDto = commentService.createComment(requestDto, email);
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
+
+  // principal 없이 테스트할 때
+//  @PostMapping
+//  public ResponseEntity<CommentResponseDto> createComment(
+//      @RequestBody CommentRequestDto requestDto) {
+//    String email = "test@example.com"; // 임시 사용자 정보
+//    CommentResponseDto responseDto = commentService.createComment(requestDto, email);
+//    return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+//  }
 
   @PutMapping("/{commentId}")
   public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
@@ -59,15 +65,20 @@ public class CommentController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    if (principal == null) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
-
     String email = principal.getName();
     CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, email);
 
     return new ResponseEntity<>(responseDto, HttpStatus.OK);
   }
+
+  // principal 없이 테스트할 때
+//  @PutMapping("/{commentId}")
+//  public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
+//      @RequestBody CommentRequestDto requestDto) {
+//    String email = "test@example.com";
+//    CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, email);
+//    return new ResponseEntity<>(responseDto, HttpStatus.OK);
+//  }
 
   @DeleteMapping("/{commentId}")
   public ResponseEntity<CommentResponseDto> deleteComment(@PathVariable Long commentId,
@@ -76,13 +87,17 @@ public class CommentController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    if (principal == null) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
-
     String email = principal.getName();
     commentService.deleteComment(commentId, email);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
+
+  // principal 없이 테스트할 때
+//  @DeleteMapping("/{commentId}")
+//  public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+//    String email = "test@example.com";
+//    commentService.deleteComment(commentId, email);
+//    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//  }
 }
