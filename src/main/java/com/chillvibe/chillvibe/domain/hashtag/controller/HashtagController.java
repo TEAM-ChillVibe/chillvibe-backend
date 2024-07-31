@@ -30,20 +30,24 @@ public class HashtagController {
     List<HashtagResponseDto> hashtags = hashtagService.getAllHashtags();
     return ResponseEntity.ok(hashtags);
   }
-
+  
   /**
-   * 인기 해시태그를 조회하는 엔드포인트입니다.
-   * 기본적으로 10개의 해시태그를 반환하며, limit 쿼리 파라미터를 통해 개수를 조절할 수 있습니다.
+   * 인기 해시태그를 페이지네이션을 통해 조회하는 엔드포인트입니다.
    *
-   * @param limit 조회할 해시태그 개수 (기본값: 10)
-   * @return 인기 해시태그 목록을 담은 ResponseEntity
+   * @param page 조회할 페이지 번호 (0부터 시작)
+   * @param size 페이지당 항목 수
+   * @return 주어진 페이지와 크기에 해당하는 인기 해시태그의 DTO 리스트를 담은 ResponseEntity
+   *
+   *     1~10위의 태그를 가져오고 싶은 경우: GET /popular?page=0&size=10
    */
   @GetMapping("/popular")
   public ResponseEntity<List<HashtagResponseDto>> getPopularHashtags(
-      @RequestParam(defaultValue = "10") int limit) {
-    List<HashtagResponseDto> hashtags = hashtagService.getPopularHashtags(limit);
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    List<HashtagResponseDto> hashtags = hashtagService.getPopularHashtags(page, size);
     return ResponseEntity.ok(hashtags);
   }
+
 
   /**
    * 특정 게시글에 속한 해시태그를 조회하는 엔드포인트입니다.

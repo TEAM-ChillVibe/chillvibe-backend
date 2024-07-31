@@ -19,6 +19,7 @@ public enum ErrorCode {
   HANDLE_ACCESS_DENIED(403, "C005", "Access denied", LogLevel.ERROR),
   INTERNAL_SERVER_ERROR(500, "C006", "Internal server error", LogLevel.ERROR),
   INVALID_TYPE_VALUE(400, "C007", "Invalid Type Value", LogLevel.ERROR),
+  POSITIVE_VALUE_REQUIRED(400, "C008", "Value must be positive", LogLevel.ERROR),
 
   // COMMENT
 
