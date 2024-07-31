@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.controller;
 
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
@@ -37,6 +38,14 @@ public class PlaylistController {
     Playlist createdPlaylist = playlistService.createEmptyPlaylist(request.getTitle());
     return ResponseEntity.ok(createdPlaylist);
   }
+
+  // 플레이리스트 수정(상세) 페이지 조회
+  @GetMapping("/{playlistId}/edit")
+  public ResponseEntity<PlaylistEditPageResponseDto> getPlaylistForEditing(@PathVariable Long playlistId){
+    PlaylistEditPageResponseDto responseDto = playlistService.getPlaylistForEditing(playlistId);
+    return ResponseEntity.ok(responseDto);
+  }
+
 
   // 마이 페이지 - 플레이리스트들 조회 (10개 단위 페이지네이션)
   @GetMapping("/my")
