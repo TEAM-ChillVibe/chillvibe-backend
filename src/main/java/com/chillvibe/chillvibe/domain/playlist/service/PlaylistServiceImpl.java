@@ -11,6 +11,8 @@ import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.exception.UserNotFoundException;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   private final PlaylistRepository playlistRepository;
   private final PlaylistTrackRepository playlistTrackRepository;
+  private final PlaylistTrackMapper playlistTrackMapper;
   private final UserRepository userRepository;
   private final UserUtil userUtil;
 
@@ -29,10 +32,12 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   public PlaylistServiceImpl(PlaylistRepository playlistRepository,
       PlaylistTrackRepository playlistTrackRepository,
+      PlaylistTrackMapper playlistTrackMapper,
       UserRepository userRepository,
       UserUtil userUtil){
     this.playlistRepository = playlistRepository;
     this.playlistTrackRepository = playlistTrackRepository;
+    this.playlistTrackMapper = playlistTrackMapper;
     this.userRepository = userRepository;
     this.userUtil = userUtil;
   }
@@ -40,10 +45,10 @@ public class PlaylistServiceImpl implements PlaylistService {
   public Playlist createEmptyPlaylist(String title){
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
-      throw new RuntimeException("User not authenticated"); // 인증된 유저가 아닙니다.
+      throw new ApiException(ErrorCode.UNAUTHENTICATED); // 인증된 유저가 아닙니다.
     }
 
-    User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+    User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     // 빈 플레이리스트 객체 생성
     Playlist playlist = Playlist.builder()
@@ -56,11 +61,16 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   public PlaylistTrackResponseDto addTrackToPlaylist(Long playlistId, PlaylistTrackRequestDto requestDto){
-    Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new RuntimeException("플레이리스트를 찾을 수 없습니다."));
+    Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(
+        ErrorCode.PLAYLIST_NOT_FOUND));
 
     Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null){
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
     if (!playlist.getUser().getId().equals(currentUserId)) {
-      throw new RuntimeException("해당 플레이리스트에 대한 권한이 없습니다.");
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
     PlaylistTrack playlistTrack = PlaylistTrack.builder()
@@ -73,20 +83,24 @@ public class PlaylistServiceImpl implements PlaylistService {
         .thumbnailUrl(requestDto.getThumbnailUrl())
         .build();
 
-    PlaylistTrack savedTrack = playlistTrackRepository.save(playlistTrack);
+    try {
+      PlaylistTrack savedTrack = playlistTrackRepository.save(playlistTrack);
+      return playlistTrackMapper.toDto(savedTrack);
+    } catch (Exception e) {
+      throw new ApiException(ErrorCode.TRACK_ADD_FAILED);
+    }
 
-    return PlaylistTrackMapper.toDto(savedTrack);
   }
 
   public void removeTrackFromPlaylist(Long playlistId, Long trackId) {
-    Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new RuntimeException("플레이리스트를 찾을 수 없습니다."));
+    Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
     Long currentUserId = userUtil.getAuthenticatedUserId();
     if(!playlist.getUser().getId().equals(currentUserId)) {
-      throw new RuntimeException("해당 플레이리스트에 대한 권한이 없습니다.");
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    PlaylistTrack track = playlistTrackRepository.findByPlaylistIdAndId(playlistId, trackId).orElseThrow(() -> new RuntimeException("해당 트랙을 찾을 수 없습니다."));
+    PlaylistTrack track = playlistTrackRepository.findByPlaylistIdAndId(playlistId, trackId).orElseThrow(() -> new ApiException(ErrorCode.TRACK_NOT_FOUND));
 
     playlistTrackRepository.delete(track);
   }
