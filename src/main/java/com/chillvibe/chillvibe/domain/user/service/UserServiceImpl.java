@@ -1,6 +1,10 @@
 package com.chillvibe.chillvibe.domain.user.service;
 
+import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
+import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
+import com.chillvibe.chillvibe.domain.hashtag.repository.UserHashtagRepository;
 import com.chillvibe.chillvibe.domain.user.dto.JoinRequestDto;
+import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.exception.DuplicateEmailException;
@@ -9,7 +13,11 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +34,7 @@ public class UserServiceImpl implements UserService {
   private final S3Uploader s3Uploader;
   private final ObjectMapper objectMapper;
   private final UserUtil userUtil;
+  private final UserHashtagRepository userHashtagRepository;
 
   public void join(String joinDto, MultipartFile multipartFile){
 
@@ -67,8 +76,6 @@ public class UserServiceImpl implements UserService {
         .nickname(parsedJoinDto.getNickname())
         .profileUrl(imageUrl)
         .introduction(parsedJoinDto.getIntroduction())
-        .isPublic(Boolean.TRUE)
-        .isDelete(Boolean.FALSE)
         .build();
 
     userRepository.save(newUser);
@@ -111,5 +118,55 @@ public class UserServiceImpl implements UserService {
     User updatedUser = user.updateUser(parsedUserUpdateDto, imageUrl);
 
     userRepository.save(updatedUser);
+  }
+
+  @Transactional
+  public void softDeleteUser() {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+
+    userRepository.delete(user);
+  }
+
+  @Transactional
+  public void restoreUser() {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+
+    userRepository.restore(userId);
+  }
+
+  public UserInfoResponseDto getMyPageInfo() {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+
+    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+
+    List<Hashtag> hashtags = userHashtag.stream()
+        .map(UserHashtag::getHashtag)
+        .filter(Objects::nonNull)
+        .toList();
+
+    return new UserInfoResponseDto(user, hashtags);
+  }
+  public UserInfoResponseDto getUserInfo(Long userId) {
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+
+    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+
+    List<Hashtag> hashtags = userHashtag.stream()
+        .map(UserHashtag::getHashtag)
+        .filter(Objects::nonNull)
+        .toList();
+
+    return new UserInfoResponseDto(user, hashtags);
   }
 }
