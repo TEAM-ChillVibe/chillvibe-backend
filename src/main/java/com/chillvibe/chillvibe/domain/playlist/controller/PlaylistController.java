@@ -54,6 +54,13 @@ public class PlaylistController {
     return ResponseEntity.ok(playlistMapper.playlistPageToPlaylistDtoPage(playlists));
   }
 
+  // 플레이리스트 제거
+  @DeleteMapping("/{playlistId}")
+  public ResponseEntity<Void> deletePlaylist(@PathVariable Long playlistId){
+    playlistService.deletePlaylist(playlistId);
+    return ResponseEntity.noContent().build();
+  }
+
   // 플레이리스트에 트랙 추가
   @PostMapping("/{playlistId}/tracks")
   public ResponseEntity<PlaylistTrackResponseDto> addTrackToPlaylist(@PathVariable Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {

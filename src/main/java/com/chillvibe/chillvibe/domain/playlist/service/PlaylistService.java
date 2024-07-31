@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 public interface PlaylistService {
   // 빈 플레이리스트 생성
   Playlist createEmptyPlaylist(String title);
+  // 플레이리스트 삭제
+  void deletePlaylist(Long playlistId);
   // 마이 페이지 - 플레이리스트들 조회 (10개 단위 페이지네이션)
   Page<Playlist> getUserPlaylists(int page, int size);
   // 플레이리스트 수정(상세) 페이지 조회

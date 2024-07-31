@@ -67,6 +67,22 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
+  public void deletePlaylist(Long playlistId){
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if(currentUserId == null){
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    if (!playlist.getUser().getId().equals(currentUserId)) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+    playlistRepository.delete(playlist);
+  }
+
+  @Override
   public Page<Playlist> getUserPlaylists(int page, int size){
     Long userId = userUtil.getAuthenticatedUserId();
     if(userId == null) {
