@@ -18,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HashtagService {
@@ -114,44 +113,25 @@ public class HashtagService {
         .toList();
   }
 
-
   /**
-   * 게시글의 좋아요 수를 기반으로 해당 게시글에 속한 해시태그의 총 좋아요 수를 증가시킵니다.
+   * 게시글의 좋아요 수를 기반으로 해당 게시글에 속한 해시태그의 총 좋아요 수를 변화시킵니다.
    *
-   * @param postId 좋아요 수가 증가한 게시글의 ID
+   * @param postId   좋아요 수가 변화한 게시글의 ID
+   * @param increase 좋아요 수를 증가시킬지 감소시킬지 결정하는 플래그.
+   *                 `true`일 경우 총 좋아요 수를 증가시키고, `false`일 경우 감소시킵니다.
    */
-  @Transactional
-  public void increaseHashtagLikes(Long postId) {
-    int likeCount = postLikeRepository.countByPostId(postId);
-
-    // 게시글에 포함된 모든 해시태그에 게시글의 좋아요 수를 반영
-    List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
-
-    List<Hashtag> hashtagsToUpdate = postHashtags.stream()
-        .map(postHashtag -> {
-          Hashtag hashtag = postHashtag.getHashtag();
-          hashtag.increaseTotalLikes(likeCount);
-          return hashtag;
-        })
-        .toList();
-
-    hashtagRepository.saveAll(hashtagsToUpdate);
-  }
-
-  /**
-   * 게시글의 좋아요 수를 기반으로 해당 게시글에 속한 해시태그의 총 좋아요 수를 감소시킵니다.
-   *
-   * @param postId 좋아요 수가 감소한 게시글의 ID
-   */
-  @Transactional
-  public void decreaseHashtagLikes(Long postId) {
+  public void adjustHashtagLikes(Long postId, boolean increase) {
     int likeCount = postLikeRepository.countByPostId(postId);
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
 
     List<Hashtag> hashtagsToUpdate = postHashtags.stream()
         .map(postHashtag -> {
           Hashtag hashtag = postHashtag.getHashtag();
-          hashtag.decreaseTotalLikes(likeCount);
+          if (increase) {
+            hashtag.increaseTotalLikes(likeCount);
+          } else {
+            hashtag.decreaseTotalLikes(likeCount);
+          }
           return hashtag;
         })
         .toList();
