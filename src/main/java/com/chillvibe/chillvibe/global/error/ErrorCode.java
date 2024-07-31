@@ -19,8 +19,12 @@ public enum ErrorCode {
   HANDLE_ACCESS_DENIED(403, "C005", "Access denied", LogLevel.ERROR),
   INTERNAL_SERVER_ERROR(500, "C006", "Internal server error", LogLevel.ERROR),
   INVALID_TYPE_VALUE(400, "C007", "Invalid Type Value", LogLevel.ERROR),
+  UNAUTHORIZED_ACCESS(403, "C008", "user id mismatch", LogLevel.ERROR),
 
   // COMMENT
+  COMMENT_NOT_FOUND(404, "C009", "Comment not found", LogLevel.ERROR),
+  USER_COMMENT_NOT_FOUND(404, "C010", "User comment not found", LogLevel.ERROR),
+  POST_COMMENT_NOT_FOUND(404, "C011", "Post comment not found", LogLevel.ERROR),
 
   // HASHTAG
   HASHTAG_NOT_FOUND(404, "H001", "Hashtag not found", LogLevel.ERROR),
