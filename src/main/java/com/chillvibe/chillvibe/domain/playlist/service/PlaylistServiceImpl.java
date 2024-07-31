@@ -1,10 +1,12 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.entity.PlaylistTrack;
+import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistTrackMapper;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistTrackRepository;
@@ -27,6 +29,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   private final PlaylistRepository playlistRepository;
   private final PlaylistTrackRepository playlistTrackRepository;
+  private final PlaylistMapper playlistMapper;
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserRepository userRepository;
   private final UserUtil userUtil;
@@ -37,14 +40,28 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   public PlaylistServiceImpl(PlaylistRepository playlistRepository,
       PlaylistTrackRepository playlistTrackRepository,
+      PlaylistMapper playlistMapper,
       PlaylistTrackMapper playlistTrackMapper,
       UserRepository userRepository,
       UserUtil userUtil){
     this.playlistRepository = playlistRepository;
     this.playlistTrackRepository = playlistTrackRepository;
+    this.playlistMapper = playlistMapper;
     this.playlistTrackMapper = playlistTrackMapper;
     this.userRepository = userRepository;
     this.userUtil = userUtil;
+  }
+
+  @Override
+  public List<PlaylistSelectDto> getUserPlaylistsForSelection() {
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
+    List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
+
+    return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 
   @Override

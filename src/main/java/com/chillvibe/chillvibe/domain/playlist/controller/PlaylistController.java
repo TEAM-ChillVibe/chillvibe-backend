@@ -3,11 +3,13 @@ package com.chillvibe.chillvibe.domain.playlist.controller;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
+import java.util.List;
 import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,13 @@ public class PlaylistController {
   public ResponseEntity<Playlist> createPlaylist(@RequestBody PlaylistRequestDto request) {
     Playlist createdPlaylist = playlistService.createEmptyPlaylist(request.getTitle());
     return ResponseEntity.ok(createdPlaylist);
+  }
+
+  // 본인의 플레이리스트 조회
+  @GetMapping("/selection")
+  public ResponseEntity<List<PlaylistSelectDto>> getPlaylistsForSelection() {
+    List<PlaylistSelectDto> playlists = playlistService.getUserPlaylistsForSelection();
+    return ResponseEntity.ok(playlists);
   }
 
   // 플레이리스트 수정(상세) 페이지 조회
