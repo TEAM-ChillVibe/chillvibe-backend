@@ -15,6 +15,9 @@ import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -58,6 +61,20 @@ public class PlaylistServiceImpl implements PlaylistService {
         .build();
 
     return playlistRepository.save(playlist);
+  }
+
+  public Page<Playlist> getUserPlaylists(int page, int size){
+    Long userId = userUtil.getAuthenticatedUserId();
+    if(userId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
+    if (!userRepository.existsById(userId)) {
+      throw new ApiException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    Pageable pageable = PageRequest.of(page,size);
+    return playlistRepository.findByUserId(userId, pageable);
   }
 
   public PlaylistTrackResponseDto addTrackToPlaylist(Long playlistId, PlaylistTrackRequestDto requestDto){
