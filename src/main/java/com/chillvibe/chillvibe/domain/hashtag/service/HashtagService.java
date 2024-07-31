@@ -7,8 +7,11 @@ import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
 import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.UserHashtagRepository;
+import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostLikeRepository;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
+import com.chillvibe.chillvibe.domain.user.entity.User;
+import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import java.util.Collections;
@@ -26,14 +29,18 @@ public class HashtagService {
   private final PostHashtagRepository postHashtagRepository;
   private final UserHashtagRepository userHashtagRepository;
   private final PostLikeRepository postLikeRepository;
+  private final UserRepository userRepository;
+  private final PostRepository postRepository;
 
   public HashtagService(HashtagRepository hashtagRepository, PostRepository postRepository,
       PostHashtagRepository postHashtagRepository, UserHashtagRepository userHashtagRepository,
-      PostLikeRepository postLikeRepository) {
+      PostLikeRepository postLikeRepository, UserRepository userRepository) {
     this.hashtagRepository = hashtagRepository;
     this.postHashtagRepository = postHashtagRepository;
     this.userHashtagRepository = userHashtagRepository;
     this.postLikeRepository = postLikeRepository;
+    this.userRepository = userRepository;
+    this.postRepository = postRepository;
   }
 
   /**
@@ -137,5 +144,49 @@ public class HashtagService {
         .toList();
 
     hashtagRepository.saveAll(hashtagsToUpdate);
+  }
+
+  /**
+   * 특정 사용자의 프로필에 설정될 해시태그를 설정(변경)합니다.
+   *
+   * @param userId     사용자 ID
+   * @param hashtagIds 해시태그 ID list
+   * @exception ApiException USER_NOT_FOUND 사용자가 존재하지 않을 경우
+   */
+  public void updateHashtagsOfUser(Long userId, List<Long> hashtagIds) {
+    userHashtagRepository.deleteByUserId(userId);
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
+
+    List<UserHashtag> userHashtags = hashtags.stream()
+        .map(hashtag -> new UserHashtag(user, hashtag))
+        .toList();
+
+    userHashtagRepository.saveAll(userHashtags);
+  }
+
+  /**
+   * 특정 게시글에 설정될 해시태그를 설정(변경)합니다.
+   *
+   * @param postId     게시글 ID
+   * @param hashtagIds 해시태그 ID list
+   * @exception ApiException POST_NOT_FOUND 게시글이 존재하지 않을 경우
+   */
+  public void updateHashtagsOfPost(Long postId, List<Long> hashtagIds) {
+    postHashtagRepository.deleteByPostId(postId);
+
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+
+    List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
+
+    List<PostHashtag> postHashtags = hashtags.stream()
+        .map(hashtag -> new PostHashtag(post, hashtag))
+        .toList();
+
+    postHashtagRepository.saveAll(postHashtags);
   }
 }

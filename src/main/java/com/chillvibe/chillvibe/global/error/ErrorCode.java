@@ -31,10 +31,12 @@ public enum ErrorCode {
   // PLAYLIST
 
   // POST
+  POST_NOT_FOUND(404, "P001", "Post not found", LogLevel.ERROR),
 
   // SPOTIFY
 
   // USER
+  USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),
 
   // SECURE
 

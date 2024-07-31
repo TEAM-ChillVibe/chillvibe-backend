@@ -2,9 +2,13 @@ package com.chillvibe.chillvibe.domain.hashtag.controller;
 
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +34,7 @@ public class HashtagController {
     List<HashtagResponseDto> hashtags = hashtagService.getAllHashtags();
     return ResponseEntity.ok(hashtags);
   }
-  
+
   /**
    * 인기 해시태그를 페이지네이션을 통해 조회하는 엔드포인트입니다.
    *
@@ -71,5 +75,29 @@ public class HashtagController {
   public ResponseEntity<List<HashtagResponseDto>> getHashtagsOfUser(@RequestParam Long userId) {
     List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfUser(userId);
     return ResponseEntity.ok(hashtags);
+  }
+
+  /**
+   * 특정 사용자의 프로필 또는 특정 게시글에 설정될 해시태그를 변경하는 엔드포인트입니다.
+   *
+   * @param userId     사용자 ID (선택적, userId가 제공되면 사용자 해시태그를 업데이트)
+   * @param postId     게시글 ID (선택적, postId가 제공되면 게시글 해시태그를 업데이트)
+   * @param hashtagIds 해시태그 ID 리스트
+   * @return 성공적으로 업데이트된 경우 HTTP 200 OK 반환
+   */
+  @PutMapping
+  public ResponseEntity<Void> updateHashtags(
+      @RequestParam(required = false) Long userId,
+      @RequestParam(required = false) Long postId,
+      @RequestBody List<Long> hashtagIds) {
+    if (userId != null) {
+      hashtagService.updateHashtagsOfUser(userId, hashtagIds);
+    } else if (postId != null) {
+      hashtagService.updateHashtagsOfPost(postId, hashtagIds);
+    } else {
+      throw new ApiException("Either userId or postId must be provided",
+          ErrorCode.INVALID_INPUT_VALUE);
+    }
+    return ResponseEntity.ok().build();
   }
 }
