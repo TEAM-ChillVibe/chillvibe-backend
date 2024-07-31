@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 
-  @Query("SELECT h FROM Hashtag h ORDER BY h.totalLikes DESC")
-  Page<Hashtag> findTopByOrderByTotalLikesDESC(Pageable pageable);
+  // totalLikes를 기준으로 태그를 인기순 정렬, totalLikes가 같은 데이터의 경우 랜덤 정렬
+  @Query("SELECT h FROM Hashtag h ORDER BY h.totalLikes DESC, RAND()")
+  Page<Hashtag> findTopByOrderByTotalLikesDescRandom(Pageable pageable);
 }

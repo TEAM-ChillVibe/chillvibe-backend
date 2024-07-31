@@ -67,7 +67,8 @@ public class HashtagService {
     }
 
     Pageable pageable = PageRequest.of(page, size);
-    Page<Hashtag> popularHashtags = hashtagRepository.findTopByOrderByTotalLikesDESC(pageable);
+    Page<Hashtag> popularHashtags = hashtagRepository.findTopByOrderByTotalLikesDescRandom(
+        pageable);
 
     // 조회 결과가 없는 경우 빈 리스트 반환
     if (popularHashtags.isEmpty()) {
