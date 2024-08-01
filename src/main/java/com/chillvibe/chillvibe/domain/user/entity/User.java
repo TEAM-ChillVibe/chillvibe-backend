@@ -22,13 +22,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DialectOverride.Wheres;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE user SET is_delete = true WHERE user_id=?")
 public class User extends BaseTimeEntity {
 
   @Id
@@ -53,11 +56,11 @@ public class User extends BaseTimeEntity {
 
   @Column(nullable = false)
   @Builder.Default
-  private boolean isPublic = true;
+  private boolean isPublic = Boolean.TRUE;
 
   @Column(nullable = false)
   @Builder.Default
-  private boolean isDelete = false;
+  private boolean isDelete = Boolean.FALSE;
 
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
