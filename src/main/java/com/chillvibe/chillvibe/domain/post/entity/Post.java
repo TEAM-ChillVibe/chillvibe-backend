@@ -4,9 +4,11 @@ import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.user.entity.User;
+import com.chillvibe.chillvibe.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,30 +31,26 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor
 @Table(name = "post")
 @Entity
-//@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE post_id = ?")
-//@Wheres(clause = "is_deleted = false")
-public class Post {
-
+public class Post extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "post_id")
   private Long id;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<PostLike> likes;
+  private List<PostLike> postLike = new ArrayList<>();
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "postHashtag_id")
   private PostHashtag hashtag;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "playList_id")
-  private Playlist playList;
+  private Playlist playlist;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Comment> comment = new ArrayList<>();
@@ -61,15 +59,17 @@ public class Post {
   private String title;
 
   @Lob
-  private String discription;
+  private String description;
 
-  @Column(length = 1000)
-  private String postImageURL;
+  @Column
+  private String postImageUrl;
 
   @Column(length = 1000, nullable = false)
-  private String postTitleImageURL;
+  private String postTitleImageUrl;
 
   @ColumnDefault("0")
   @Column(name = "likeCount", nullable = false)
   private Integer likeCount;
+
+  private boolean isDeleted;
 }

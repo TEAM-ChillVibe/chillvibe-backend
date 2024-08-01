@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HashtagDto {
+public class HashtagResponseDto {
 
   private Long id;
   private String name;
