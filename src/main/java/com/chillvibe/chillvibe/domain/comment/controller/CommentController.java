@@ -3,7 +3,6 @@ package com.chillvibe.chillvibe.domain.comment.controller;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentRequestDto;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.service.CommentService;
-import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,62 +41,27 @@ public class CommentController {
   }
 
   @PostMapping
-  public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto requestDto,
-      Principal principal) {
-    String email = principal.getName();
-    CommentResponseDto responseDto = commentService.createComment(requestDto, email);
+  public ResponseEntity<CommentResponseDto> createComment(
+      @RequestBody CommentRequestDto requestDto) {
+    CommentResponseDto responseDto = commentService.createComment(requestDto);
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
 
-  // principal 없이 테스트할 때
-//  @PostMapping
-//  public ResponseEntity<CommentResponseDto> createComment(
-//      @RequestBody CommentRequestDto requestDto) {
-//    String email = "test@example.com"; // 임시 사용자 정보
-//    CommentResponseDto responseDto = commentService.createComment(requestDto, email);
-//    return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-//  }
-
   @PutMapping("/{commentId}")
   public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
-      @RequestBody CommentRequestDto requestDto, Principal principal) {
+      @RequestBody CommentRequestDto requestDto) {
     if (commentId == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    String email = principal.getName();
-    CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, email);
-
+    CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto);
     return new ResponseEntity<>(responseDto, HttpStatus.OK);
   }
 
-  // principal 없이 테스트할 때
-//  @PutMapping("/{commentId}")
-//  public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long commentId,
-//      @RequestBody CommentRequestDto requestDto) {
-//    String email = "test@example.com";
-//    CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, email);
-//    return new ResponseEntity<>(responseDto, HttpStatus.OK);
-//  }
-
   @DeleteMapping("/{commentId}")
-  public ResponseEntity<CommentResponseDto> deleteComment(@PathVariable Long commentId,
-      Principal principal) {
-    if (commentId == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    String email = principal.getName();
-    commentService.deleteComment(commentId, email);
-
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+    commentService.deleteComment(commentId);
+    return new ResponseEntity<>("Comment deleted successfully.", HttpStatus.OK);
   }
 
-  // principal 없이 테스트할 때
-//  @DeleteMapping("/{commentId}")
-//  public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
-//    String email = "test@example.com";
-//    commentService.deleteComment(commentId, email);
-//    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//  }
 }
