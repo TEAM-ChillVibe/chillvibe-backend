@@ -10,6 +10,8 @@ import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.exception.DuplicateEmailException;
 import com.chillvibe.chillvibe.domain.user.exception.UserNotFoundException;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +19,6 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
   private final UserUtil userUtil;
   private final UserHashtagRepository userHashtagRepository;
 
-  public void join(String joinDto, MultipartFile multipartFile){
+  public void join(String joinDto, MultipartFile multipartFile) {
 
     JoinRequestDto parsedJoinDto = new JoinRequestDto();
     try {
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
     Boolean isExist = userRepository.existsByEmail(email);
 
     // 이미 존재한다면
-    if(isExist){
+    if (isExist) {
       throw new DuplicateEmailException();
     }
 
@@ -63,9 +64,11 @@ public class UserServiceImpl implements UserService {
       try {
         imageUrl = s3Uploader.upload(multipartFile, "profile-images");
         // 회원가입 로직 처리 (DB 저장 등)
-        ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully with profile image URL: " + imageUrl);
+        ResponseEntity.status(HttpStatus.CREATED)
+            .body("User registered successfully with profile image URL: " + imageUrl);
       } catch (IOException e) {
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading profile image: " + e.getMessage());
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error uploading profile image: " + e.getMessage());
         return;
       }
     }
@@ -102,7 +105,7 @@ public class UserServiceImpl implements UserService {
     String imageUrl = user.getProfileUrl();
 
     // 만약 multiparFile에 파일이 들어왔다면
-    if(multipartFile != null && !multipartFile.isEmpty()){
+    if (multipartFile != null && !multipartFile.isEmpty()) {
       // 기존의 profileUrl 삭제
       s3Uploader.deleteFile(user.getProfileUrl());
 
@@ -110,7 +113,8 @@ public class UserServiceImpl implements UserService {
       try {
         imageUrl = s3Uploader.upload(multipartFile, "profile-images");
       } catch (IOException e) {
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading profile image: " + e.getMessage());
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error uploading profile image: " + e.getMessage());
       }
     }
 
@@ -155,6 +159,7 @@ public class UserServiceImpl implements UserService {
 
     return new UserInfoResponseDto(user, hashtags);
   }
+
   public UserInfoResponseDto getUserInfo(Long userId) {
 
     User user = userRepository.findById(userId)
@@ -168,5 +173,10 @@ public class UserServiceImpl implements UserService {
         .toList();
 
     return new UserInfoResponseDto(user, hashtags);
+  }
+
+  public User getUserById(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
   }
 }

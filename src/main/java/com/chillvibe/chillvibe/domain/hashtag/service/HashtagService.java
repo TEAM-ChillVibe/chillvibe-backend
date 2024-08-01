@@ -11,9 +11,10 @@ import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostLikeRepository;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
-import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.domain.user.service.UserService;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
+import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +33,10 @@ public class HashtagService {
   private final PostHashtagRepository postHashtagRepository;
   private final UserHashtagRepository userHashtagRepository;
   private final PostLikeRepository postLikeRepository;
-  private final UserRepository userRepository;
+  private final UserService userService;
+  //  private final PostService postService;
   private final PostRepository postRepository;
+  public final UserUtil userUtil;
 
   /**
    * 시스템에 존재하는 모든 해시태그를 조회합니다.
@@ -142,16 +146,19 @@ public class HashtagService {
    *
    * @param userId     사용자 ID
    * @param hashtagIds 해시태그 ID list
-   * @exception ApiException USER_NOT_FOUND 사용자가 존재하지 않을 경우
+   * @exception ApiException UNAUTHENTICATED 인증되지 않은 사용자일 경우
    */
+  @Transactional
   public void updateHashtagsOfUser(Long userId, List<Long> hashtagIds) {
+    userId = userUtil.getAuthenticatedUserId();
+    if (userId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
     userHashtagRepository.deleteByUserId(userId);
 
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-
+    User user = userService.getUserById(userId);
     List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
-
     List<UserHashtag> userHashtags = hashtags.stream()
         .map(hashtag -> new UserHashtag(user, hashtag))
         .toList();
@@ -164,16 +171,15 @@ public class HashtagService {
    *
    * @param postId     게시글 ID
    * @param hashtagIds 해시태그 ID list
-   * @exception ApiException POST_NOT_FOUND 게시글이 존재하지 않을 경우
    */
+  @Transactional
   public void updateHashtagsOfPost(Long postId, List<Long> hashtagIds) {
     postHashtagRepository.deleteByPostId(postId);
 
+//    Post post = postService.getPostById(postId);
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
-
     List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
-
     List<PostHashtag> postHashtags = hashtags.stream()
         .map(hashtag -> new PostHashtag(post, hashtag))
         .toList();
