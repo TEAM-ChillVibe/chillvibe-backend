@@ -6,7 +6,7 @@ import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
-import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
@@ -66,7 +66,7 @@ public class PostService {
    * @exception ApiException PLAYLIST_NOT_FOUND 플레이리스트가 존재하지 않을 경우
    */
   @Transactional
-  public PostResponseDto createPost(String title, String description, String postTitleImageUrl,
+  public PostListResponseDto createPost(String title, String description, String postTitleImageUrl,
       Long playlistId, List<Long> hashtagIds) {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
@@ -82,7 +82,7 @@ public class PostService {
 
     hashtagService.updateHashtagsOfPost(savedPost.getId(), hashtagIds);
 
-    return new PostResponseDto(savedPost);
+    return new PostListResponseDto(savedPost);
   }
 
   /**
@@ -93,7 +93,7 @@ public class PostService {
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 페이지 객체, 각 포스트는 {PostRequestDto}로 변환됨
    * @exception ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
    */
-  public Page<PostResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable) {
+  public Page<PostListResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable) {
     List<PostHashtag> postHashtags = postHashtagRepository.findByHashtagId(hashtagId);
 
     if (postHashtags.isEmpty()) {
@@ -106,6 +106,6 @@ public class PostService {
 
     Page<Post> posts = postRepository.findAllByIdIn(postIds, pageable);
 
-    return posts.map(PostResponseDto::new);
+    return posts.map(PostListResponseDto::new);
   }
 }

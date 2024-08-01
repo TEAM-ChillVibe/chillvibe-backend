@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
-import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
@@ -59,7 +59,7 @@ public class PostController {
    */
   @SneakyThrows
   @PostMapping
-  public ResponseEntity<PostResponseDto> createPost(
+  public ResponseEntity<PostListResponseDto> createPost(
       @RequestParam("title") String title,
       @RequestParam("description") String description,
       @RequestParam("postTitleImage") MultipartFile postTitleImage,
@@ -68,7 +68,8 @@ public class PostController {
 
     String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
 
-    PostResponseDto postResponseDto = postService.createPost(title, description, postTitleImageUrl,
+    PostListResponseDto postResponseDto = postService.createPost(title, description,
+        postTitleImageUrl,
         playlistId, hashtagIds);
 
     return ResponseEntity.ok(postResponseDto);
@@ -98,12 +99,12 @@ public class PostController {
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 Page 객체, 각 포스트는 PostRequestDto로 변환됨
    */
   @GetMapping("/hashtags")
-  public ResponseEntity<Page<PostResponseDto>> getPostsByHashtagId(
+  public ResponseEntity<Page<PostListResponseDto>> getPostsByHashtagId(
       @RequestParam Long hashtagId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Page<PostResponseDto> resultPage = postService.getPostsByHashtagId(hashtagId, pageable);
+    Page<PostListResponseDto> resultPage = postService.getPostsByHashtagId(hashtagId, pageable);
     return ResponseEntity.ok(resultPage);
   }
 }
