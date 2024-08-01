@@ -74,7 +74,7 @@ public class SearchService {
         post.getTitle(),
         post.getCreatedAt(),
         getTrackCountForPost(post),
-        getGenreTagsForPost(post),
+        getPostHashtagsForPost(post),
         post.getUser().getNickname(),
         post.getUser().getProfileUrl(),
         post.getPostLike().size()
@@ -90,7 +90,7 @@ public class SearchService {
   }
 
   // 게시글에 달린 태그 추출
-  private List<String> getGenreTagsForPost(Post post) {
+  private List<String> getPostHashtagsForPost(Post post) {
     return post.getPostHashtag().stream()
         .map(postHashtag -> postHashtag.getHashtag().getName())
         .collect(Collectors.toList());

@@ -18,7 +18,7 @@ public class PostSearchDto {
   private String title; // 게시글 제목
   private LocalDateTime createdAt; // 게시글 생성일
   private int trackCount; // 게시글에 존재하는 플레이리스트의 트랙 수
-  private List<String> genreTags; // 게시글에 달린 태그
+  private List<String> postHashtags; // 게시글에 달린 태그
   private String author; // 게시글 저자
   private String authorProfileImageUrl; // 게시글 작성자의 프로필 사진
   private int likeCount; // 해당 게시글 좋아요 갯수
