@@ -36,7 +36,8 @@ public class SecurityConfig {
       "/userpage",
       "/api/search**",
       "/api/hashtags/**",
-      "/api/comments/**"
+      "/api/comments/byPost",
+      "/api/comments/byUser"
   };
 
 
