@@ -30,6 +30,10 @@ public enum ErrorCode {
   // PLAYLIST
 
   // POST
+  POST_NOT_FOUND(404, "p001", "Post not found", LogLevel.ERROR),
+  USER_POST_NOT_FOUND(404, "p002", "User post not found", LogLevel.ERROR),
+  UNLIKE_POST_ERROR(400, "p003", "Users haven't liked this post", LogLevel.ERROR),
+  LIKE_POST_ERROR(400, "p004", "User already likes this post", LogLevel.ERROR),
 
   // SPOTIFY
 
