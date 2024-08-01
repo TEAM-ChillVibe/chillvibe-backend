@@ -33,7 +33,10 @@ public class SecurityConfig {
       "/logout",
       "/",
       "/signup",
-      "/api/hashtags/**"
+      "/userpage",
+      "/api/search**",
+      "/api/hashtags/**",
+      "/api/comments/**"
   };
 
 

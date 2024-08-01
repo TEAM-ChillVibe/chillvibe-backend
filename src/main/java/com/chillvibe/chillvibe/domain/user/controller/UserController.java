@@ -1,12 +1,20 @@
 package com.chillvibe.chillvibe.domain.user.controller;
 
+import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
+import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
+import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.service.UserService;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,5 +40,29 @@ public class UserController {
     userService.update(userUpdateDto, multipartFile);
 
     return ResponseEntity.status(HttpStatus.OK).body("회원 정보 수정 완료");
+  }
+
+  @PatchMapping("/delete")
+  public ResponseEntity<String> softDeleteUser() {
+    userService.softDeleteUser();
+    return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴 완료");
+  }
+
+  @PatchMapping("/restore")
+  public ResponseEntity<String> restoreUser() {
+    userService.restoreUser();
+    return ResponseEntity.status(HttpStatus.OK).body("회원 복구 완료");
+  }
+
+  @GetMapping("/mypage")
+  public ResponseEntity<UserInfoResponseDto> getMyInfo() {
+    UserInfoResponseDto userInfo = userService.getMyPageInfo();
+    return ResponseEntity.ok(userInfo);
+  }
+
+  @GetMapping("/userpage")
+  public ResponseEntity<UserInfoResponseDto> getUserInfo(@RequestParam Long userId) {
+    UserInfoResponseDto userInfo = userService.getUserInfo(userId);
+    return ResponseEntity.ok(userInfo);
   }
 }

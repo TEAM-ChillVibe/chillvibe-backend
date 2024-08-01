@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.boot.logging.LogLevel;
 
 /**
- * 에러 코드 enum - 애플리케이션에서 발생할 수 있는 다양한 에러를 코드와 메시지로 정의합니다. - 각 에러 코드는 상태 코드, 코드 값(도메인 별 넘버링), 메시지, 로그
- * 레벨을 포함합니다.
+ * 에러 코드 enum
+ * - 애플리케이션에서 발생할 수 있는 다양한 에러를 코드와 메시지로 정의합니다.
+ * - 각 에러 코드는 상태 코드, 코드 값(도메인 별 넘버링), 메시지, 로그 레벨을 포함합니다.
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
@@ -31,12 +32,17 @@ public enum ErrorCode {
   POST_HASHTAG_NOT_FOUND(404, "H003", "Post hashtag not found", LogLevel.ERROR),
 
   // PLAYLIST
+  PLAYLIST_NOT_FOUND(404, "PL001", "Playlist not found", LogLevel.ERROR),
 
   // POST
 
-  // SPOTIFY
+  // TRACK
+  TRACK_NOT_FOUND(404, "T001", "Track not found", LogLevel.ERROR),
+  TRACK_ADD_FAILED(500, "T001", "Failed to add track to playlist", LogLevel.ERROR),
 
   // USER
+  UNAUTHENTICATED(401, "A001", "User not authenticated", LogLevel.WARN),
+  USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),
 
   // SECURE
 
