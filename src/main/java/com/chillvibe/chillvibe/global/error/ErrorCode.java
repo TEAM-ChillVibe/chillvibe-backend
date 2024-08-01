@@ -20,11 +20,12 @@ public enum ErrorCode {
   INTERNAL_SERVER_ERROR(500, "C006", "Internal server error", LogLevel.ERROR),
   INVALID_TYPE_VALUE(400, "C007", "Invalid Type Value", LogLevel.ERROR),
   UNAUTHORIZED_ACCESS(403, "C008", "user id mismatch", LogLevel.ERROR),
+  POSITIVE_VALUE_REQUIRED(400, "C009", "Value must be positive", LogLevel.ERROR),
 
   // COMMENT
-  COMMENT_NOT_FOUND(404, "C009", "Comment not found", LogLevel.ERROR),
-  USER_COMMENT_NOT_FOUND(404, "C010", "User comment not found", LogLevel.ERROR),
-  POST_COMMENT_NOT_FOUND(404, "C011", "Post comment not found", LogLevel.ERROR),
+  COMMENT_NOT_FOUND(404, "C101", "Comment not found", LogLevel.ERROR),
+  USER_COMMENT_NOT_FOUND(404, "C102", "User comment not found", LogLevel.ERROR),
+  POST_COMMENT_NOT_FOUND(404, "C103", "Post comment not found", LogLevel.ERROR),
 
   // HASHTAG
   HASHTAG_NOT_FOUND(404, "H001", "Hashtag not found", LogLevel.ERROR),
@@ -35,14 +36,18 @@ public enum ErrorCode {
   PLAYLIST_NOT_FOUND(404, "PL001", "Playlist not found", LogLevel.ERROR),
 
   // POST
+  POST_NOT_FOUND(404, "p001", "Post not found", LogLevel.ERROR),
+  USER_POST_NOT_FOUND(404, "p002", "User post not found", LogLevel.ERROR),
+  UNLIKE_POST_ERROR(400, "p003", "Users haven't liked this post", LogLevel.ERROR),
+  LIKE_POST_ERROR(400, "p004", "User already likes this post", LogLevel.ERROR),
 
   // TRACK
   TRACK_NOT_FOUND(404, "T001", "Track not found", LogLevel.ERROR),
   TRACK_ADD_FAILED(500, "T001", "Failed to add track to playlist", LogLevel.ERROR),
 
   // USER
-  UNAUTHENTICATED(401, "A001", "User not authenticated", LogLevel.WARN),
   USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),
+  UNAUTHENTICATED(401, "A001", "User not authenticated", LogLevel.WARN),
 
   // SECURE
 

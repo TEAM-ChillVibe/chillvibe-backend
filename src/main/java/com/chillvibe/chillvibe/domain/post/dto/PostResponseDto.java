@@ -22,9 +22,9 @@ public class PostResponseDto {
   private Playlist playlist;
   private Comment comment;
   private String title;
-  private String discription;
-  private String postImageURL;
-  private  String postTitleImageURL;
+  private String description;
+  private String postImageUrl;
+  private  String postTitleImageUrl;
   private Integer likeCount;
 
 
@@ -36,9 +36,10 @@ public class PostResponseDto {
     this.playlist = getPlaylist();
     this.comment = getComment();
     this.title = getTitle();
-    this.discription = getDiscription();
-    this.postImageURL = getPostImageURL();
-    this.postTitleImageURL = getPostTitleImageURL();
+    this.description = getDescription();
+
+    this.postImageUrl = getPostImageUrl();
+    this.postTitleImageUrl = getPostTitleImageUrl();
     this.likeCount = getLikeCount();
   }
 
