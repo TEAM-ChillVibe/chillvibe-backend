@@ -10,6 +10,7 @@ import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
+import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,15 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final UserRepository userRepository;
   public final PostRepository postRepository;
+  public final UserUtil userUtil;
 
   @Autowired
   public CommentService(CommentRepository commentRepository, UserRepository userRepository,
-      PostRepository postRepository) {
+      PostRepository postRepository, UserUtil userUtil) {
     this.commentRepository = commentRepository;
     this.userRepository = userRepository;
     this.postRepository = postRepository;
+    this.userUtil = userUtil;
   }
 
   // 특정 게시글의 모든 댓글 조회 (+ 최신순 정렬)
@@ -59,13 +62,15 @@ public class CommentService {
 
   // 댓글 생성
   @Transactional
-  public CommentResponseDto createComment(CommentRequestDto requestDto, String email) {
-    User user = userRepository.findByEmail(email);
+  public CommentResponseDto createComment(CommentRequestDto requestDto) {
+    Long userId = userUtil.getAuthenticatedUserId();
 
-    if (user == null) {
-      throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
+    if (userId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     Post post = postRepository.findById(requestDto.getPostId())
         .orElseThrow(() -> new ApiException(ErrorCode.POST_COMMENT_NOT_FOUND));
 
@@ -81,14 +86,15 @@ public class CommentService {
 
   // 댓글 수정
   @Transactional
-  public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto,
-      String email) {
-    User user = userRepository.findByEmail(email);
+  public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto) {
+    Long userId = userUtil.getAuthenticatedUserId();
 
-    if (user == null) {
-      throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
+    if (userId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new ApiException(ErrorCode.COMMENT_NOT_FOUND));
 
@@ -104,13 +110,15 @@ public class CommentService {
 
   // 댓글 삭제
   @Transactional
-  public void deleteComment(Long commentId, String email) {
-    User user = userRepository.findByEmail(email);
+  public void deleteComment(Long commentId) {
+    Long userId = userUtil.getAuthenticatedUserId();
 
-    if (user == null) {
-      throw new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND);
+    if (userId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new ApiException(ErrorCode.COMMENT_NOT_FOUND));
 

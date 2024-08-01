@@ -49,8 +49,8 @@ public class PlaylistController {
   }
 
   // 플레이리스트 수정(상세) 페이지 조회
-  @GetMapping("/{playlistId}/edit")
-  public ResponseEntity<PlaylistEditPageResponseDto> getPlaylistForEditing(@PathVariable Long playlistId){
+  @GetMapping("/edit")
+  public ResponseEntity<PlaylistEditPageResponseDto> getPlaylistForEditing(@RequestParam Long playlistId){
     PlaylistEditPageResponseDto responseDto = playlistService.getPlaylistForEditing(playlistId);
     return ResponseEntity.ok(responseDto);
   }
@@ -64,22 +64,22 @@ public class PlaylistController {
   }
 
   // 플레이리스트 제거
-  @DeleteMapping("/{playlistId}")
-  public ResponseEntity<Void> deletePlaylist(@PathVariable Long playlistId){
+  @DeleteMapping
+  public ResponseEntity<Void> deletePlaylist(@RequestParam Long playlistId){
     playlistService.deletePlaylist(playlistId);
     return ResponseEntity.noContent().build();
   }
 
   // 플레이리스트에 트랙 추가
-  @PostMapping("/{playlistId}/tracks")
-  public ResponseEntity<Long> addTrackToPlaylist(@PathVariable Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {
+  @PostMapping("/track")
+  public ResponseEntity<Long> addTrackToPlaylist(@RequestParam Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {
     PlaylistTrackResponseDto addedTrack = playlistService.addTrackToPlaylist(playlistId, requestDto);
     return ResponseEntity.ok(addedTrack.getId());
   }
 
   // 플레이리스트에 트랙 삭제
-  @DeleteMapping("/{playlistId}/tracks/{trackId}")
-  public ResponseEntity<Void> removeTrackFromPlaylist(@PathVariable Long playlistId, @PathVariable Long trackId) {
+  @DeleteMapping("/track")
+  public ResponseEntity<Void> removeTrackFromPlaylist(@RequestParam Long playlistId, @RequestParam Long trackId) {
     playlistService.removeTrackFromPlaylist(playlistId, trackId);
     return ResponseEntity.noContent().build();
   }
