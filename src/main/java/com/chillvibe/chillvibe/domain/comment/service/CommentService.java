@@ -92,12 +92,11 @@ public class CommentService {
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new ApiException(ErrorCode.COMMENT_NOT_FOUND));
 
-    if (comment.getUser().getId() != user.getId()) {
+    if (!comment.getUser().getId().equals(user.getId())) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
     comment.setContent(requestDto.getContent());
-    comment.setUser(user);
 
     Comment updatedComment = commentRepository.save(comment);
     return new CommentResponseDto(updatedComment);

@@ -1,6 +1,7 @@
 package com.chillvibe.chillvibe.domain.playlist.entity;
 
 import com.chillvibe.chillvibe.domain.user.entity.User;
+import com.chillvibe.chillvibe.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder // Setter 대신 Builder 사용
 @Table(name = "Playlist")
-public class Playlist {
+public class Playlist extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
