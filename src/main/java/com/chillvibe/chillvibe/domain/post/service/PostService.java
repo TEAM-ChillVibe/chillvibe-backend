@@ -51,7 +51,7 @@ public class PostService {
     return postRepository.save(post);
   }
 
-  public Post createPost(String title, String description, String postTitleImageUrl, List<String> postImageUrl, Long playlistId) {
+  public Post createPost(String title, String description, String postTitleImageUrl, Long playlistId) {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
@@ -65,7 +65,6 @@ public class PostService {
     post.setTitle(title);
     post.setDescription(description);
     post.setPostTitleImageUrl(postTitleImageUrl);
-    post.setPostImageUrl(postImageUrl);
     post.setPlaylist(playlist);
 
     return postRepository.save(post);

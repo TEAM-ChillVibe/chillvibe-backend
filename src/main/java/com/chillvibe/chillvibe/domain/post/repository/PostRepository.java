@@ -8,20 +8,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-  //특정 포스트 조회
-  List<Post> findByPostAndIsDeletedFalse(Post post);
-  // 포스트 id로 조회
-  Post findByPostIdAndIsDeletedFalse(Long id);
-  // 특정 user로 포스트 조회
-  Post findByUserIdAndIsDeletedFalse(Long id);
-  // 특정 playlist로 포스트 조회
-  Post findByPlaylistAndIsDeletedFalse(Long id);
+//  //특정 포스트 조회
+//  List<Post> findByPostAndIsDeletedFalse(Post post);
+//  // 포스트 id로 조회
+//  Post findByPostIdAndIsDeletedFalse(Long id);
+//  // 특정 user로 포스트 조회
+//  Post findByUserIdAndIsDeletedFalse(Long id);
+//  // 특정 playlist로 포스트 조회
+//  Post findByPlaylistAndIsDeletedFalse(Long id);
   //
-  Page<Post> getByUserId(Long user_Id, Pageable pageable);
+//  Page<Post> getByUserId(Long user_Id, Pageable pageable);
   // 인기순 내림차순
   Page<Post> findByPostAndIsDeletedFalseOrderLikeCountDesc(Pageable pageable);
   // 생성일 내림차순
   Page<Post> findByPostAnsIsDeletedFalseOrderCreatedAtDesc(Pageable pageable);
-
-  List<Post> findByIsDeletedFalse();
+//
+//  List<Post> findByIsDeletedFalse();
 }

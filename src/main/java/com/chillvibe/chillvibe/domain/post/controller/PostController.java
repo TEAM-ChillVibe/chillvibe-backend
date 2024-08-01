@@ -55,12 +55,10 @@ public class PostController {
       @RequestParam("playlistId") Long playlistId) throws IOException {
 
     String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
-    List<String> postImageUrl = new ArrayList<>();
-    for (MultipartFile image : postImages) {
-      postImageUrl.add(s3Uploader.upload(image, "post-image"));
-    }
 
-    Post post = postService.createPost(title, description, postTitleImageUrl, postImageUrl, playlistId);
+
+
+    Post post = postService.createPost(title, description, postTitleImageUrl, playlistId);
     return ResponseEntity.ok(post);
   }
 

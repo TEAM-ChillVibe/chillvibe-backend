@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.post.entity;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
+import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.global.common.BaseTimeEntity;
@@ -40,7 +41,6 @@ public class Post extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "post_id")
   private Long id;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,9 +50,9 @@ public class Post extends BaseTimeEntity {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @OneToMany
-  @JoinColumn
-  private Hashtag hashtag;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "postHashtag_id")
+  private PostHashtag hashtag;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "playList_id")
@@ -67,8 +67,8 @@ public class Post extends BaseTimeEntity {
   @Lob
   private String description;
 
-  @ElementCollection
-  private List<String> postImageUrl = new ArrayList<>();
+  @Column
+  private String postImageUrl;
 
   @Column(length = 1000, nullable = false)
   private String postTitleImageUrl;
