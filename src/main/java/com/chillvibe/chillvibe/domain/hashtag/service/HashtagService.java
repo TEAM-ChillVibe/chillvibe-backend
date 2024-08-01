@@ -17,12 +17,14 @@ import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class HashtagService {
 
   private final HashtagRepository hashtagRepository;
@@ -31,17 +33,6 @@ public class HashtagService {
   private final PostLikeRepository postLikeRepository;
   private final UserRepository userRepository;
   private final PostRepository postRepository;
-
-  public HashtagService(HashtagRepository hashtagRepository, PostRepository postRepository,
-      PostHashtagRepository postHashtagRepository, UserHashtagRepository userHashtagRepository,
-      PostLikeRepository postLikeRepository, UserRepository userRepository) {
-    this.hashtagRepository = hashtagRepository;
-    this.postHashtagRepository = postHashtagRepository;
-    this.userHashtagRepository = userHashtagRepository;
-    this.postLikeRepository = postLikeRepository;
-    this.userRepository = userRepository;
-    this.postRepository = postRepository;
-  }
 
   /**
    * 시스템에 존재하는 모든 해시태그를 조회합니다.

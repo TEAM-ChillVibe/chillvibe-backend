@@ -42,7 +42,8 @@ public class SearchService {
   // 통합 검색 postRepository
   // type = all일 경우, 검색어에 대한 트랙 5개,
   private SearchResponseDto searchAll(String query) {
-    List<PostSearchDto> posts = postRepository.findByTitleContainingIgnoreCase(query, PageRequest.of(0, 5))
+    List<PostSearchDto> posts = postRepository.findByTitleContainingIgnoreCase(query,
+            PageRequest.of(0, 5))
         .stream().map(this::convertToPostSearchDto).collect(Collectors.toList());
     List<TrackSearchDto> tracks = spotifyService.searchTracks(query, 0, 5).getTracks();
     long totalPosts = postRepository.countByTitleContainingIgnoreCase(query);
@@ -53,8 +54,10 @@ public class SearchService {
 
   // 게시글 검색
   private SearchResponseDto searchPosts(String query, int page, int size) {
-    Page<Post> postPage = postRepository.findByTitleContainingIgnoreCase(query, PageRequest.of(page, size));
-    List<PostSearchDto> posts = postPage.getContent().stream().map(this::convertToPostSearchDto).collect(Collectors.toList());
+    Page<Post> postPage = postRepository.findByTitleContainingIgnoreCase(query,
+        PageRequest.of(page, size));
+    List<PostSearchDto> posts = postPage.getContent().stream().map(this::convertToPostSearchDto)
+        .collect(Collectors.toList());
     return SearchResponseDto.ofPosts(posts, postPage.getTotalElements(), page, size,
         postPage.isLast());
   }
