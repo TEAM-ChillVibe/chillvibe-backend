@@ -1,5 +1,7 @@
 package com.chillvibe.chillvibe.domain.spotify.service;
 
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.Instant;
@@ -31,19 +33,19 @@ public class SpotifyTokenManager {
         tokenExpiration = Instant.now().plusSeconds(credentials.getExpiresIn() - 100);
         log.info("토큰 유효기간 : {}", tokenExpiration);
       }
-    } catch (SpotifyWebApiException e) {
-      log.error("Spotify API 에러 발생: {}", e.getMessage());
-    } catch (IOException | ParseException e) {
-      log.error("토큰 갱신 중 에러 발생: {}", e.getMessage());
-    } catch (Exception e) {
-      log.error("예기치 않은 에러 발생: {}", e.getClass().getSimpleName(), e);
+    } catch (SpotifyWebApiException | IOException | ParseException e) {
+      throw new ApiException(ErrorCode.SPOTIFY_TOKEN_REFRESH_ERROR);
     }
   }
 
   //
   @PostConstruct
   public void initialize() {
-    refreshToken();
-    log.info("Spotify Access Token 발급 완료");
+      try {
+        refreshToken();
+        log.info("Spotify Access Token 발급 완료");
+      } catch (ApiException e) {
+        throw new ApiException(ErrorCode.SPOTIFY_TOKEN_INITIALIZATION_ERROR);
+      }
   }
 }
