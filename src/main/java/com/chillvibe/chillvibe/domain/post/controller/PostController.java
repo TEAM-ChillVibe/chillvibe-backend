@@ -6,6 +6,7 @@ import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import io.jsonwebtoken.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
@@ -45,18 +46,32 @@ public class PostController {
     return ResponseEntity.ok(postService.getPostById(id));
   }
 
+  /**
+   * 새 게시글을 생성합니다.
+   *
+   * @param title          게시글 제목
+   * @param description    게시글 설명
+   * @param postTitleImage 게시글 타이틀 이미지 파일
+   * @param playlistId     플레이리스트 ID
+   * @param hashtagIds     해시태그 ID 리스트
+   * @return 생성된 게시글의 DTO
+   * @exception IOException S3 업로드 또는 파일 처리 중 오류 발생
+   */
   @SneakyThrows
   @PostMapping
-  public ResponseEntity<Post> createPost(
+  public ResponseEntity<PostResponseDto> createPost(
       @RequestParam("title") String title,
       @RequestParam("description") String description,
       @RequestParam("postTitleImage") MultipartFile postTitleImage,
-      @RequestParam("playlistId") Long playlistId) throws IOException {
+      @RequestParam("playlistId") Long playlistId,
+      @RequestParam("hashtagIds") List<Long> hashtagIds) throws IOException {
 
     String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
 
-    Post post = postService.createPost(title, description, postTitleImageUrl, playlistId);
-    return ResponseEntity.ok(post);
+    PostResponseDto postResponseDto = postService.createPost(title, description, postTitleImageUrl,
+        playlistId, hashtagIds);
+
+    return ResponseEntity.ok(postResponseDto);
   }
 
 
