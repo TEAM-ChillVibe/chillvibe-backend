@@ -44,9 +44,8 @@ public class Post extends BaseTimeEntity {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "postHashtag_id")
-  private PostHashtag hashtag;
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<PostHashtag> postHashtag;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "playList_id")

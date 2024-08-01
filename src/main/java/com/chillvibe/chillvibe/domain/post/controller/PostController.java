@@ -56,7 +56,6 @@ public class PostController {
     String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
 
 
-
     Post post = postService.createPost(title, description, postTitleImageUrl, playlistId);
     return ResponseEntity.ok(post);
   }
