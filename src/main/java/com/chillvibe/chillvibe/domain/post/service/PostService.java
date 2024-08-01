@@ -65,6 +65,14 @@ public class PostService {
     return postRepository.save(post);
   }
 
+  /**
+   * 주어진 해시태그 ID에 해당하는 포스트를 페이지네이션하여 조회합니다.
+   *
+   * @param hashtagId 조회할 해시태그의 ID
+   * @param pageable  페이지네이션 정보를 담고 있는 객체 (페이지 번호, 페이지 크기 등)
+   * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 페이지 객체, 각 포스트는 {PostRequestDto}로 변환됨
+   * @exception ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
+   */
   public Page<PostResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable) {
     List<PostHashtag> postHashtags = postHashtagRepository.findByHashtagId(hashtagId);
 

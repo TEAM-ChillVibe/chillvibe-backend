@@ -74,6 +74,14 @@ public class PostController {
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * 주어진 해시태그 ID에 해당하는 포스트를 페이지네이션하여 조회하는 엔드포인트입니다.
+   *
+   * @param hashtagId 조회할 해시태그의 ID
+   * @param page      페이지 번호 (기본값: 0)
+   * @param size      페이지 크기 (기본값: 10)
+   * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 Page 객체, 각 포스트는 PostRequestDto로 변환됨
+   */
   @GetMapping("/hashtags")
   public ResponseEntity<Page<PostResponseDto>> getPostsByHashtagId(
       @RequestParam Long hashtagId,
