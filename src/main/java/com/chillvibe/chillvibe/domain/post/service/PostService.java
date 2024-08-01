@@ -30,14 +30,14 @@ public class PostService {
 
   //생성일 순
   public Page<Post> getAllPosts(String soltBy, Pageable pageable){
-    return postRepository.findByPostAnsIsDeletedFalseOrderCreatedAtDesc(pageable);
+    return postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageable);
   }
   //인기글 순
   public Page<Post> getLikePosts(String soltBy, Pageable pageable) {
     if ("like".equalsIgnoreCase(soltBy)) {
-      return postRepository.findByPostAndIsDeletedFalseOrderLikeCountDesc(pageable);
+      return postRepository.findByIsDeletedFalseOrderByLikeCountDesc(pageable);
     } else {
-      return postRepository.findByPostAnsIsDeletedFalseOrderCreatedAtDesc(pageable);
+      return postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageable);
     }
   }
   //포스트 ID로 조회

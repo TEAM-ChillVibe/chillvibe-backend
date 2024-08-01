@@ -19,9 +19,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   //
 //  Page<Post> getByUserId(Long user_Id, Pageable pageable);
   // 인기순 내림차순
-  Page<Post> findByPostAndIsDeletedFalseOrderLikeCountDesc(Pageable pageable);
+  Page<Post> findByIsDeletedFalseOrderByLikeCountDesc(Pageable pageable);
   // 생성일 내림차순
-  Page<Post> findByPostAnsIsDeletedFalseOrderCreatedAtDesc(Pageable pageable);
-//
+  Page<Post> findByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
 //  List<Post> findByIsDeletedFalse();
 }

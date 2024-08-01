@@ -32,7 +32,7 @@ public class PostController {
   @GetMapping
   public ResponseEntity<Page<Post>> getAllPosts(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "50") int size,
+      @RequestParam(defaultValue = "10") int size,
       @RequestParam(defaultValue = "createdAt") String soltBy){
 
     Pageable pageable = PageRequest.of(page, size);
@@ -51,7 +51,6 @@ public class PostController {
       @RequestParam("title") String title,
       @RequestParam("description") String  description,
       @RequestParam("postTitleImage")MultipartFile postTitleImage,
-      @RequestParam("postImage")MultipartFile[] postImages,
       @RequestParam("playlistId") Long playlistId) throws IOException {
 
     String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
