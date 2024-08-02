@@ -39,12 +39,13 @@ public class UserServiceImpl implements UserService {
 
   public void join(String joinDto, MultipartFile multipartFile) {
 
-    JoinRequestDto parsedJoinDto = new JoinRequestDto();
+    JoinRequestDto parsedJoinDto;
+
     try {
       // JSON 문자열을 JoinDto 객체로 변환
       parsedJoinDto = objectMapper.readValue(joinDto, JoinRequestDto.class);
     } catch (IOException e) {
-      ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JSON format: " + e.getMessage());
+      throw new ApiException(ErrorCode.INVALID_TYPE_VALUE);
     }
 
     // 이메일 가져와서 이미 존재하는 이메일인지 확인
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     // 이미 존재한다면
     if (isExist) {
-      throw new DuplicateEmailException();
+      throw new ApiException(ErrorCode.DUPLICATE_EMAIL);
     }
 
     // 이미지를 s3에 업로드하고 url 가져오기
@@ -67,9 +68,7 @@ public class UserServiceImpl implements UserService {
         ResponseEntity.status(HttpStatus.CREATED)
             .body("User registered successfully with profile image URL: " + imageUrl);
       } catch (IOException e) {
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error uploading profile image: " + e.getMessage());
-        return;
+        throw new ApiException("Error uploading profile image", ErrorCode.INTERNAL_SERVER_ERROR);
       }
     }
 
@@ -90,16 +89,17 @@ public class UserServiceImpl implements UserService {
 
     System.out.println(userId);
 
-    UserUpdateRequestDto parsedUserUpdateDto = new UserUpdateRequestDto();
+    UserUpdateRequestDto parsedUserUpdateDto;
+
     try {
       parsedUserUpdateDto = objectMapper.readValue(userUpdateDto, UserUpdateRequestDto.class);
     } catch (IOException e) {
-      ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JSON format: " + e.getMessage());
+      throw new ApiException(ErrorCode.INVALID_TYPE_VALUE);
     }
 
     // 인증된 유저 객체 가져오기
     User user = userRepository.findById(userId)
-        .orElseThrow(UserNotFoundException::new);
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     // imageUrl 기존 url로 초기화
     String imageUrl = user.getProfileUrl();
@@ -113,8 +113,7 @@ public class UserServiceImpl implements UserService {
       try {
         imageUrl = s3Uploader.upload(multipartFile, "profile-images");
       } catch (IOException e) {
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error uploading profile image: " + e.getMessage());
+        throw new ApiException("Error uploading profile image", ErrorCode.INTERNAL_SERVER_ERROR);
       }
     }
 
@@ -129,7 +128,7 @@ public class UserServiceImpl implements UserService {
     Long userId = userUtil.getAuthenticatedUserId();
 
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     userRepository.delete(user);
   }
@@ -138,8 +137,8 @@ public class UserServiceImpl implements UserService {
   public void restoreUser() {
     Long userId = userUtil.getAuthenticatedUserId();
 
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+    userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     userRepository.restore(userId);
   }
@@ -148,7 +147,7 @@ public class UserServiceImpl implements UserService {
     Long userId = userUtil.getAuthenticatedUserId();
 
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
 
@@ -163,7 +162,7 @@ public class UserServiceImpl implements UserService {
   public UserInfoResponseDto getUserInfo(Long userId) {
 
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("해당 ID의 유저가 없습니다: " + userId));
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
 

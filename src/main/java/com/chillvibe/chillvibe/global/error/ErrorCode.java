@@ -49,12 +49,12 @@ public enum ErrorCode {
   SPOTIFY_TOKEN_REFRESH_ERROR(500, "S002", "Failed to refresh Spotify access token", LogLevel.ERROR),
   SPOTIFY_TOKEN_INITIALIZATION_ERROR(500, "S003", "Failed to initialize Spotify access token", LogLevel.ERROR),
 
-
   // USER
   USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),
-  UNAUTHENTICATED(401, "A001", "User not authenticated", LogLevel.WARN),
+  DUPLICATE_EMAIL(409, "U003", "Email is already registered", LogLevel.WARN),
 
   // SECURE
+  UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN),
 
   ;
 
