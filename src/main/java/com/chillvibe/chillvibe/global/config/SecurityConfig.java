@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.global.config;
 
+import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.jwt.filter.CustomLogoutFilter;
 import com.chillvibe.chillvibe.global.jwt.filter.JwtFilter;
 import com.chillvibe.chillvibe.global.jwt.filter.LoginFilter;
@@ -44,6 +45,7 @@ public class SecurityConfig {
   private final AuthenticationConfiguration authenticationConfiguration;
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
+  private final UserRepository userRepository;
 
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
@@ -123,7 +125,7 @@ public class SecurityConfig {
     // UsernamePasswordAuthenticationFilter 자리에 필터 장착
     httpSecurity
         .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
-            refreshRepository), UsernamePasswordAuthenticationFilter.class);
+            refreshRepository, userRepository), UsernamePasswordAuthenticationFilter.class);
 
     // CustomLogoutFilter 등록
     // LogoutFilter 앞에 필터 장착

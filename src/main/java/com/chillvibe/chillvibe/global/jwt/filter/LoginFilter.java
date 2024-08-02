@@ -1,6 +1,10 @@
 package com.chillvibe.chillvibe.global.jwt.filter;
 
 import com.chillvibe.chillvibe.domain.user.dto.LoginRequestDto;
+import com.chillvibe.chillvibe.domain.user.entity.User;
+import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.dto.CustomUserDetails;
 import com.chillvibe.chillvibe.global.jwt.entity.Refresh;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
@@ -31,6 +35,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   private final AuthenticationManager authenticationManager;
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
+  private final UserRepository userRepository;
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -59,6 +64,31 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // 스프링 시큐리티에서 제공하는 인증 수행 로직
     // 사용자 인증을 위한 토큰을 생성
     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password);
+
+    // 인증 수행
+    Authentication authentication = authenticationManager.authenticate(authToken);
+
+    // 인증 성공 후 사용자 정보 조회
+    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    Long userId = customUserDetails.getId();
+
+    // 사용자 정보 조회
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    // 탈퇴된 사용자일 경우
+//    if (user.isDelete()) {
+//      throw new ApiException(ErrorCode.USER_ACCOUNT_DELETED);
+//    }
+    if (user.isDelete()) {
+      response.setStatus(HttpStatus.FORBIDDEN.value());  // 403 Forbidden
+      try {
+        response.getWriter().write(ErrorCode.USER_ACCOUNT_DELETED.getMessage());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return null;  // 인증 실패 처리
+    }
 
     // 주어진 인증 토큰을 기반으로 인증 수행
     return authenticationManager.authenticate(authToken);
