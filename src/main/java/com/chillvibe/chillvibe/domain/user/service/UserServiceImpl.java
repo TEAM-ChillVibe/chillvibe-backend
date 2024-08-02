@@ -12,9 +12,15 @@ import com.chillvibe.chillvibe.domain.user.exception.UserNotFoundException;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
+import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
+import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +42,10 @@ public class UserServiceImpl implements UserService {
   private final ObjectMapper objectMapper;
   private final UserUtil userUtil;
   private final UserHashtagRepository userHashtagRepository;
+  private final JwtUtil jwtUtil;
+  private final RefreshRepository refreshRepository;
+  private final HttpServletRequest request;
+  private final HttpServletResponse response;
 
   public void join(String joinDto, MultipartFile multipartFile) {
 
@@ -131,6 +141,7 @@ public class UserServiceImpl implements UserService {
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     userRepository.delete(user);
+    performLogout(request, response);
   }
 
   @Transactional
@@ -177,5 +188,54 @@ public class UserServiceImpl implements UserService {
   public User getUserById(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+  }
+
+  private void performLogout(HttpServletRequest request, HttpServletResponse response) {
+    String refreshToken = getRefreshTokenFromCookies(request);
+
+    if (refreshToken != null) {
+      // refreshToken 만료 확인
+      try {
+        jwtUtil.isExpired(refreshToken);
+      } catch (ExpiredJwtException e) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+
+      // refreshToken이 유효한지 확인
+      String category = jwtUtil.getCategory(refreshToken);
+      if (!"refresh".equals(category)) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
+
+      // DB에서 refreshToken 삭제
+      boolean exists = refreshRepository.existsByToken(refreshToken);
+      if (exists) {
+        refreshRepository.deleteByToken(refreshToken);
+      }
+
+      // 쿠키에서 refreshToken 제거
+      Cookie cookie = new Cookie("refresh", null);
+      cookie.setMaxAge(0);
+      cookie.setPath("/");
+      response.addCookie(cookie);
+
+      response.setStatus(HttpServletResponse.SC_OK);
+    } else {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+  }
+
+  private String getRefreshTokenFromCookies(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("refresh".equals(cookie.getName())) {
+          return cookie.getValue();
+        }
+      }
+    }
+    return null;
   }
 }
