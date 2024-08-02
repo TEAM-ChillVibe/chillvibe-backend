@@ -43,7 +43,12 @@ public enum ErrorCode {
 
   // TRACK
   TRACK_NOT_FOUND(404, "T001", "Track not found", LogLevel.ERROR),
-  TRACK_ADD_FAILED(500, "T001", "Failed to add track to playlist", LogLevel.ERROR),
+
+  // SPOTIFY
+  SPOTIFY_API_ERROR(500, "S001", "Spotify API error occurred, Try Again", LogLevel.ERROR),
+  SPOTIFY_TOKEN_REFRESH_ERROR(500, "S002", "Failed to refresh Spotify access token", LogLevel.ERROR),
+  SPOTIFY_TOKEN_INITIALIZATION_ERROR(500, "S003", "Failed to initialize Spotify access token", LogLevel.ERROR),
+
 
   // USER
   USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),

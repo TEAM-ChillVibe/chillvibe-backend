@@ -2,6 +2,8 @@ package com.chillvibe.chillvibe.domain.spotify.service;
 
 import com.chillvibe.chillvibe.domain.spotify.dto.SpotifySearchResult;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.neovisionaries.i18n.CountryCode;
 import java.util.Arrays;
 import java.util.List;
@@ -45,8 +47,7 @@ public class SpotifyService {
           offset + tracks.size() < trackPaging.getTotal()
       );
     } catch (Exception e) {
-      log.error("Error searching tracks from Spotify", e);
-      throw new RuntimeException("Failed to search tracks from Spotify", e);
+      throw new ApiException(ErrorCode.SPOTIFY_API_ERROR);
     }
   }
 

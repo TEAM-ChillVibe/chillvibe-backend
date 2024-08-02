@@ -13,6 +13,9 @@ public class CommentResponseDto {
   private LocalDateTime modifiedAt;
   private Long userId;
   private Long postId;
+  private String userNickname;
+  private String userProfileUrl;
+  private String userEmail;
 
   public CommentResponseDto(Comment comment) {
     this.id = comment.getId();
@@ -21,6 +24,9 @@ public class CommentResponseDto {
     this.modifiedAt = comment.getModifiedAt();
     this.userId = comment.getUser().getId();
     this.postId = comment.getPost().getId();
+    this.userNickname = comment.getUser().getNickname();
+    this.userProfileUrl = comment.getUser().getProfileUrl();
+    this.userEmail = comment.getUser().getEmail();
   }
 
 }

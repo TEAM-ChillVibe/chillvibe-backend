@@ -7,6 +7,8 @@ import com.chillvibe.chillvibe.domain.spotify.dto.SpotifySearchResult;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.service.SpotifyService;
 import com.chillvibe.chillvibe.global.common.dto.SearchResponseDto;
+import com.chillvibe.chillvibe.global.error.ErrorCode;
+import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,7 @@ public class SearchService {
     } else if ("track".equals(type)) {
       return searchTracks(query, page, size);
     }
-    throw new IllegalArgumentException("Invalid search type");
+    throw new ApiException(ErrorCode.INVALID_INPUT_VALUE);
   }
 
   // 통합 검색 postRepository
@@ -45,7 +47,12 @@ public class SearchService {
     List<PostSearchDto> posts = postRepository.findByTitleContainingIgnoreCase(query,
             PageRequest.of(0, 5))
         .stream().map(this::convertToPostSearchDto).collect(Collectors.toList());
-    List<TrackSearchDto> tracks = spotifyService.searchTracks(query, 0, 5).getTracks();
+    List<TrackSearchDto> tracks;
+    try {
+      tracks = spotifyService.searchTracks(query, 0, 5).getTracks();
+    } catch (Exception e) {
+      throw new ApiException(ErrorCode.SPOTIFY_API_ERROR);
+    }
     long totalPosts = postRepository.countByTitleContainingIgnoreCase(query);
     long totalTracks = Math.min(spotifyService.searchTracks(query, 0, 1).getTotalTracks(), 50);
 
@@ -64,7 +71,12 @@ public class SearchService {
 
   // 트랙 검색
   private SearchResponseDto searchTracks(String query, int page, int size) {
-    SpotifySearchResult result = spotifyService.searchTracks(query, page * size, size);
+    SpotifySearchResult result;
+    try {
+      result = spotifyService.searchTracks(query, page * size, size);
+    } catch (Exception e) {
+      throw new ApiException(ErrorCode.SPOTIFY_API_ERROR);
+    }
     return SearchResponseDto.ofTracks(result.getTracks(), Math.min(result.getTotalTracks(), 50),
         page, size, !result.isHasMore());
   }
