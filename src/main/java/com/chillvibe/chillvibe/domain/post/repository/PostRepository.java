@@ -17,7 +17,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //  Post findByPostIdAndIsDeletedFalse(Long id);
 //  // 특정 user로 포스트 조회
   Page<Post> findByUserIdAndIsDeletedFalse(Long Userid, Pageable pageable);
-//  // 특정 playlist로 포스트 조회
+
+  //  // 특정 playlist로 포스트 조회
 //  Post findByPlaylistAndIsDeletedFalse(Long id);
   //
 //  Page<Post> getByUserId(Long user_Id, Pageable pageable);
