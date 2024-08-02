@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 @RestController
 public class PostController {
 
@@ -59,7 +59,7 @@ public class PostController {
   }
 
   //특정 유저 게시글 조회
-  @GetMapping
+  @GetMapping("/user")
   public ResponseEntity<Page<PostResponseDto>> getPostsByUserId(
       @RequestParam Long userId,
       @RequestParam(defaultValue = "0") int page,
