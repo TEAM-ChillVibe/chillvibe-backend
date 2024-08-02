@@ -7,6 +7,7 @@ import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
@@ -48,10 +49,24 @@ public class PostService {
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
   }
 
+  // 사용자 ID로 게시글 목록 조회
+  public Page<PostResponseDto> getPostsByUserId(Long userId, Pageable pageable) {
+    Page<Post> posts = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
+    return posts.map(PostResponseDto::new);
+  }
+
 
   //새포스트 저장
   public Post savePost(Post post) {
     return postRepository.save(post);
+  }
+
+
+  // 포스트 삭제
+  public void deletePost(Long postId) {
+    Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+    post.setDeleted(true);
+    postRepository.save(post);
   }
 
   /**
@@ -84,6 +99,30 @@ public class PostService {
 
     return new PostListResponseDto(savedPost);
   }
+
+  //게시글 수정
+  @Transactional
+  public PostResponseDto updatePost(Long postId, String title, String description, String postTitleImageUrl, Long playlistId, List<Long> hashtagIds) {
+    Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+
+    post.setTitle(title);
+    post.setDescription(description);
+    post.setPostTitleImageUrl(postTitleImageUrl);
+
+    if (playlistId != null) {
+      Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+      post.setPlaylist(playlist);
+    }
+
+    Post updatedPost = postRepository.save(post);
+
+    if (hashtagIds != null && !hashtagIds.isEmpty()) {
+      hashtagService.updateHashtagsOfPost(updatedPost.getId(), hashtagIds);
+    }
+
+    return new PostResponseDto(updatedPost);
+  }
+
 
   /**
    * 주어진 해시태그 ID에 해당하는 포스트를 페이지네이션하여 조회합니다.

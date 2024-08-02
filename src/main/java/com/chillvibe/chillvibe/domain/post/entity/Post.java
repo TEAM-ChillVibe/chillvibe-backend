@@ -24,11 +24,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE post_id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "post")
 @Entity
 public class Post extends BaseTimeEntity {
@@ -59,9 +63,6 @@ public class Post extends BaseTimeEntity {
 
   @Lob
   private String description;
-
-  @Column
-  private String postImageUrl;
 
   @Column(length = 1000, nullable = false)
   private String postTitleImageUrl;

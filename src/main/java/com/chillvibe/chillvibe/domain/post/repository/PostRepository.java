@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.post.repository;
 
+import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //  // 포스트 id로 조회
 //  Post findByPostIdAndIsDeletedFalse(Long id);
 //  // 특정 user로 포스트 조회
-//  Post findByUserIdAndIsDeletedFalse(Long id);
+  Page<Post> findByUserIdAndIsDeletedFalse(Long Userid, Pageable pageable);
 //  // 특정 playlist로 포스트 조회
 //  Post findByPlaylistAndIsDeletedFalse(Long id);
   //
