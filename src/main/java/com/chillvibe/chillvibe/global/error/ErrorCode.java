@@ -51,7 +51,8 @@ public enum ErrorCode {
 
   // USER
   USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),
-  DUPLICATE_EMAIL(409, "U003", "Email is already registered", LogLevel.WARN),
+  DUPLICATE_EMAIL(409, "U002", "Email is already registered", LogLevel.WARN),
+  USER_ACCOUNT_DELETED(403, "U003", "User account has been deleted", LogLevel.ERROR),
 
   // SECURE
   UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN),
