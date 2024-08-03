@@ -109,17 +109,17 @@ public class PostController {
   }
 
 
-  //좋아요 추가
-  @PostMapping("/{postId}/like")
-  public ResponseEntity<Void> likePost(@RequestParam Long userId, @PathVariable Long postId) {
-    postLikeService.likePost(userId, postId);
+  // 좋아요 추가
+  @PostMapping("/like")
+  public ResponseEntity<Void> likePost(@RequestParam Long postId) {
+    postLikeService.likePost(postId);
     return ResponseEntity.ok().build();
   }
 
-  //좋아요 취소
-  @PostMapping("/{postId}/unlike")
-  public ResponseEntity<Void> unlikePost(@RequestParam Long userId, @PathVariable Long postId) {
-    postLikeService.unlikePost(userId, postId);
+  // 좋아요 취소
+  @DeleteMapping("/like")
+  public ResponseEntity<Void> unlikePost(@RequestParam Long postId) {
+    postLikeService.unlikePost(postId);
     return ResponseEntity.ok().build();
   }
 
