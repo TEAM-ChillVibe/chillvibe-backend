@@ -12,12 +12,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter@Setter
-@NoArgsConstructor
+// 게시글에 들어갔을 때, 나와야 하는 항목들
 @Data
+@NoArgsConstructor
 public class PostResponseDto {
 
-  private Long id;
+  private Long id; // 게시글 ID
   private List<PostLike> postLike;
   private User user;
   private PostHashtag hashtag;

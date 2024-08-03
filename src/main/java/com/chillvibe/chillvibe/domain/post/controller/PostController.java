@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
+import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
@@ -7,6 +8,7 @@ import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import io.jsonwebtoken.io.IOException;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,18 +39,16 @@ public class PostController {
   private final S3Uploader s3Uploader;
 
 
-  //전체 게시글 조회
+  // 전체 게시글 조회
+  // 기본값은 최신순으로 조회합니다. latest & popular
   @GetMapping
-  public ResponseEntity<Page<PostResponseDto>> getAllPosts(
+  public ResponseEntity<Page<PostListResponseDto>> getAllPosts(
+      @RequestParam(defaultValue = "latest") String sortBy,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "createdAt") String soltBy) {
-
-    Pageable pageable = PageRequest.of(page, size);
-    Page<Post> resultPage = postService.getAllPosts(soltBy, pageable);
-
-    Page<PostResponseDto> dtoPage = resultPage.map(PostResponseDto::new);
-    return ResponseEntity.ok(dtoPage);
+      @RequestParam(defaultValue = "10") int size
+      ) {
+    Page<PostListResponseDto> posts = postService.getPosts(sortBy, page, size);
+    return ResponseEntity.ok(posts);
   }
 
   //특정게시글 조회
@@ -83,31 +84,11 @@ public class PostController {
     return ResponseEntity.ok(response);
   }
 
-  /**
-   * 새 게시글을 생성합니다.
-   *
-   * @param title          게시글 제목
-   * @param description    게시글 설명
-   * @param postTitleImage 게시글 타이틀 이미지 파일
-   * @param playlistId     플레이리스트 ID
-   * @param hashtagIds     해시태그 ID 리스트
-   * @return 생성된 게시글의 DTO
-   * @exception IOException S3 업로드 또는 파일 처리 중 오류 발생
-   */
-  @SneakyThrows
+  // 게시글 생성
   @PostMapping
-  public ResponseEntity<PostListResponseDto> createPost(
-      @RequestParam("title") String title,
-      @RequestParam("description") String description,
-      @RequestParam("postTitleImage") MultipartFile postTitleImage,
-      @RequestParam("playlistId") Long playlistId,
-      @RequestParam("hashtagIds") List<Long> hashtagIds) throws IOException {
+  public ResponseEntity<PostListResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto requestDto){
 
-    String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
-
-    PostListResponseDto postResponseDto = postService.createPost(title, description,
-        postTitleImageUrl,
-        playlistId, hashtagIds);
+    PostListResponseDto postResponseDto = postService.createPost(requestDto);
 
     return ResponseEntity.ok(postResponseDto);
   }
