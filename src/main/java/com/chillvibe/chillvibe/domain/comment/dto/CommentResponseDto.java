@@ -3,8 +3,10 @@ package com.chillvibe.chillvibe.domain.comment.dto;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class CommentResponseDto {
 
   private Long id;

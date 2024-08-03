@@ -62,7 +62,6 @@ public class PostLikeServiceImpl implements PostLikeService {
       throw new ApiException(ErrorCode.UNLIKE_POST_ERROR);
     }
 
-
     // 사용자와 게시글을 조회
     User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorCode.USER_POST_NOT_FOUND));
     Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));

@@ -1,21 +1,35 @@
 package com.chillvibe.chillvibe.domain.post.service;
 
+import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
+import com.chillvibe.chillvibe.domain.comment.entity.Comment;
+import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
+import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
+import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
+import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
+import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistTrackMapper;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
+import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +44,11 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final PlaylistRepository playlistRepository;
   private final PostHashtagRepository postHashtagRepository;
+  private final HashtagRepository hashtagRepository;
   private final HashtagService hashtagService;
   private final UserRepository userRepository;
+  private final PlaylistMapper playlistMapper;
+  private final PlaylistTrackMapper playlistTrackMapper;
   private final UserUtil userUtil;
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
@@ -49,10 +66,37 @@ public class PostServiceImpl implements PostService {
   }
 
 
-  //포스트 ID로 조회
-  public Post getPostById(Long id) {
-    return postRepository.findById(id)
+  // 특정 게시글 조회
+  public PostDetailResponseDto getPostById(Long postId) {
+    Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+
+    User user = post.getUser();
+    Set<PostHashtag> postHashtags = post.getPostHashtag();
+    Playlist playlist = post.getPlaylist();
+    List<Comment> comments = post.getComments();
+
+    UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(user, postHashtags.stream()
+        .map(PostHashtag::getHashtag)
+        .collect(Collectors.toList()));
+
+    List<HashtagResponseDto> hashtagResponseDtos = postHashtags.stream()
+        .map(posHashTag -> {
+          Hashtag hashtag = posHashTag.getHashtag();
+          return new HashtagResponseDto(hashtag.getId(), hashtag.getName(), hashtag.getTotalLikes());
+        })
+        .collect(Collectors.toList());
+
+    List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(playlist.getTracks());
+
+    PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistDto(playlist);
+    playlistResponseDto.setTracks(playlistTrackResponseDtos);
+
+    List<CommentResponseDto> commentResponseDtos = comments.stream()
+        .map(CommentResponseDto::new)
+        .collect(Collectors.toList());
+
+    return new PostDetailResponseDto(post, userInfoResponseDto, playlistResponseDto, hashtagResponseDtos, commentResponseDtos);
   }
 
   // 사용자 ID로 게시글 목록 조회
@@ -62,7 +106,7 @@ public class PostServiceImpl implements PostService {
   }
 
 
-  // 새포스트 저장
+  // 새 포스트 저장
   public Post savePost(Post post) {
     return postRepository.save(post);
   }
@@ -119,30 +163,44 @@ public class PostServiceImpl implements PostService {
     return new PostListResponseDto(savedPost);
   }
 
-  //게시글 수정
+  // 게시글 수정
   @Transactional
-  public PostResponseDto updatePost(Long postId, String title, String description,
-      String postTitleImageUrl, Long playlistId, List<Long> hashtagIds) {
+  public Long updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto) {
+    // 유저 찾기.
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null){
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
+    // 게시글 찾기.
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
-    post.setTitle(title);
-    post.setDescription(description);
-    post.setPostTitleImageUrl(postTitleImageUrl);
-
-    if (playlistId != null) {
-      Playlist playlist = playlistRepository.findById(playlistId)
-          .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
-      post.setPlaylist(playlist);
+    // 게시글 작성자와 현재 사용자가 같은지 확인
+    if (!post.getUser().getId().equals(currentUserId)) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    Post updatedPost = postRepository.save(post);
+    post.setTitle(postUpdateRequestDto.getTitle());
+    post.setDescription(postUpdateRequestDto.getDescription());
 
+
+    // 기존 해시태그 관계 모두 제거
+    post.getPostHashtag().clear();
+
+    List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
     if (hashtagIds != null && !hashtagIds.isEmpty()) {
-      hashtagService.updateHashtagsOfPost(updatedPost.getId(), hashtagIds);
+      List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
+      List<PostHashtag> newPostHashtags = hashtags.stream()
+          .map(hashtag -> new PostHashtag(post, hashtag))
+          .toList();
+
+      // 새로운 PostHashtag 관계 추가
+      post.getPostHashtag().addAll(newPostHashtags);
     }
 
-    return new PostResponseDto(updatedPost);
+    postRepository.save(post);
+    return post.getId();
   }
 
 

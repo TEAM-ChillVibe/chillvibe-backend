@@ -57,7 +57,7 @@ public class Post extends BaseTimeEntity {
   private Playlist playlist;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Comment> comment = new ArrayList<>();
+  private List<Comment> comments = new ArrayList<>();
 
   @Column(length = 1000, nullable = false)
   private String title;

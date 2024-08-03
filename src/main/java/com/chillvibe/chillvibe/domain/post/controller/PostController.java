@@ -1,8 +1,10 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
@@ -51,12 +53,11 @@ public class PostController {
     return ResponseEntity.ok(posts);
   }
 
-  //특정게시글 조회
+  // 특정 게시글 상세 조회
   @GetMapping("/{postId}")
-  public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long postId) {
-    Post post = postService.getPostById(postId);
-    PostResponseDto postResponseDto = new PostResponseDto(post);
-    return ResponseEntity.ok(postResponseDto);
+  public ResponseEntity<PostDetailResponseDto> getPostById(@PathVariable Long postId) {
+    PostDetailResponseDto responseDto = postService.getPostById(postId);
+    return ResponseEntity.ok(responseDto);
   }
 
   //특정 유저 게시글 조회
@@ -93,19 +94,14 @@ public class PostController {
     return ResponseEntity.ok(postResponseDto);
   }
 
-  //게시글 수정
+  // 게시글 수정
   @PutMapping("/{postId}")
-  public ResponseEntity<PostResponseDto> updatePost(
+  public ResponseEntity<Long> updatePost(
       @PathVariable Long postId,
-      @RequestParam String title,
-      @RequestParam String description,
-      @RequestParam String postTitleImageUrl,
-      @RequestParam(required = false) Long playlistId,
-      @RequestParam(required = false) List<Long> hashtagIds) {
+      @RequestBody PostUpdateRequestDto postUpdateRequestDto) {
 
-    PostResponseDto updatedPost = postService.updatePost(postId, title, description,
-        postTitleImageUrl, playlistId, hashtagIds);
-    return ResponseEntity.ok(updatedPost);
+    Long updatedPostId = postService.updatePost(postId, postUpdateRequestDto);
+    return ResponseEntity.ok(updatedPostId);
   }
 
 
