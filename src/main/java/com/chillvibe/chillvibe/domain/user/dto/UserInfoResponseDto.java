@@ -1,12 +1,10 @@
 package com.chillvibe.chillvibe.domain.user.dto;
 
+import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
-import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +19,7 @@ public class UserInfoResponseDto {
   private String profileUrl;
   private String introduction;
   private boolean isPublic;
-  private List<Hashtag> tagLists;
+  private List<HashtagResponseDto> tagLists;
 
   public UserInfoResponseDto(User user, List<Hashtag> hashtags) {
     this.userId = user.getId();
@@ -30,6 +28,8 @@ public class UserInfoResponseDto {
     this.profileUrl = user.getProfileUrl();
     this.introduction = user.getIntroduction();
     this.isPublic = user.isPublic();
-    this.tagLists = hashtags;
+    this.tagLists = hashtags.stream()
+        .map(hashtag -> new HashtagResponseDto(hashtag.getId(), hashtag.getName(),
+            hashtag.getTotalLikes())).toList();
   }
 }
