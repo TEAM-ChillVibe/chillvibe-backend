@@ -4,6 +4,8 @@ import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.user.dto.UserSimpleResponseDto;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +17,7 @@ public class PostListResponseDto {
   private String title;
   private LocalDateTime createdAt;
   private Integer trackCount;
-  private List<String> hashtags;
+  private Set<String> hashtags;
   private UserSimpleResponseDto user;
   private Integer likeCount;
 
@@ -26,7 +28,8 @@ public class PostListResponseDto {
     this.trackCount = post.getPlaylist() != null ? post.getPlaylist().getTracks().size() : 0;
     this.hashtags = post.getPostHashtag().stream()
         .map(postHashtag -> postHashtag.getHashtag().getName())
-        .toList();
+        .collect(Collectors.toSet());
+//        .toList();
     this.user = post.getUser() != null ? new UserSimpleResponseDto(
         post.getUser().getId(),
         post.getUser().getNickname(),

@@ -19,6 +19,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +50,7 @@ public class Post extends BaseTimeEntity {
   private User user;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<PostHashtag> postHashtag;
+  private Set<PostHashtag> postHashtag;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "playList_id")
@@ -64,11 +65,11 @@ public class Post extends BaseTimeEntity {
   @Lob
   private String description;
 
-  @Column(length = 1000, nullable = false)
+  @Column(length = 1000, nullable = true)
   private String postTitleImageUrl;
 
   @ColumnDefault("0")
-  @Column(name = "likeCount", nullable = false)
+  @Column(name = "likeCount", nullable = true)
   private Integer likeCount;
 
   private boolean isDeleted;
