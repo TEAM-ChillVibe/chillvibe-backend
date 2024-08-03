@@ -41,10 +41,10 @@ public class PostController {
   public ResponseEntity<Page<PostResponseDto>> getAllPosts(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "createdAt") String soltBy) {
+      @RequestParam(defaultValue = "createdAt") String sortBy) {
 
     Pageable pageable = PageRequest.of(page, size);
-    Page<Post> resultPage = postService.getAllPosts(soltBy, pageable);
+    Page<Post> resultPage = postService.getAllPosts(sortBy, pageable);
 
     Page<PostResponseDto> dtoPage = resultPage.map(PostResponseDto::new);
     return ResponseEntity.ok(dtoPage);
@@ -122,7 +122,8 @@ public class PostController {
       @RequestParam(required = false) Long playlistId,
       @RequestParam(required = false) List<Long> hashtagIds) {
 
-    PostResponseDto updatedPost = postService.updatePost(postId, title, description, postTitleImageUrl, playlistId, hashtagIds);
+    PostResponseDto updatedPost = postService.updatePost(postId, title, description,
+        postTitleImageUrl, playlistId, hashtagIds);
     return ResponseEntity.ok(updatedPost);
   }
 

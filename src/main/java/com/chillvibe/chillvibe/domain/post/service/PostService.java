@@ -30,13 +30,13 @@ public class PostService {
   private final HashtagService hashtagService;
 
   //생성일 순
-  public Page<Post> getAllPosts(String soltBy, Pageable pageable) {
+  public Page<Post> getAllPosts(String sortBy, Pageable pageable) {
     return postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageable);
   }
 
   //인기글 순
-  public Page<Post> getLikePosts(String soltBy, Pageable pageable) {
-    if ("like".equalsIgnoreCase(soltBy)) {
+  public Page<Post> getLikePosts(String sortBy, Pageable pageable) {
+    if ("like".equalsIgnoreCase(sortBy)) {
       return postRepository.findByIsDeletedFalseOrderByLikeCountDesc(pageable);
     } else {
       return postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageable);
@@ -64,7 +64,8 @@ public class PostService {
 
   // 포스트 삭제
   public void deletePost(Long postId) {
-    Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
     post.setDeleted(true);
     postRepository.save(post);
   }
@@ -102,15 +103,18 @@ public class PostService {
 
   //게시글 수정
   @Transactional
-  public PostResponseDto updatePost(Long postId, String title, String description, String postTitleImageUrl, Long playlistId, List<Long> hashtagIds) {
-    Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+  public PostResponseDto updatePost(Long postId, String title, String description,
+      String postTitleImageUrl, Long playlistId, List<Long> hashtagIds) {
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
     post.setTitle(title);
     post.setDescription(description);
     post.setPostTitleImageUrl(postTitleImageUrl);
 
     if (playlistId != null) {
-      Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+      Playlist playlist = playlistRepository.findById(playlistId)
+          .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
       post.setPlaylist(playlist);
     }
 
