@@ -1,12 +1,9 @@
 package com.chillvibe.chillvibe.domain.post.service;
 
-import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
-import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
-import com.chillvibe.chillvibe.domain.playlist.entity.PlaylistTrack;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
@@ -18,10 +15,7 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +29,6 @@ public class PostServiceImpl implements PostService {
 
   private final PostRepository postRepository;
   private final PlaylistRepository playlistRepository;
-  private final HashtagRepository hashtagRepository;
   private final PostHashtagRepository postHashtagRepository;
   private final HashtagService hashtagService;
   private final UserRepository userRepository;
@@ -77,51 +70,32 @@ public class PostServiceImpl implements PostService {
 
   // 포스트 삭제
   public void deletePost(Long postId) {
-    Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
     post.setDeleted(true);
     postRepository.save(post);
   }
 
-//  /**
-//   * 새 게시글을 생성하고, 지정된 해시태그를 설정합니다.
-//   *
-//   * @param title             게시글 제목
-//   * @param description       게시글 설명
-//   * @param postTitleImageUrl 게시글 타이틀 이미지 URL
-//   * @param playlistId        플레이리스트 ID
-//   * @param hashtagIds        해시태그 ID 리스트
-//   * @return 생성된 게시글의 DTO
-//   * @exception ApiException PLAYLIST_NOT_FOUND 플레이리스트가 존재하지 않을 경우
-//   */
-//  @Transactional
-//  public PostListResponseDto createPost(String title, String description, String postTitleImageUrl,
-//      Long playlistId, List<Long> hashtagIds) {
-//
-//    Playlist playlist = playlistRepository.findById(playlistId)
-//        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
-//
-//    Post post = new Post();
-//    post.setTitle(title);
-//    post.setDescription(description);
-//    post.setPostTitleImageUrl(postTitleImageUrl);
-//    post.setPlaylist(playlist);
-//    post.setDeleted(false);
-//
-//    Post savedPost = postRepository.save(post);
-//
-//    hashtagService.updateHashtagsOfPost(savedPost.getId(), hashtagIds);
-//
-//    return new PostListResponseDto(savedPost);
-//  }
+  /**
+   * 새 게시글을 생성하고, 지정된 해시태그를 설정합니다.
+   *
+   * @param requestDto 게시글 생성에 필요한 정보를 담고 있는 DTO 객체.
+   *                   제목, 설명, 플레이리스트 ID 및 해시태그 ID 목록을 포함합니다.
+   * @return 생성된 게시글의 정보를 담고 있는 {PostListResponseDto} 객체를 반환합니다.
+   * @exception ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우
+   *                         {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을 경우
+   *                         {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
+   */
   @Transactional
-  public PostListResponseDto createPost(PostCreateRequestDto requestDto){
+  public PostListResponseDto createPost(PostCreateRequestDto requestDto) {
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED); // 인증된 유저가 아닙니다.
     }
 
     // 유저 받아오기.
-    User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     long playlistId = requestDto.getPlaylistId();
 
@@ -135,22 +109,11 @@ public class PostServiceImpl implements PostService {
     post.setUser(user);
     post.setPlaylist(playlist);
     post.setDeleted(false);
-
-    List<Long> hashtagIds = requestDto.getHashtagIds();
-    List<Hashtag> hashtags = hashtagRepository.findByIdIn(requestDto.getHashtagIds());
-    Set<PostHashtag> postHashtags = new HashSet<>();
-
-    for (Hashtag hashtag : hashtags) {
-      PostHashtag postHashtag = new PostHashtag();
-      postHashtag.setPost(post);
-      postHashtag.setHashtag(hashtag);
-      postHashtags.add(postHashtag);
-    }
-
-    post.setPostHashtag(postHashtags);
+    post.setLikeCount(0);
 
     Post savedPost = postRepository.save(post);
 
+    List<Long> hashtagIds = requestDto.getHashtagIds();
     hashtagService.updateHashtagsOfPost(savedPost.getId(), hashtagIds);
 
     return new PostListResponseDto(savedPost);
@@ -158,15 +121,18 @@ public class PostServiceImpl implements PostService {
 
   //게시글 수정
   @Transactional
-  public PostResponseDto updatePost(Long postId, String title, String description, String postTitleImageUrl, Long playlistId, List<Long> hashtagIds) {
-    Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+  public PostResponseDto updatePost(Long postId, String title, String description,
+      String postTitleImageUrl, Long playlistId, List<Long> hashtagIds) {
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
     post.setTitle(title);
     post.setDescription(description);
     post.setPostTitleImageUrl(postTitleImageUrl);
 
     if (playlistId != null) {
-      Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+      Playlist playlist = playlistRepository.findById(playlistId)
+          .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
       post.setPlaylist(playlist);
     }
 

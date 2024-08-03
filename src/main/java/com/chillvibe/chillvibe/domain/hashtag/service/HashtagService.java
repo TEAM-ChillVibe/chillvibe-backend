@@ -16,6 +16,7 @@ import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -177,13 +178,14 @@ public class HashtagService {
   public void updateHashtagsOfPost(Long postId, List<Long> hashtagIds) {
     postHashtagRepository.deleteByPostId(postId);
 
-//    Post post = postService.getPostById(postId);
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
     List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
     List<PostHashtag> postHashtags = hashtags.stream()
         .map(hashtag -> new PostHashtag(post, hashtag))
         .toList();
+
+    post.setPostHashtag(new HashSet<>(postHashtags));
 
     postHashtagRepository.saveAll(postHashtags);
   }
