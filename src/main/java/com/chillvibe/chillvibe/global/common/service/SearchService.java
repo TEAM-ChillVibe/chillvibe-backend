@@ -1,7 +1,6 @@
 package com.chillvibe.chillvibe.global.common.service;
 
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
-import com.chillvibe.chillvibe.domain.post.dto.PostSearchDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.spotify.dto.SpotifySearchResult;
@@ -83,21 +82,6 @@ public class SearchService {
     }
     return SearchResponseDto.ofTracks(result.getTracks(), Math.min(result.getTotalTracks(), 50),
         page, size, !result.isHasMore());
-  }
-
-
-  // Post -> PostDto 변환
-//  private PostSearchDto convertToPostSearchDto(Post post) {
-//    return new PostSearchDto(
-//        post.getId(),
-//        post.getTitle(),
-//        post.getCreatedAt(),
-//        getTrackCountForPost(post),
-//        getPostHashtagsForPost(post),
-//        post.getUser().getNickname(),
-//        post.getUser().getProfileUrl(),
-//        post.getPostLike().size()
-//    );
   }
 
   // 게시글의 좋아요 수 추출
