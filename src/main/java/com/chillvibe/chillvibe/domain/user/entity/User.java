@@ -31,7 +31,8 @@ import org.hibernate.annotations.Where;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE user SET is_delete = true WHERE user_id=?")
+@SQLDelete(sql = "UPDATE user SET is_delete = true WHERE id=?")
+@Where(clause = "is_delete = false")
 public class User extends BaseTimeEntity {
 
   @Id
@@ -50,7 +51,6 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String profileUrl;
 
-  @Column(nullable = false)
   private String introduction;
 
   @Column(nullable = false)

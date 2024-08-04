@@ -19,16 +19,21 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE post_id = ?")
+@Where(clause = "is_deleted = false")
 @Table(name = "post")
 @Entity
 public class Post extends BaseTimeEntity {
@@ -44,16 +49,15 @@ public class Post extends BaseTimeEntity {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "postHashtag_id")
-  private PostHashtag hashtag;
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<PostHashtag> postHashtag;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "playList_id")
   private Playlist playlist;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Comment> comment = new ArrayList<>();
+  private List<Comment> comments = new ArrayList<>();
 
   @Column(length = 1000, nullable = false)
   private String title;
@@ -61,14 +65,11 @@ public class Post extends BaseTimeEntity {
   @Lob
   private String description;
 
-  @Column
-  private String postImageUrl;
-
-  @Column(length = 1000, nullable = false)
+  @Column(length = 1000, nullable = true)
   private String postTitleImageUrl;
 
   @ColumnDefault("0")
-  @Column(name = "likeCount", nullable = false)
+  @Column(name = "likeCount", nullable = true)
   private Integer likeCount;
 
   private boolean isDeleted;

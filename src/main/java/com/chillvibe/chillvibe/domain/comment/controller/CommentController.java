@@ -28,13 +28,13 @@ public class CommentController {
     this.commentService = commentService;
   }
 
-  @GetMapping
+  @GetMapping("/byPost")
   public ResponseEntity<List<CommentResponseDto>> getCommentsByPost(@RequestParam Long postId) {
     List<CommentResponseDto> comments = commentService.getCommentsByPost(postId);
     return new ResponseEntity<>(comments, HttpStatus.OK);
   }
 
-  @GetMapping("/user")
+  @GetMapping("/byUser")
   public ResponseEntity<List<CommentResponseDto>> getComments(@RequestParam Long userId) {
     List<CommentResponseDto> comments = commentService.getCommentsByUser(userId);
     return new ResponseEntity<>(comments, HttpStatus.OK);

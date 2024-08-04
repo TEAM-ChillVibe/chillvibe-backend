@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/playlist")
+@RequestMapping("/api/playlists")
 public class PlaylistController {
 
   private final PlaylistService playlistService;
@@ -49,8 +49,8 @@ public class PlaylistController {
   }
 
   // 플레이리스트 수정(상세) 페이지 조회
-  @GetMapping("/{playlistId}/edit")
-  public ResponseEntity<PlaylistEditPageResponseDto> getPlaylistForEditing(@PathVariable Long playlistId){
+  @GetMapping("/edit")
+  public ResponseEntity<PlaylistEditPageResponseDto> getPlaylistForEditing(@RequestParam Long playlistId){
     PlaylistEditPageResponseDto responseDto = playlistService.getPlaylistForEditing(playlistId);
     return ResponseEntity.ok(responseDto);
   }
@@ -64,23 +64,23 @@ public class PlaylistController {
   }
 
   // 플레이리스트 제거
-  @DeleteMapping("/{playlistId}")
-  public ResponseEntity<Void> deletePlaylist(@PathVariable Long playlistId){
+  @DeleteMapping
+  public ResponseEntity<Void> deletePlaylist(@RequestParam Long playlistId){
     playlistService.deletePlaylist(playlistId);
     return ResponseEntity.noContent().build();
   }
 
   // 플레이리스트에 트랙 추가
-  @PostMapping("/{playlistId}/tracks")
-  public ResponseEntity<Long> addTrackToPlaylist(@PathVariable Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {
+  @PostMapping("/track")
+  public ResponseEntity<Long> addTrackToPlaylist(@RequestParam Long playlistId, @RequestBody PlaylistTrackRequestDto requestDto) {
     PlaylistTrackResponseDto addedTrack = playlistService.addTrackToPlaylist(playlistId, requestDto);
     return ResponseEntity.ok(addedTrack.getId());
   }
 
-  // 플레이리스트에 트랙 삭제
-  @DeleteMapping("/{playlistId}/tracks/{trackId}")
-  public ResponseEntity<Void> removeTrackFromPlaylist(@PathVariable Long playlistId, @PathVariable Long trackId) {
-    playlistService.removeTrackFromPlaylist(playlistId, trackId);
+  // 플레이리스트에 선택한 트랙들을 삭제
+  @DeleteMapping("/{playlistId}/tracks")
+  public ResponseEntity<Void> removeTracksFromPlaylist(@PathVariable Long playlistId, @RequestBody List<Long> trackIds) {
+    playlistService.removeTracksFromPlaylist(playlistId, trackIds);
     return ResponseEntity.noContent().build();
   }
 }

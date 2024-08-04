@@ -3,8 +3,10 @@ package com.chillvibe.chillvibe.domain.comment.dto;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class CommentResponseDto {
 
   private Long id;
@@ -13,6 +15,9 @@ public class CommentResponseDto {
   private LocalDateTime modifiedAt;
   private Long userId;
   private Long postId;
+  private String userNickname;
+  private String userProfileUrl;
+  private String userEmail;
 
   public CommentResponseDto(Comment comment) {
     this.id = comment.getId();
@@ -21,6 +26,9 @@ public class CommentResponseDto {
     this.modifiedAt = comment.getModifiedAt();
     this.userId = comment.getUser().getId();
     this.postId = comment.getPost().getId();
+    this.userNickname = comment.getUser().getNickname();
+    this.userProfileUrl = comment.getUser().getProfileUrl();
+    this.userEmail = comment.getUser().getEmail();
   }
 
 }

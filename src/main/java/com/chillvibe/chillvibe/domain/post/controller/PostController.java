@@ -1,12 +1,16 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
+import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import io.jsonwebtoken.io.IOException;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -21,13 +25,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 @RestController
 public class PostController {
 
@@ -36,108 +41,89 @@ public class PostController {
   private final S3Uploader s3Uploader;
 
 
-  //전체 게시글 조회
+  // 전체 게시글 조회
+  // 기본값은 최신순으로 조회합니다. latest & popular
   @GetMapping
-  public ResponseEntity<Page<PostResponseDto>> getAllPosts(
+  public ResponseEntity<Page<PostListResponseDto>> getAllPosts(
+      @RequestParam(defaultValue = "latest") String sortBy,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "createdAt") String soltBy) {
-
-    Pageable pageable = PageRequest.of(page, size);
-    Page<Post> resultPage = postService.getAllPosts(soltBy, pageable);
-
-    Page<PostResponseDto> dtoPage = resultPage.map(PostResponseDto::new);
-    return ResponseEntity.ok(dtoPage);
+      @RequestParam(defaultValue = "10") int size
+      ) {
+    Page<PostListResponseDto> posts = postService.getPosts(sortBy, page, size);
+    return ResponseEntity.ok(posts);
   }
 
-  //특정게시글 조회
+  // 특정 게시글 상세 조회
   @GetMapping("/{postId}")
-  public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long postId) {
-    Post post = postService.getPostById(postId);
-    PostResponseDto postResponseDto = new PostResponseDto(post);
-    return ResponseEntity.ok(postResponseDto);
+  public ResponseEntity<PostDetailResponseDto> getPostById(@PathVariable Long postId) {
+    PostDetailResponseDto responseDto = postService.getPostById(postId);
+    return ResponseEntity.ok(responseDto);
   }
 
-  //특정 유저 게시글 조회
-  @GetMapping
-  public ResponseEntity<Page<PostResponseDto>> getPostsByUserId(
-      @RequestParam Long userId,
+
+//  @GetMapping("/user")
+//  public ResponseEntity<Page<PostResponseDto>> getPostsByUserId(
+//      @RequestParam Long userId,
+//      @RequestParam(defaultValue = "0") int page,
+//      @RequestParam(defaultValue = "10") int size,
+//      @RequestParam(defaultValue = "createdAt") String sortBy) {
+//
+//    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+//    Page<PostResponseDto> resultPage = postService.getPostsByUserId(userId, pageable);
+//
+//    return ResponseEntity.ok(resultPage);
+//  }
+
+  // 특정 유저 게시글 조회
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<Page<PostListResponseDto>> getPostsByUserId(
+      @PathVariable Long userId,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "createdAt") String sortBy) {
+      @RequestParam(defaultValue = "10") int size) {
 
-    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-    Page<PostResponseDto> resultPage = postService.getPostsByUserId(userId, pageable);
-
-    return ResponseEntity.ok(resultPage);
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    Page<PostListResponseDto> posts = postService.getPostsByUserId(userId, pageable);
+    return ResponseEntity.ok(posts);
   }
 
-  //게시글 삭제
-  @Transactional
+  // 게시글 삭제
   @DeleteMapping("/{postId}")
-  public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long postId) {
+  public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
     postService.deletePost(postId);
-    PostResponseDto response = new PostResponseDto();
-    response.setId(postId);
-    response.setMessage("Post deleted successfully");
-    return ResponseEntity.ok(response);
+    return ResponseEntity.noContent().build();
   }
 
-  /**
-   * 새 게시글을 생성합니다.
-   *
-   * @param title          게시글 제목
-   * @param description    게시글 설명
-   * @param postTitleImage 게시글 타이틀 이미지 파일
-   * @param playlistId     플레이리스트 ID
-   * @param hashtagIds     해시태그 ID 리스트
-   * @return 생성된 게시글의 DTO
-   * @exception IOException S3 업로드 또는 파일 처리 중 오류 발생
-   */
-  @SneakyThrows
+  // 게시글 생성
   @PostMapping
-  public ResponseEntity<PostListResponseDto> createPost(
-      @RequestParam("title") String title,
-      @RequestParam("description") String description,
-      @RequestParam("postTitleImage") MultipartFile postTitleImage,
-      @RequestParam("playlistId") Long playlistId,
-      @RequestParam("hashtagIds") List<Long> hashtagIds) throws IOException {
+  public ResponseEntity<PostListResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto requestDto){
 
-    String postTitleImageUrl = s3Uploader.upload(postTitleImage, "post-title-image");
-
-    PostListResponseDto postResponseDto = postService.createPost(title, description,
-        postTitleImageUrl,
-        playlistId, hashtagIds);
+    PostListResponseDto postResponseDto = postService.createPost(requestDto);
 
     return ResponseEntity.ok(postResponseDto);
   }
 
-  //게시글 수정
+  // 게시글 수정
   @PutMapping("/{postId}")
-  public ResponseEntity<PostResponseDto> updatePost(
+  public ResponseEntity<Long> updatePost(
       @PathVariable Long postId,
-      @RequestParam String title,
-      @RequestParam String description,
-      @RequestParam String postTitleImageUrl,
-      @RequestParam(required = false) Long playlistId,
-      @RequestParam(required = false) List<Long> hashtagIds) {
+      @RequestBody PostUpdateRequestDto postUpdateRequestDto) {
 
-    PostResponseDto updatedPost = postService.updatePost(postId, title, description, postTitleImageUrl, playlistId, hashtagIds);
-    return ResponseEntity.ok(updatedPost);
+    Long updatedPostId = postService.updatePost(postId, postUpdateRequestDto);
+    return ResponseEntity.ok(updatedPostId);
   }
 
 
-  //좋아요 추가
-  @PostMapping("/{postId}/like")
-  public ResponseEntity<Void> likePost(@RequestParam Long userId, @PathVariable Long postId) {
-    postLikeService.likePost(userId, postId);
+  // 좋아요 추가
+  @PostMapping("/like")
+  public ResponseEntity<Void> likePost(@RequestParam Long postId) {
+    postLikeService.likePost(postId);
     return ResponseEntity.ok().build();
   }
 
-  //좋아요 취소
-  @PostMapping("/{postId}/unlike")
-  public ResponseEntity<Void> unlikePost(@RequestParam Long userId, @PathVariable Long postId) {
-    postLikeService.unlikePost(userId, postId);
+  // 좋아요 취소
+  @DeleteMapping("/like")
+  public ResponseEntity<Void> unlikePost(@RequestParam Long postId) {
+    postLikeService.unlikePost(postId);
     return ResponseEntity.ok().build();
   }
 
@@ -159,4 +145,3 @@ public class PostController {
     return ResponseEntity.ok(resultPage);
   }
 }
-
