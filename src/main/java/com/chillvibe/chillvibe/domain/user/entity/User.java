@@ -51,7 +51,6 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String profileUrl;
 
-  @Column(nullable = false)
   private String introduction;
 
   @Column(nullable = false)

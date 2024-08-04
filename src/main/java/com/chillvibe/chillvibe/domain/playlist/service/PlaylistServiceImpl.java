@@ -12,7 +12,6 @@ import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistTrackRepository;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
-import com.chillvibe.chillvibe.domain.user.exception.UserNotFoundException;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
