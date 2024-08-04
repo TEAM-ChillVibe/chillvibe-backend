@@ -116,13 +116,8 @@ public class PostServiceImpl implements PostService {
     return postPage.map(PostListResponseDto::new);
   }
 
-  // 새 포스트 저장
-  public Post savePost(Post post) {
-    return postRepository.save(post);
-  }
-
-
   // 게시글 삭제
+  @Transactional
   public void deletePost(Long postId) {
     // 삭제하려는 유저 정보를 가져온다.
     Long currentUserId = userUtil.getAuthenticatedUserId();

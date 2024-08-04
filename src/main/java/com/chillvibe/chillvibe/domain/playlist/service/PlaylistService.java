@@ -21,7 +21,7 @@ public interface PlaylistService {
   PlaylistTrackResponseDto addTrackToPlaylist(Long PlaylistId, PlaylistTrackRequestDto requestDto);
   // 플레이리스트 삭제
   void deletePlaylist(Long playlistId);
-  // 플레이리스트 트랙 삭제하기
-  void removeTrackFromPlaylist(Long playlistId, Long trackId);
+  // 플레이리스트에서 선택한 트랙들 삭제하기
+  void removeTracksFromPlaylist(Long playlistId, List<Long> trackIds);
 
 }

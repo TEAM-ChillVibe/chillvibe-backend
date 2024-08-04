@@ -43,6 +43,7 @@ public enum ErrorCode {
 
   // TRACK
   TRACK_NOT_FOUND(404, "T001", "Track not found", LogLevel.ERROR),
+  TRACK_NOT_IN_PLAYLIST(404, "T002", "Track not in playlist", LogLevel.ERROR),
 
   // SPOTIFY
   SPOTIFY_API_ERROR(500, "S001", "Spotify API error occurred, Try Again", LogLevel.ERROR),

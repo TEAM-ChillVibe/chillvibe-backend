@@ -44,7 +44,6 @@ public interface PostService {
   // 게시글 삭제
   void deletePost(Long postId);
 
-  Post savePost(Post post);
 
   Page<PostListResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable);
 

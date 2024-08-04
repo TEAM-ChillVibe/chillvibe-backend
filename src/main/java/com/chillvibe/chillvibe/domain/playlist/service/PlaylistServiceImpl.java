@@ -17,12 +17,14 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PlaylistServiceImpl implements PlaylistService {
@@ -52,8 +54,10 @@ public class PlaylistServiceImpl implements PlaylistService {
     this.userUtil = userUtil;
   }
 
+  // 플레이리스트에 트랙을 추가하려는 유저에게 본인이 가진 플레이리스트들을 보여준다.
   @Override
   public List<PlaylistSelectDto> getUserPlaylistsForSelection() {
+    // 현재 해당 작업을 시작하려는 유저를 확인한다.
     Long currentUserId = userUtil.getAuthenticatedUserId();
     if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
@@ -64,7 +68,9 @@ public class PlaylistServiceImpl implements PlaylistService {
     return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 
+  // 로그인 한 유저가 빈 플레이리스트를 생성한다.
   @Override
+  @Transactional
   public Playlist createEmptyPlaylist(String title){
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
@@ -84,7 +90,9 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
+  @Transactional
   public void deletePlaylist(Long playlistId){
+    // 해당 작업을 진행하려는 유저를 확인한다.
     Long currentUserId = userUtil.getAuthenticatedUserId();
     if(currentUserId == null){
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
@@ -93,6 +101,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
+    // 삭제를 사도하려는 유저와 플레이리스트의 주인이 맞는지 확인한다.
     if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
@@ -169,19 +178,28 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
-  public void removeTrackFromPlaylist(Long playlistId, Long trackId) {
+  @Transactional
+  public void removeTracksFromPlaylist(Long playlistId, List<Long> trackIds) {
     Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
     Long currentUserId = userUtil.getAuthenticatedUserId();
+    if(currentUserId == null){
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
     if(!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    PlaylistTrack track = playlistTrackRepository.findByPlaylistIdAndId(playlistId, trackId).orElseThrow(() -> new ApiException(ErrorCode.TRACK_NOT_FOUND));
+    List<PlaylistTrack> tracks = playlistTrackRepository.findAllById(trackIds);
 
-    playlistTrackRepository.delete(track);
+    for (PlaylistTrack track : tracks) {
+      if (!track.getPlaylist().equals(playlist)) {
+        throw new ApiException(ErrorCode.TRACK_NOT_IN_PLAYLIST);
+      }
+      playlist.getTracks().remove(track);
+      playlistTrackRepository.delete(track);
+    }
   }
-
-
 
 }

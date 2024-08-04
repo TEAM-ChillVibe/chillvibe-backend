@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/playlist")
+@RequestMapping("/api/playlists")
 public class PlaylistController {
 
   private final PlaylistService playlistService;
@@ -77,10 +77,10 @@ public class PlaylistController {
     return ResponseEntity.ok(addedTrack.getId());
   }
 
-  // 플레이리스트에 트랙 삭제
-  @DeleteMapping("/track")
-  public ResponseEntity<Void> removeTrackFromPlaylist(@RequestParam Long playlistId, @RequestParam Long trackId) {
-    playlistService.removeTrackFromPlaylist(playlistId, trackId);
+  // 플레이리스트에 선택한 트랙들을 삭제
+  @DeleteMapping("/{playlistId}/tracks")
+  public ResponseEntity<Void> removeTracksFromPlaylist(@PathVariable Long playlistId, @RequestBody List<Long> trackIds) {
+    playlistService.removeTracksFromPlaylist(playlistId, trackIds);
     return ResponseEntity.noContent().build();
   }
 }
