@@ -60,18 +60,30 @@ public class PostController {
     return ResponseEntity.ok(responseDto);
   }
 
-  //특정 유저 게시글 조회
-  @GetMapping("/user")
-  public ResponseEntity<Page<PostResponseDto>> getPostsByUserId(
-      @RequestParam Long userId,
+
+//  @GetMapping("/user")
+//  public ResponseEntity<Page<PostResponseDto>> getPostsByUserId(
+//      @RequestParam Long userId,
+//      @RequestParam(defaultValue = "0") int page,
+//      @RequestParam(defaultValue = "10") int size,
+//      @RequestParam(defaultValue = "createdAt") String sortBy) {
+//
+//    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+//    Page<PostResponseDto> resultPage = postService.getPostsByUserId(userId, pageable);
+//
+//    return ResponseEntity.ok(resultPage);
+//  }
+
+  // 특정 유저 게시글 조회
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<Page<PostListResponseDto>> getPostsByUserId(
+      @PathVariable Long userId,
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "createdAt") String sortBy) {
+      @RequestParam(defaultValue = "10") int size) {
 
-    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
-    Page<PostResponseDto> resultPage = postService.getPostsByUserId(userId, pageable);
-
-    return ResponseEntity.ok(resultPage);
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    Page<PostListResponseDto> posts = postService.getPostsByUserId(userId, pageable);
+    return ResponseEntity.ok(posts);
   }
 
   //게시글 삭제

@@ -34,15 +34,18 @@ public interface PostService {
   // 특정 게시글 상세 조회
   PostDetailResponseDto getPostById(Long postId);
 
+  // 유저 페이지의 게시글 보기 (isPublic 확인 필요)
+  Page<PostListResponseDto> getPostsByUserId(Long userId, Pageable pageable);
+
   // 게시글 수정
   Long updatePost(Long id, PostUpdateRequestDto postUpdateRequestDto);
+  // PostResponseDto updatePost(Long postId, String title, String description, String postTitleImageUrl, Long playlistId, List<Long> hashtagIds);
 
-  //게시글 삭제
+  // 게시글 삭제
   void deletePost(Long postId);
 
-  Page<PostResponseDto> getPostsByUserId(Long userId, Pageable pageable);
   Post savePost(Post post);
-//  PostResponseDto updatePost(Long postId, String title, String description, String postTitleImageUrl, Long playlistId, List<Long> hashtagIds);
+
   Page<PostListResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable);
 
 

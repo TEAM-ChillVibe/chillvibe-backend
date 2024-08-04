@@ -22,6 +22,7 @@ import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
+import com.chillvibe.chillvibe.domain.user.dto.UserPageResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
@@ -99,12 +100,21 @@ public class PostServiceImpl implements PostService {
     return new PostDetailResponseDto(post, userInfoResponseDto, playlistResponseDto, hashtagResponseDtos, commentResponseDtos);
   }
 
-  // 사용자 ID로 게시글 목록 조회
-  public Page<PostResponseDto> getPostsByUserId(Long userId, Pageable pageable) {
-    Page<Post> posts = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
-    return posts.map(PostResponseDto::new);
-  }
+  // 사용자 ID로 게시글 목록 조회 (isPublic)
+  public Page<PostListResponseDto> getPostsByUserId(Long userId, Pageable pageable) {
+    // 유저 정보 조회.
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
+    // 비공개 계정인 경우 빈 페이지 반환한다.
+    if (!user.isPublic()) {
+      return Page.empty(pageable);
+    }
+
+    Page<Post> postPage = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
+
+    return postPage.map(PostListResponseDto::new);
+  }
 
   // 새 포스트 저장
   public Post savePost(Post post) {

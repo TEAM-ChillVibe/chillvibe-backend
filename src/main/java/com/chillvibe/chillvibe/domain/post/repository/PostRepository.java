@@ -15,13 +15,19 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //  List<Post> findByPostAndIsDeletedFalse(Post post);
 //  // 포스트 id로 조회
 //  Post findByPostIdAndIsDeletedFalse(Long id);
+
 //  // 특정 user로 포스트 조회
-  Page<Post> findByUserIdAndIsDeletedFalse(Long Userid, Pageable pageable);
+//  Page<Post> findByUserIdAndIsDeletedFalse(Long Userid, Pageable pageable);
+
 
   //  // 특정 playlist로 포스트 조회
 //  Post findByPlaylistAndIsDeletedFalse(Long id);
   //
 //  Page<Post> getByUserId(Long user_Id, Pageable pageable);
+
+  // userId를 통해, 게시글을 페이지 형태로 가져온다.
+  Page<Post> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
+
   // 인기순 내림차순
   Page<Post> findByIsDeletedFalseOrderByLikeCountDesc(Pageable pageable);
 
