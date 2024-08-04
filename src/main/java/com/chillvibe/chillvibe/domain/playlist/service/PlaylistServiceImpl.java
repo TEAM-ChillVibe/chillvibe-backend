@@ -150,6 +150,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
+  @Transactional
   public PlaylistTrackResponseDto addTrackToPlaylist(Long playlistId, PlaylistTrackRequestDto requestDto){
     Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(
         ErrorCode.PLAYLIST_NOT_FOUND));
