@@ -29,6 +29,10 @@ public class SpotifyService {
 
   public SpotifySearchResult searchTracks(String query, int offset, int limit) {
     try {
+      log.info("== 트랙 검색 API 호출 확인 ==");
+      // 현재 코드 상으로, 페이지를 누를때나, 계속 호출이 되게 됨.
+      // 현재 SPOTIFY - 백 - 프론트 형태로,
+      // SPOTIFY - 프론트로 API를 놓는 것도 고려 필요
       SearchTracksRequest searchRequest = spotifyApi.searchTracks(query)
           .market(CountryCode.KR)
           .limit(limit)
