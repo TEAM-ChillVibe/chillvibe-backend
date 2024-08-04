@@ -122,10 +122,22 @@ public class PostServiceImpl implements PostService {
   }
 
 
-  // 포스트 삭제
+  // 게시글 삭제
   public void deletePost(Long postId) {
+    // 삭제하려는 유저 정보를 가져온다.
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null){
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+
+    // 해당 유저가 게시글 작성자가 아닐 경우, 에러 메세지를 발생시킨다.
+    if (!post.getUser().getId().equals(currentUserId)){
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    // Soft Delete로 구현.
     post.setDeleted(true);
     postRepository.save(post);
   }

@@ -86,15 +86,11 @@ public class PostController {
     return ResponseEntity.ok(posts);
   }
 
-  //게시글 삭제
-  @Transactional
+  // 게시글 삭제
   @DeleteMapping("/{postId}")
-  public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long postId) {
+  public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
     postService.deletePost(postId);
-    PostResponseDto response = new PostResponseDto();
-    response.setId(postId);
-    response.setMessage("Post deleted successfully");
-    return ResponseEntity.ok(response);
+    return ResponseEntity.noContent().build();
   }
 
   // 게시글 생성
