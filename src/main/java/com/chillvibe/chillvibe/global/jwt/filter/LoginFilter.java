@@ -112,7 +112,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     refreshRepository.save(refreshEntity);
 
     // 응답 설정
-    response.setHeader("access", access);
+    response.setHeader("Authorization", "Bearer " + access);
     response.addCookie(createCookie(refresh));
     response.setStatus(HttpStatus.OK.value());
   }
