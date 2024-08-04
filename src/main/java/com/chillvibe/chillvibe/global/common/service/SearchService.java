@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.global.common.service;
 
+import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostSearchDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
@@ -44,9 +45,11 @@ public class SearchService {
   // 통합 검색 postRepository
   // type = all일 경우, 검색어에 대한 트랙 5개,
   private SearchResponseDto searchAll(String query) {
-    List<PostSearchDto> posts = postRepository.findByTitleContainingIgnoreCase(query,
+    List<PostListResponseDto> posts = postRepository.findByTitleContainingIgnoreCase(query,
             PageRequest.of(0, 5))
-        .stream().map(this::convertToPostSearchDto).collect(Collectors.toList());
+        .stream()
+        .map(PostListResponseDto::new)
+        .collect(Collectors.toList());
     List<TrackSearchDto> tracks;
     try {
       tracks = spotifyService.searchTracks(query, 0, 5).getTracks();
@@ -63,7 +66,8 @@ public class SearchService {
   private SearchResponseDto searchPosts(String query, int page, int size) {
     Page<Post> postPage = postRepository.findByTitleContainingIgnoreCase(query,
         PageRequest.of(page, size));
-    List<PostSearchDto> posts = postPage.getContent().stream().map(this::convertToPostSearchDto)
+    List<PostListResponseDto> posts = postPage.getContent().stream()
+        .map(PostListResponseDto::new)
         .collect(Collectors.toList());
     return SearchResponseDto.ofPosts(posts, postPage.getTotalElements(), page, size,
         postPage.isLast());
@@ -83,17 +87,17 @@ public class SearchService {
 
 
   // Post -> PostDto 변환
-  private PostSearchDto convertToPostSearchDto(Post post) {
-    return new PostSearchDto(
-        post.getId(),
-        post.getTitle(),
-        post.getCreatedAt(),
-        getTrackCountForPost(post),
-        getPostHashtagsForPost(post),
-        post.getUser().getNickname(),
-        post.getUser().getProfileUrl(),
-        post.getPostLike().size()
-    );
+//  private PostSearchDto convertToPostSearchDto(Post post) {
+//    return new PostSearchDto(
+//        post.getId(),
+//        post.getTitle(),
+//        post.getCreatedAt(),
+//        getTrackCountForPost(post),
+//        getPostHashtagsForPost(post),
+//        post.getUser().getNickname(),
+//        post.getUser().getProfileUrl(),
+//        post.getPostLike().size()
+//    );
   }
 
   // 게시글의 좋아요 수 추출

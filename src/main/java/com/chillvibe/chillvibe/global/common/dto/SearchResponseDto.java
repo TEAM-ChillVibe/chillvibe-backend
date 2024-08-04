@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.global.common.dto;
 
+import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchResponseDto {
-  private List<PostSearchDto> postContent; // 게시글 검색 결과
+  private List<PostListResponseDto> postContent; // 게시글 검색 결과
   private List<TrackSearchDto> trackContent; // 트랙 검색 결과
   private long totalPosts; // 검색 조건에 맞는 총 게시글 수
   private long totalTracks; // 검색 조건에 맞는 총 트랙의 수 (최대 50)
@@ -23,7 +24,7 @@ public class SearchResponseDto {
   private boolean isLast; // 현재 페이지가 마지막 페이지인지 확인
 
   // 생성자 -> Type = all일때 (default)
-  public SearchResponseDto(List<PostSearchDto> posts, List<TrackSearchDto> tracks, long totalPosts, long totalTracks) {
+  public SearchResponseDto(List<PostListResponseDto> posts, List<TrackSearchDto> tracks, long totalPosts, long totalTracks) {
     this.postContent = posts;
     this.trackContent = tracks;
     this.totalPosts = totalPosts;
@@ -35,7 +36,7 @@ public class SearchResponseDto {
   }
 
   // 생성자 -> 게시글 검색 결과
-  public static SearchResponseDto ofPosts(List<PostSearchDto> posts, long totalPosts, int currentPage, int pageSize, boolean isLast) {
+  public static SearchResponseDto ofPosts(List<PostListResponseDto> posts, long totalPosts, int currentPage, int pageSize, boolean isLast) {
     SearchResponseDto dto = new SearchResponseDto();
     dto.postContent = posts;
     dto.trackContent = null;
