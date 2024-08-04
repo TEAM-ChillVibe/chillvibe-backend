@@ -1,7 +1,6 @@
 package com.chillvibe.chillvibe.global.common.dto;
 
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
-import com.chillvibe.chillvibe.domain.post.dto.PostSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
