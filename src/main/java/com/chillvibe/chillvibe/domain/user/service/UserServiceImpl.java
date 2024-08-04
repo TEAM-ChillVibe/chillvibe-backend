@@ -7,8 +7,6 @@ import com.chillvibe.chillvibe.domain.user.dto.JoinRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
-import com.chillvibe.chillvibe.domain.user.exception.DuplicateEmailException;
-import com.chillvibe.chillvibe.domain.user.exception.UserNotFoundException;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
