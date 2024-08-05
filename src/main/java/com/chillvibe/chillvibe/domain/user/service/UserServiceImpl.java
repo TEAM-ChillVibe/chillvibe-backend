@@ -1,8 +1,7 @@
 package com.chillvibe.chillvibe.domain.user.service;
 
-import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
-import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
-import com.chillvibe.chillvibe.domain.hashtag.repository.UserHashtagRepository;
+import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
+import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.user.dto.JoinRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserUpdateRequestDto;
@@ -22,7 +21,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +37,11 @@ public class UserServiceImpl implements UserService {
   private final S3Uploader s3Uploader;
   private final ObjectMapper objectMapper;
   private final UserUtil userUtil;
-  private final UserHashtagRepository userHashtagRepository;
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
   private final HttpServletRequest request;
   private final HttpServletResponse response;
+  private final HashtagService hashtagService;
 
   public void join(String joinDto, MultipartFile multipartFile) {
 
@@ -173,12 +171,14 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
-    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+    List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfUser(userId);
 
-    List<Hashtag> hashtags = userHashtag.stream()
-        .map(UserHashtag::getHashtag)
-        .filter(Objects::nonNull)
-        .toList();
+//    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+//
+//    List<Hashtag> hashtags = userHashtag.stream()
+//        .map(UserHashtag::getHashtag)
+//        .filter(Objects::nonNull)
+//        .toList();
 
     return new UserInfoResponseDto(user, hashtags);
   }
@@ -188,12 +188,14 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
-    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+//    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+//
+//    List<Hashtag> hashtags = userHashtag.stream()
+//        .map(UserHashtag::getHashtag)
+//        .filter(Objects::nonNull)
+//        .toList();
 
-    List<Hashtag> hashtags = userHashtag.stream()
-        .map(UserHashtag::getHashtag)
-        .filter(Objects::nonNull)
-        .toList();
+    List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfUser(userId);
 
     return new UserInfoResponseDto(user, hashtags);
   }
