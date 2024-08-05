@@ -95,7 +95,8 @@ public class UserServiceImpl implements UserService {
 
     Long userId = userUtil.getAuthenticatedUserId();
 
-    System.out.println(userId);
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     UserUpdateRequestDto parsedUserUpdateDto;
 
@@ -105,9 +106,23 @@ public class UserServiceImpl implements UserService {
       throw new ApiException(ErrorCode.INVALID_TYPE_VALUE);
     }
 
-    // 인증된 유저 객체 가져오기
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    String oldPassword = parsedUserUpdateDto.getOldPassword();
+    String newPassword = parsedUserUpdateDto.getNewPassword();
+    String confirmNewPassword = parsedUserUpdateDto.getConfirmNewPassword();
+
+    if (!isBlank(oldPassword) && !isBlank(newPassword) && !isBlank(confirmNewPassword)) {
+      // 기존 비밀번호 확인
+      if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+        throw new ApiException(ErrorCode.INVALID_PASSWORD);
+      }
+
+      // 새 비밀번호와 확인 비밀번호가 일치하는지 확인
+      if (!newPassword.equals(confirmNewPassword)) {
+        throw new ApiException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+      }
+
+      user.updatePassword(newPassword, bCryptPasswordEncoder);
+    }
 
     // imageUrl 기존 url로 초기화
     String imageUrl = user.getProfileUrl();
@@ -235,5 +250,10 @@ public class UserServiceImpl implements UserService {
       }
     }
     return null;
+  }
+
+  // 문자열이 null이거나 빈 문자열인지 확인하는 메소드
+  private boolean isBlank(String str) {
+    return str == null || str.trim().isEmpty();
   }
 }
