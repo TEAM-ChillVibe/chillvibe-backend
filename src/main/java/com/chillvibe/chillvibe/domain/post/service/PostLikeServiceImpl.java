@@ -82,6 +82,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     post.setLikeCount(post.getLikeCount() - 1);
     postRepository.save(post);
 
+    // 해시태그 누적 좋아요 수 변경
     hashtagService.adjustHashtagLikes(postId, true);
   }
 
