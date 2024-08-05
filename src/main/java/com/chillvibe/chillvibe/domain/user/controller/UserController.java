@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -42,13 +44,13 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body("회원 정보 수정 완료");
   }
 
-  @PatchMapping("/delete")
+  @PatchMapping("/users/delete")
   public ResponseEntity<String> softDeleteUser() {
     userService.softDeleteUser();
     return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴 완료");
   }
 
-  @PatchMapping("/restore")
+  @PatchMapping("/users/restore")
   public ResponseEntity<String> restoreUser() {
     userService.restoreUser();
     return ResponseEntity.status(HttpStatus.OK).body("회원 복구 완료");
