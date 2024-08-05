@@ -41,12 +41,14 @@ public class Hashtag extends BaseTimeEntity {
   }
 
   // 누적 좋아요 계산 (+)
-  public void increaseTotalLikes(int likeCount) {
-    this.totalLikes += likeCount;
+  public void increaseTotalLikes() {
+    this.totalLikes += 1;
   }
 
   // 누적 좋아요 계산 (-)
-  public void decreaseTotalLikes(int likeCount) {
-    this.totalLikes = Math.max(0, this.totalLikes - likeCount);
+  public void decreaseTotalLikes() {
+    if (this.totalLikes > 0) {
+      this.totalLikes -= 1;
+    }
   }
 }
