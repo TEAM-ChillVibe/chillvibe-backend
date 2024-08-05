@@ -9,10 +9,11 @@ import lombok.Setter;
 @Setter
 @Builder
 public class PlaylistResponseDto {
+
   private Long id;
   private String title;
   private String imageUrl;
   private int trackCount;
   private List<PlaylistTrackResponseDto> tracks;
-
+  private List<String> thumbnailUrls; // 대표이미지용 썸네일 4개 리스트
 }

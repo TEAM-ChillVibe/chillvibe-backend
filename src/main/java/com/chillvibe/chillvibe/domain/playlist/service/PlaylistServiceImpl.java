@@ -10,13 +10,11 @@ import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistTrackMapper;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistTrackRepository;
-import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -44,7 +42,7 @@ public class PlaylistServiceImpl implements PlaylistService {
       PlaylistMapper playlistMapper,
       PlaylistTrackMapper playlistTrackMapper,
       UserRepository userRepository,
-      UserUtil userUtil){
+      UserUtil userUtil) {
     this.playlistRepository = playlistRepository;
     this.playlistTrackRepository = playlistTrackRepository;
     this.playlistMapper = playlistMapper;
@@ -70,13 +68,14 @@ public class PlaylistServiceImpl implements PlaylistService {
   // 로그인 한 유저가 빈 플레이리스트를 생성한다.
   @Override
   @Transactional
-  public Playlist createEmptyPlaylist(String title){
+  public Playlist createEmptyPlaylist(String title) {
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED); // 인증된 유저가 아닙니다.
     }
 
-    User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     // 빈 플레이리스트 객체 생성
     Playlist playlist = Playlist.builder()
@@ -90,10 +89,10 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   @Override
   @Transactional
-  public void deletePlaylist(Long playlistId){
+  public void deletePlaylist(Long playlistId) {
     // 해당 작업을 진행하려는 유저를 확인한다.
     Long currentUserId = userUtil.getAuthenticatedUserId();
-    if(currentUserId == null){
+    if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
@@ -108,9 +107,9 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
-  public Page<Playlist> getUserPlaylists(int page, int size){
+  public Page<Playlist> getUserPlaylists(int page, int size) {
     Long userId = userUtil.getAuthenticatedUserId();
-    if(userId == null) {
+    if (userId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
@@ -118,18 +117,19 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }
 
-    Pageable pageable = PageRequest.of(page,size);
+    Pageable pageable = PageRequest.of(page, size);
     return playlistRepository.findByUserId(userId, pageable);
   }
 
   @Override
-  public PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId){
+  public PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId) {
     Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null ){
+    if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
-    Playlist playlist =  playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
     if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -138,24 +138,31 @@ public class PlaylistServiceImpl implements PlaylistService {
     List<PlaylistTrack> tracks = playlistTrackRepository.findByPlaylistId(playlistId);
     List<PlaylistTrackResponseDto> trackDtos = playlistTrackMapper.toDtoList(tracks);
 
+    List<String> thumbnailUrls = tracks.stream()
+        .map(PlaylistTrack::getThumbnailUrl)
+        .limit(4)
+        .toList();
+
     return PlaylistEditPageResponseDto.builder()
         .playlistName(playlist.getTitle())
         .trackCount(tracks.size())
         .createdAt(playlist.getCreatedAt())
         .modifiedAt(playlist.getModifiedAt())
         .tracks(trackDtos)
+        .thumbnailUrls(thumbnailUrls)
         .build();
 
   }
 
   @Override
   @Transactional
-  public PlaylistTrackResponseDto addTrackToPlaylist(Long playlistId, PlaylistTrackRequestDto requestDto){
+  public PlaylistTrackResponseDto addTrackToPlaylist(Long playlistId,
+      PlaylistTrackRequestDto requestDto) {
     Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(
         ErrorCode.PLAYLIST_NOT_FOUND));
 
     Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null){
+    if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
@@ -173,21 +180,22 @@ public class PlaylistServiceImpl implements PlaylistService {
         .thumbnailUrl(requestDto.getThumbnailUrl())
         .build();
 
-      PlaylistTrack savedTrack = playlistTrackRepository.save(playlistTrack);
-      return playlistTrackMapper.toDto(savedTrack);
+    PlaylistTrack savedTrack = playlistTrackRepository.save(playlistTrack);
+    return playlistTrackMapper.toDto(savedTrack);
   }
 
   @Override
   @Transactional
   public void removeTracksFromPlaylist(Long playlistId, List<Long> trackIds) {
-    Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
     Long currentUserId = userUtil.getAuthenticatedUserId();
-    if(currentUserId == null){
+    if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
-    if(!playlist.getUser().getId().equals(currentUserId)) {
+    if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
