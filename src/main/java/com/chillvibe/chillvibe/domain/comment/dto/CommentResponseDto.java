@@ -18,6 +18,10 @@ public class CommentResponseDto {
   private String userNickname;
   private String userProfileUrl;
   private String userEmail;
+  private String postTitle;
+  private String postAuthor;
+  private String postAuthorProfileUrl;
+  private String postTitleImageUrl;
 
   public CommentResponseDto(Comment comment) {
     this.id = comment.getId();
@@ -29,6 +33,10 @@ public class CommentResponseDto {
     this.userNickname = comment.getUser().getNickname();
     this.userProfileUrl = comment.getUser().getProfileUrl();
     this.userEmail = comment.getUser().getEmail();
+    this.postTitle = comment.getPost().getTitle();
+    this.postAuthor = comment.getPost().getUser().getNickname();
+    this.postAuthorProfileUrl = comment.getPost().getUser().getProfileUrl();
+    this.postTitleImageUrl = comment.getPost().getPostTitleImageUrl();
   }
 
 }
