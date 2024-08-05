@@ -8,10 +8,9 @@ import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.UserHashtagRepository;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
-import com.chillvibe.chillvibe.domain.post.repository.PostLikeRepository;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
-import com.chillvibe.chillvibe.domain.user.service.UserService;
+import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
@@ -33,11 +32,9 @@ public class HashtagService {
   private final HashtagRepository hashtagRepository;
   private final PostHashtagRepository postHashtagRepository;
   private final UserHashtagRepository userHashtagRepository;
-  private final PostLikeRepository postLikeRepository;
-  private final UserService userService;
-  //  private final PostService postService;
   private final PostRepository postRepository;
   public final UserUtil userUtil;
+  private final UserRepository userRepository;
 
   /**
    * 시스템에 존재하는 모든 해시태그를 조회합니다.
@@ -158,7 +155,8 @@ public class HashtagService {
 
     userHashtagRepository.deleteByUserId(userId);
 
-    User user = userService.getUserById(userId);
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
     List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
     List<UserHashtag> userHashtags = hashtags.stream()
         .map(hashtag -> new UserHashtag(user, hashtag))
