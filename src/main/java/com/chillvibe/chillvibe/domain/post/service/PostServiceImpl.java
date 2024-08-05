@@ -23,6 +23,7 @@ import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.global.common.dto.SearchResponseDto;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
@@ -241,5 +242,14 @@ public class PostServiceImpl implements PostService {
     Page<Post> posts = postRepository.findAllByIdIn(postIds, pageable);
 
     return posts.map(PostListResponseDto::new);
+  }
+
+  public Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable){
+
+    // 제목에 검색어가 포함된 게시글을 대소문자 구분 없이 검색
+    Page<Post> postPage = postRepository.findByTitleContainingIgnoreCaseOrderByLikeCountDesc(query, pageable);
+
+    // Post 엔티티를 PostListResponseDto로 변환
+    return postPage.map(PostListResponseDto::new);
   }
 }

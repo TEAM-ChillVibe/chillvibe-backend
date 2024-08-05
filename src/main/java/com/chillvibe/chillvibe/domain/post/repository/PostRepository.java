@@ -35,8 +35,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
 //  List<Post> findByIsDeletedFalse();
 
-  // 게시글 검색
-  Page<Post> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+  // 게시글 검색, 좋아요 수에 내림차순으로 가져온다.
+  Page<Post> findByTitleContainingIgnoreCaseOrderByLikeCountDesc(String title, Pageable pageable);
 
   // 검색해서 나온 게시글의 갯수
   long countByTitleContainingIgnoreCase(String title);

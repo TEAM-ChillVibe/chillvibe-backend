@@ -39,7 +39,8 @@ public class SecurityConfig {
       "/api/comments/byPost",
       "/api/comments/byUser",
       "/api/hashtags/**",
-      "/api/posts/**"
+      "/api/posts/**",
+      "/api/tracks/**"
   };
 
 
