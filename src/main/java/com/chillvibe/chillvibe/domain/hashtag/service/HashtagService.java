@@ -124,16 +124,15 @@ public class HashtagService {
    *                 `true`일 경우 총 좋아요 수를 증가시키고, `false`일 경우 감소시킵니다.
    */
   public void adjustHashtagLikes(Long postId, boolean increase) {
-    int likeCount = postLikeRepository.countByPostId(postId);
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
 
     List<Hashtag> hashtagsToUpdate = postHashtags.stream()
         .map(postHashtag -> {
           Hashtag hashtag = postHashtag.getHashtag();
           if (increase) {
-            hashtag.increaseTotalLikes(likeCount);
+            hashtag.increaseTotalLikes();
           } else {
-            hashtag.decreaseTotalLikes(likeCount);
+            hashtag.decreaseTotalLikes();
           }
           return hashtag;
         })
