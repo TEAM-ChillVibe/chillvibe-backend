@@ -53,7 +53,7 @@ public class Post extends BaseTimeEntity {
   private Set<PostHashtag> postHashtag;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "playList_id")
+  @JoinColumn(name = "playlist_id")
   private Playlist playlist;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
