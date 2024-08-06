@@ -1,6 +1,7 @@
 package com.chillvibe.chillvibe.global.jwt.filter;
 
 import com.chillvibe.chillvibe.domain.user.dto.LoginRequestDto;
+import com.chillvibe.chillvibe.domain.user.dto.LoginResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
@@ -9,6 +10,7 @@ import com.chillvibe.chillvibe.global.jwt.dto.CustomUserDetails;
 import com.chillvibe.chillvibe.global.jwt.entity.Refresh;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
 import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -17,6 +19,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -96,7 +100,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
   // 로그인 성공 -> JWT 발급
   @Override
-  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
 
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -115,6 +119,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     response.setHeader("Authorization", "Bearer " + access);
     response.addCookie(createCookie(refresh));
     response.setStatus(HttpStatus.OK.value());
+
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    LoginResponseDto loginResponseDto = new LoginResponseDto(user);
+
+    // ObjectMapper 생성 및 JSON 변환
+    ObjectMapper objectMapper = new ObjectMapper();
+    String responseBody = objectMapper.writeValueAsString(loginResponseDto);
+
+    // 응답 바디에 JSON 작성
+    response.setContentType("application/json");
+    response.getWriter().write(responseBody);
   }
 
   // 로그인 실패 -> 에러 처리
