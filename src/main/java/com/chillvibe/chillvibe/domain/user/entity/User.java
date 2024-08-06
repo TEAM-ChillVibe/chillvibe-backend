@@ -92,4 +92,21 @@ public class User extends BaseTimeEntity {
   public void updatePassword(String newPassword, BCryptPasswordEncoder bCryptPasswordEncoder) {
     this.password = bCryptPasswordEncoder.encode(newPassword);
   }
+
+  public static User createUser(String nickname, String email, String password, String profileUrl, String introduction) {
+    return User.builder()
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .profileUrl(profileUrl)
+            .introduction(introduction)
+            .isPublic(true)
+            .isDelete(false)
+            .build();
+  }
+
+  public void passwordEncode(BCryptPasswordEncoder bCryptPasswordEncoder) {
+    this.password = bCryptPasswordEncoder.encode(this.password);
+  }
+
 }
