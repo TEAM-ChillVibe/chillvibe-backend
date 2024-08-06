@@ -211,11 +211,6 @@ public class PostServiceImpl implements PostService {
    */
   public Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId, Pageable pageable) {
 
-    if("popular".equalsIgnoreCase(sortBy)){
-
-    } else {
-
-    }
     List<PostHashtag> postHashtags = postHashtagRepository.findByHashtagId(hashtagId);
 
     if (postHashtags.isEmpty()) {
@@ -227,7 +222,6 @@ public class PostServiceImpl implements PostService {
         .toList();
 
     Page<Post> posts;
-
     if ("popular".equalsIgnoreCase(sortBy)) {
       posts = postRepository.findAllByIdInOrderByLikeCountDesc(postIds, pageable);
     } else {
