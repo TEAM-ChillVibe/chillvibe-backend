@@ -43,4 +43,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
   // ID 목록에 해당하는 포스트를 페이지네이션하여 조회
   Page<Post> findAllByIdIn(List<Long> ids, Pageable pageable);
+
+  Page<Post> findAllByIdInOrderByLikeCountDesc(List<Long> postIds, Pageable pageable);
+
+  Page<Post> findAllByIdInOrderByCreatedAtDesc(List<Long> postIds, Pageable pageable);
 }
