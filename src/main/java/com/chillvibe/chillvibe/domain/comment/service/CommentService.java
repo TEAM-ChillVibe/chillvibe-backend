@@ -49,14 +49,21 @@ public class CommentService {
 
   // user가 작성한 모든 댓글 조회 (+ 최신순 정렬)
   @Transactional
-  public List<CommentResponseDto> getCommentsByUser(Long userId) {
+  public List<CommentResponseDto> getCommentsByUser() {
+    Long userId = userUtil.getAuthenticatedUserId();
+
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_COMMENT_NOT_FOUND));
 
     List<Comment> comments = commentRepository.findByUserOrderByCreatedAtDesc(user);
 
     return comments.stream()
-        .map(CommentResponseDto::new)
+        .map(comment -> {
+          CommentResponseDto dto = new CommentResponseDto(comment);
+          dto.setPostAuthor(comment.getUser().getNickname());
+          dto.setPostAuthorProfileUrl(comment.getUser().getProfileUrl());
+          return dto;
+        })
         .collect(Collectors.toList());
   }
 
