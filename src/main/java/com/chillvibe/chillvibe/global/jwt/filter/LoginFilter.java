@@ -130,6 +130,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     // 응답 바디에 JSON 작성
     response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
     response.getWriter().write(responseBody);
   }
 
