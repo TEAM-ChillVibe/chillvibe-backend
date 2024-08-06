@@ -144,4 +144,14 @@ public class PostController {
     Page<PostListResponseDto> resultPage = postService.getPostsByHashtagId(hashtagId, pageable);
     return ResponseEntity.ok(resultPage);
   }
+
+  @GetMapping("/search")
+  public ResponseEntity<Page<PostListResponseDto>> getPostsSearchResults(
+      @RequestParam String query,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<PostListResponseDto> resultPage = postService.getPostSearchResults(query, pageable);
+    return ResponseEntity.ok(resultPage);
+  }
 }

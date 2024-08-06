@@ -1,7 +1,6 @@
 package com.chillvibe.chillvibe.domain.user.entity;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
-import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
@@ -22,9 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DialectOverride.Wheres;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Getter
@@ -89,4 +88,25 @@ public class User extends BaseTimeEntity {
 
     return this;
   }
+
+  public void updatePassword(String newPassword, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    this.password = bCryptPasswordEncoder.encode(newPassword);
+  }
+
+  public static User createUser(String nickname, String email, String password, String profileUrl, String introduction) {
+    return User.builder()
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .profileUrl(profileUrl)
+            .introduction(introduction)
+            .isPublic(true)
+            .isDelete(false)
+            .build();
+  }
+
+  public void passwordEncode(BCryptPasswordEncoder bCryptPasswordEncoder) {
+    this.password = bCryptPasswordEncoder.encode(this.password);
+  }
+
 }

@@ -24,15 +24,12 @@ public class SpotifyTokenManager {
     this.spotifyApi = spotifyApi;
   }
 
-  @Scheduled(fixedRate = 3000000) // 토근의 유효기간은 60분으로, 50분마다 재발급
+  @Scheduled(fixedRate = 600000) // 10분마다 토근 재발급
   public synchronized void refreshToken() {
     try {
-      if (Instant.now().isAfter(tokenExpiration)) {
         ClientCredentials credentials = spotifyApi.clientCredentials().build().execute();
         spotifyApi.setAccessToken(credentials.getAccessToken());
-        tokenExpiration = Instant.now().plusSeconds(credentials.getExpiresIn() - 100);
-        log.info("토큰 유효기간 : {}", tokenExpiration);
-      }
+        log.info("Spotify Access Token 발급 완료 (10분 간격으로 발급됩니다.)");
     } catch (SpotifyWebApiException | IOException | ParseException e) {
       throw new ApiException(ErrorCode.SPOTIFY_TOKEN_REFRESH_ERROR);
     }
@@ -43,7 +40,6 @@ public class SpotifyTokenManager {
   public void initialize() {
       try {
         refreshToken();
-        log.info("Spotify Access Token 발급 완료");
       } catch (ApiException e) {
         throw new ApiException(ErrorCode.SPOTIFY_TOKEN_INITIALIZATION_ERROR);
       }

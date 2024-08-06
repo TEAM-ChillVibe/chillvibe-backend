@@ -3,9 +3,7 @@ package com.chillvibe.chillvibe.domain.post.service;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
-import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
-import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
@@ -27,7 +25,6 @@ import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +40,6 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final PlaylistRepository playlistRepository;
   private final PostHashtagRepository postHashtagRepository;
-  private final HashtagRepository hashtagRepository;
   private final HashtagService hashtagService;
   private final UserRepository userRepository;
   private final PlaylistMapper playlistMapper;
@@ -71,22 +67,15 @@ public class PostServiceImpl implements PostService {
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
     User user = post.getUser();
-    Set<PostHashtag> postHashtags = post.getPostHashtag();
     Playlist playlist = post.getPlaylist();
     List<Comment> comments = post.getComments();
 
-    UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(user, postHashtags.stream()
-        .map(PostHashtag::getHashtag)
-        .collect(Collectors.toList()));
+    List<HashtagResponseDto> hashtagResponseDtos = hashtagService.getHashtagsOfPost(postId);
 
-    List<HashtagResponseDto> hashtagResponseDtos = postHashtags.stream()
-        .map(posHashTag -> {
-          Hashtag hashtag = posHashTag.getHashtag();
-          return new HashtagResponseDto(hashtag.getId(), hashtag.getName(), hashtag.getTotalLikes());
-        })
-        .collect(Collectors.toList());
+    UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(user, hashtagResponseDtos);
 
-    List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(playlist.getTracks());
+    List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(
+        playlist.getTracks());
 
     PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistDto(playlist);
     playlistResponseDto.setTracks(playlistTrackResponseDtos);
@@ -95,7 +84,8 @@ public class PostServiceImpl implements PostService {
         .map(CommentResponseDto::new)
         .collect(Collectors.toList());
 
-    return new PostDetailResponseDto(post, userInfoResponseDto, playlistResponseDto, hashtagResponseDtos, commentResponseDtos);
+    return new PostDetailResponseDto(post, userInfoResponseDto, playlistResponseDto,
+        hashtagResponseDtos, commentResponseDtos);
   }
 
   // 사용자 ID로 게시글 목록 조회 (isPublic)
@@ -119,14 +109,14 @@ public class PostServiceImpl implements PostService {
   public void deletePost(Long postId) {
     // 삭제하려는 유저 정보를 가져온다.
     Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null){
+    if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
     // 해당 유저가 게시글 작성자가 아닐 경우, 에러 메세지를 발생시킨다.
-    if (!post.getUser().getId().equals(currentUserId)){
+    if (!post.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
@@ -183,7 +173,7 @@ public class PostServiceImpl implements PostService {
   public Long updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto) {
     // 유저 찾기.
     Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null){
+    if (currentUserId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
@@ -199,22 +189,14 @@ public class PostServiceImpl implements PostService {
     post.setTitle(postUpdateRequestDto.getTitle());
     post.setDescription(postUpdateRequestDto.getDescription());
 
-
     // 기존 해시태그 관계 모두 제거
     post.getPostHashtag().clear();
 
-    List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
-    if (hashtagIds != null && !hashtagIds.isEmpty()) {
-      List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
-      List<PostHashtag> newPostHashtags = hashtags.stream()
-          .map(hashtag -> new PostHashtag(post, hashtag))
-          .toList();
-
-      // 새로운 PostHashtag 관계 추가
-      post.getPostHashtag().addAll(newPostHashtags);
-    }
-
     postRepository.save(post);
+
+    List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
+    hashtagService.updateHashtagsOfPost(post.getId(), hashtagIds);
+
     return post.getId();
   }
 
@@ -241,5 +223,14 @@ public class PostServiceImpl implements PostService {
     Page<Post> posts = postRepository.findAllByIdIn(postIds, pageable);
 
     return posts.map(PostListResponseDto::new);
+  }
+
+  public Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable){
+
+    // 제목에 검색어가 포함된 게시글을 대소문자 구분 없이 검색
+    Page<Post> postPage = postRepository.findByTitleContainingIgnoreCaseOrderByLikeCountDesc(query, pageable);
+
+    // Post 엔티티를 PostListResponseDto로 변환
+    return postPage.map(PostListResponseDto::new);
   }
 }
