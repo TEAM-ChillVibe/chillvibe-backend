@@ -44,7 +44,8 @@ public interface PostService {
   // 게시글 삭제
   void deletePost(Long postId);
 
-  Page<PostListResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable);
+  // 해시태그별로 게시글 가져오기
+  Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId, Pageable pageable);
 
   // 게시글 검색 (좋아요 순으로 내림차순)
   Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable);

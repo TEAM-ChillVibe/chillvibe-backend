@@ -137,11 +137,12 @@ public class PostController {
    */
   @GetMapping("/hashtags")
   public ResponseEntity<Page<PostListResponseDto>> getPostsByHashtagId(
+      @RequestParam(defaultValue = "latest") String sortBy,
       @RequestParam Long hashtagId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Page<PostListResponseDto> resultPage = postService.getPostsByHashtagId(hashtagId, pageable);
+    Page<PostListResponseDto> resultPage = postService.getPostsByHashtagId(sortBy, hashtagId, pageable);
     return ResponseEntity.ok(resultPage);
   }
 

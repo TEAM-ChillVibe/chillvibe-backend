@@ -209,7 +209,13 @@ public class PostServiceImpl implements PostService {
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 페이지 객체, 각 포스트는 {PostRequestDto}로 변환됨
    * @exception ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
    */
-  public Page<PostListResponseDto> getPostsByHashtagId(Long hashtagId, Pageable pageable) {
+  public Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId, Pageable pageable) {
+
+    if("popular".equalsIgnoreCase(sortBy)){
+
+    } else {
+
+    }
     List<PostHashtag> postHashtags = postHashtagRepository.findByHashtagId(hashtagId);
 
     if (postHashtags.isEmpty()) {
@@ -220,7 +226,13 @@ public class PostServiceImpl implements PostService {
         .map(postHashtag -> postHashtag.getPost().getId())
         .toList();
 
-    Page<Post> posts = postRepository.findAllByIdIn(postIds, pageable);
+    Page<Post> posts;
+
+    if ("popular".equalsIgnoreCase(sortBy)) {
+      posts = postRepository.findAllByIdInOrderByLikeCountDesc(postIds, pageable);
+    } else {
+      posts = postRepository.findAllByIdInOrderByCreatedAtDesc(postIds, pageable);
+    }
 
     return posts.map(PostListResponseDto::new);
   }
