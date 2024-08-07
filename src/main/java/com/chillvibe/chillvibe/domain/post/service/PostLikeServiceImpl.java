@@ -10,6 +10,7 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +85,11 @@ public class PostLikeServiceImpl implements PostLikeService {
 
     // 해시태그 누적 좋아요 수 변경
     hashtagService.adjustHashtagLikes(postId, true);
+  }
+
+  @Transactional(readOnly = true)
+  public List<Long> getLikedPostIdsByUser(Long userId) {
+    return postLikeRepository.findPostIdsByUserId(userId);
   }
 
   // 좋아요 수 반환
