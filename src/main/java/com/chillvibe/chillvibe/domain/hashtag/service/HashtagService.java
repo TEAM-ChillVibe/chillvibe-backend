@@ -89,7 +89,7 @@ public class HashtagService {
   public List<HashtagResponseDto> getHashtagsOfPost(Long postId) {
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
     if (postHashtags.isEmpty()) {
-      throw new ApiException(ErrorCode.POST_HASHTAG_NOT_FOUND);
+      return Collections.emptyList();
     }
     return postHashtags.stream()
         .map(postHashtag -> postHashtag.getHashtag().toDto())
@@ -106,7 +106,7 @@ public class HashtagService {
   public List<HashtagResponseDto> getHashtagsOfUser(Long userId) {
     List<UserHashtag> userHashtags = userHashtagRepository.findByUserId(userId);
     if (userHashtags.isEmpty()) {
-      throw new ApiException(ErrorCode.USER_HASHTAG_NOT_FOUND);
+      return Collections.emptyList();
     }
     return userHashtags.stream()
         .map(userHashtag -> userHashtag.getHashtag().toDto())
