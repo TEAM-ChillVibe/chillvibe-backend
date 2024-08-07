@@ -38,5 +38,4 @@ public class CommentResponseDto {
     this.postAuthorProfileUrl = comment.getPost().getUser().getProfileUrl();
     this.postTitleImageUrl = comment.getPost().getPostTitleImageUrl();
   }
-
 }
