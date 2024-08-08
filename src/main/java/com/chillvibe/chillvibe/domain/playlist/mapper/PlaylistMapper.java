@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 @Mapper(componentModel = "spring")
 public interface PlaylistMapper {
   // Playlist -> PlaylistResponseDto
+  @Mapping(target = "trackCount", expression = "java(playlist.getTracks().size())")
   PlaylistResponseDto playlistToPlaylistResponseDto(Playlist playlist);
 
   // Playlist -> PlaylistSelectDto
