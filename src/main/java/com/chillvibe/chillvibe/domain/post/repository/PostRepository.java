@@ -1,6 +1,5 @@
 package com.chillvibe.chillvibe.domain.post.repository;
 
-import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -12,9 +11,9 @@ import org.springframework.stereotype.Repository;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
   //  //특정 포스트 조회
-//  List<Post> findByPostAndIsDeletedFalse(Post post);
+//  List<Post> findByPostAndDeletedFalse(Post post);
 //  // 포스트 id로 조회
-//  Post findByPostIdAndIsDeletedFalse(Long id);
+//  Post findByPostIdAndDeletedFalse(Long id);
 
 //  // 특정 user로 포스트 조회
 //  Page<Post> findByUserIdAndIsDeletedFalse(Long Userid, Pageable pageable);
@@ -26,13 +25,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //  Page<Post> getByUserId(Long user_Id, Pageable pageable);
 
   // userId를 통해, 게시글을 페이지 형태로 가져온다.
-  Page<Post> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
+  Page<Post> findByUserId(Long userId, Pageable pageable);
 
   // 인기순 내림차순
-  Page<Post> findByIsDeletedFalseOrderByLikeCountDesc(Pageable pageable);
+  Page<Post> findByOrderByLikeCountDesc(Pageable pageable);
 
   // 생성일 내림차순
-  Page<Post> findByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
+  Page<Post> findByOrderByCreatedAtDesc(Pageable pageable);
 //  List<Post> findByIsDeletedFalse();
 
   // 게시글 검색, 좋아요 수에 내림차순으로 가져온다.
