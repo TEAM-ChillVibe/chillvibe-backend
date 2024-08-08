@@ -1,6 +1,5 @@
 package com.chillvibe.chillvibe.domain.spotify.service;
 
-import com.chillvibe.chillvibe.domain.spotify.dto.SpotifySearchResult;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;

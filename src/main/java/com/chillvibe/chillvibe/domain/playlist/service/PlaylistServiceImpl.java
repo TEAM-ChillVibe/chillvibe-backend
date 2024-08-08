@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,7 +125,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
-  public Page<Playlist> getUserPlaylists(int page, int size) {
+  public Page<PlaylistSimpleResponseDto> getMyPlaylists(int page, int size) {
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
@@ -134,8 +135,11 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }
 
-    Pageable pageable = PageRequest.of(page, size);
-    return playlistRepository.findByUserId(userId, pageable);
+    // 가장 먼저 만든 게시글이 앞으로 나와야 한다.
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    Page<Playlist> playlistPages = playlistRepository.findByUserId(userId, pageable);
+
+    return playlistMapper.playlistPageToPlaylistSimpleResponseDtoPage(playlistPages);
   }
 
   @Override
@@ -155,18 +159,13 @@ public class PlaylistServiceImpl implements PlaylistService {
     List<PlaylistTrack> tracks = playlistTrackRepository.findByPlaylistId(playlistId);
     List<PlaylistTrackResponseDto> trackDtos = playlistTrackMapper.toDtoList(tracks);
 
-    List<String> thumbnailUrls = tracks.stream()
-        .map(PlaylistTrack::getThumbnailUrl)
-        .limit(4)
-        .toList();
-
     return PlaylistEditPageResponseDto.builder()
-        .playlistName(playlist.getTitle())
+        .title(playlist.getTitle())
         .trackCount(tracks.size())
         .createdAt(playlist.getCreatedAt())
         .modifiedAt(playlist.getModifiedAt())
         .tracks(trackDtos)
-        .imageUrl(playlist.getImageUrl())
+        .thumbnailUrl(playlist.getThumbnailUrl())
         .build();
 
   }
@@ -251,11 +250,11 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    return new PlaylistSimpleResponseDto(playlist);
+    return playlistMapper.playlistToPlaylistSimpleResponseDto(playlist);
   }
 
 
-  // 썸네일 업데이트.
+  // 썸네일 업데이트를 진행하는 코드.
   @Transactional
   public void updatePlaylistThumbnail(Long playlistId) {
     Playlist playlist = playlistRepository.findById(playlistId)

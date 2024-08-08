@@ -12,7 +12,7 @@ public class PlaylistResponseDto {
 
   private Long id;
   private String title;
-  private String imageUrl;
+  private String thumbnailUrl;
   private int trackCount;
   private List<PlaylistTrackResponseDto> tracks;
 }

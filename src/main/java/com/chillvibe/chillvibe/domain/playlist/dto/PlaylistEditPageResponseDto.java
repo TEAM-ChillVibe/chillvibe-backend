@@ -10,11 +10,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PlaylistEditPageResponseDto {
-
-  private String playlistName;
+  private String title;
   private int trackCount;
   private LocalDateTime createdAt;
   private LocalDateTime modifiedAt;
-  private String imageUrl;
+  private String thumbnailUrl;
   private List<PlaylistTrackResponseDto> tracks;
 }
