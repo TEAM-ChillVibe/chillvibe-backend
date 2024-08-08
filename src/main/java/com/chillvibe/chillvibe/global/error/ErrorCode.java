@@ -60,7 +60,8 @@ public enum ErrorCode {
   PASSWORDS_DO_NOT_MATCH(400, "U005", "Password do not match", LogLevel.ERROR),
 
   // SECURE
-  UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN),
+  UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN)
+  ;
 
 
   private final String code;
