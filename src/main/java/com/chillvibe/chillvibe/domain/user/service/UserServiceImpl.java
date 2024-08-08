@@ -3,6 +3,7 @@ package com.chillvibe.chillvibe.domain.user.service;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.user.dto.JoinRequestDto;
+import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
@@ -15,6 +16,7 @@ import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -104,24 +106,6 @@ public class UserServiceImpl implements UserService {
       throw new ApiException(ErrorCode.INVALID_TYPE_VALUE);
     }
 
-    String oldPassword = parsedUserUpdateDto.getOldPassword();
-    String newPassword = parsedUserUpdateDto.getNewPassword();
-    String confirmNewPassword = parsedUserUpdateDto.getConfirmNewPassword();
-
-    if (!isBlank(oldPassword) && !isBlank(newPassword) && !isBlank(confirmNewPassword)) {
-      // 기존 비밀번호 확인
-      if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
-        throw new ApiException(ErrorCode.INVALID_PASSWORD);
-      }
-
-      // 새 비밀번호와 확인 비밀번호가 일치하는지 확인
-      if (!newPassword.equals(confirmNewPassword)) {
-        throw new ApiException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
-      }
-
-      user.updatePassword(newPassword, bCryptPasswordEncoder);
-    }
-
     // imageUrl 기존 url로 초기화
     String imageUrl = user.getProfileUrl();
 
@@ -142,6 +126,38 @@ public class UserServiceImpl implements UserService {
     User updatedUser = user.updateUser(parsedUserUpdateDto, imageUrl);
 
     userRepository.save(updatedUser);
+  }
+
+  public void updatePassword(PasswordUpdateRequestDto passwordUpdateRequestDto) {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    String oldPassword = passwordUpdateRequestDto.getOldPassword();
+    String newPassword = passwordUpdateRequestDto.getNewPassword();
+    String confirmPassword = passwordUpdateRequestDto.getConfirmPassword();
+
+    // 비밀번호 값이 모두 존재하는지 확인 (null이 아니고 공백이 아닌지 확인)
+    if (StringUtils.isBlank(oldPassword) || StringUtils.isBlank(newPassword) || StringUtils.isBlank(confirmPassword)) {
+      throw new ApiException(ErrorCode.INVALID_INPUT_VALUE); // INVALID_INPUT_VALUE 오류 코드 추가
+    }
+
+    // 기존 비밀번호 확인
+    if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+      throw new ApiException(ErrorCode.INVALID_PASSWORD);
+    }
+
+    // 새 비밀번호와 확인 비밀번호가 일치하는지 확인
+    if (!newPassword.equals(confirmPassword)) {
+      throw new ApiException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+    }
+
+    // 비밀번호 업데이트
+    user.updatePassword(newPassword, bCryptPasswordEncoder);
+
+    // 사용자 정보 저장
+    userRepository.save(user);
   }
 
   @Transactional
