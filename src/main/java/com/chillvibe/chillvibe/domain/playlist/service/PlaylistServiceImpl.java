@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.playlist.service;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
@@ -233,6 +234,24 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     // 트랙 삭제 후 항상 썸네일 업데이트
     updatePlaylistThumbnail(playlistId);
+  }
+
+  // PostID로 해당 플레이리스트 찾아서 반환
+  public PlaylistSimpleResponseDto getPlaylistByPostId(Long postId){
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null){
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+
+    Playlist playlist = playlistRepository.findByPostsId(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    // 게시글 작성자 확인
+    if (!playlist.getUser().getId().equals(currentUserId)) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    return new PlaylistSimpleResponseDto(playlist);
   }
 
 

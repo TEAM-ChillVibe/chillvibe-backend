@@ -4,12 +4,14 @@ import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/playlists")
+@Slf4j
 public class PlaylistController {
 
   private final PlaylistService playlistService;
@@ -81,5 +84,12 @@ public class PlaylistController {
   public ResponseEntity<Void> removeTracksFromPlaylist(@PathVariable Long playlistId, @RequestBody List<Long> trackIds) {
     playlistService.removeTracksFromPlaylist(playlistId, trackIds);
     return ResponseEntity.noContent().build();
+  }
+
+  // postId를 통해 플레이리스트 가져오기.
+  @GetMapping("/post/{postId}")
+  public ResponseEntity<PlaylistSimpleResponseDto> getPlaylistByPostId(@PathVariable Long postId) {
+    PlaylistSimpleResponseDto playlist = playlistService.getPlaylistByPostId(postId);
+    return ResponseEntity.ok(playlist);
   }
 }

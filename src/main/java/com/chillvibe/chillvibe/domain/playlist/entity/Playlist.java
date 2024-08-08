@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.entity;
 
+import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
@@ -13,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,7 +46,11 @@ public class Playlist extends BaseTimeEntity {
 
   // Playlist가 삭제되면, 연관된 모든 PlaylistTrack 엔티티들도 삭제
   @OneToMany(mappedBy = "playlist", cascade =  CascadeType.ALL, orphanRemoval = true)
-  private List<PlaylistTrack> tracks;
+  private List<PlaylistTrack> tracks = new ArrayList<>();
+
+  // 우선, 플레이리스트가 삭제되면, 해당 플레이리스트가 올라간 모든 글이 삭제된다.
+  @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Post> posts = new ArrayList<>();
 
   public void updateImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;

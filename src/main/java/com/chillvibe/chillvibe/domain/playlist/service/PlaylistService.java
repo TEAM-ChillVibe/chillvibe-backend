@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.playlist.service;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
@@ -24,5 +25,6 @@ public interface PlaylistService {
   void deletePlaylist(Long playlistId);
   // 플레이리스트에서 선택한 트랙들 삭제하기
   void removeTracksFromPlaylist(Long playlistId, List<Long> trackIds);
-
+  // PostId로 해당 게시글에 있는 플레이리스트 찾기
+  PlaylistSimpleResponseDto getPlaylistByPostId(Long PostId);
 }

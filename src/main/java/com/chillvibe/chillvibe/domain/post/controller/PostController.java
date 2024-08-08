@@ -1,5 +1,7 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
+import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
@@ -33,7 +35,7 @@ public class PostController {
 
   private final PostLikeService postLikeService;
   private final PostService postService;
-  private final S3Uploader s3Uploader;
+  private final PlaylistService playlistService;
   private final UserUtil userUtil;
 
 
@@ -150,13 +152,4 @@ public class PostController {
     return ResponseEntity.ok(resultPage);
   }
 
-//  @GetMapping("/{postId}/playlist")
-//  public ResponseEntity<Playlist> getPlaylistByPostId(@PathVariable Long postId) {
-//    Playlist playlist = playlistService.getPlaylistByPostId(postId);
-//    if (playlist != null) {
-//      return ResponseEntity.ok(playlist);
-//    } else {
-//      return ResponseEntity.notFound().build();
-//    }
-//  }
 }
