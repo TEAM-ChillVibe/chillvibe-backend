@@ -52,22 +52,15 @@ VALUES (1, 1),
 
 
 -- playlist
-INSERT INTO playlist (title, image_url, user_id)
+INSERT INTO playlist (title, thumbnail_url, user_id)
 VALUES ('Chill Vibes', 'http://example.com/image1', 1);
-
--- INSERT INTO playlist (title, image_url, user_id)
--- VALUES ('Chill Vibes2', 'http://example.com/image2', 1);
---
--- INSERT INTO playlist (title, image_url, user_id)
--- VALUES ('Chill Vibes3', 'http://example.com/image2', 1);
-
-INSERT INTO playlist (title, image_url, user_id)
+INSERT INTO playlist (title, thumbnail_url, user_id)
 VALUES ('Workout Hits', 'http://example.com/image2', 2);
-INSERT INTO playlist (title, image_url, user_id)
+INSERT INTO playlist (title, thumbnail_url, user_id)
 VALUES ('Relaxing Tunes', 'http://example.com/image3', 3);
-INSERT INTO playlist (title, image_url, user_id)
+INSERT INTO playlist (title, thumbnail_url, user_id)
 VALUES ('Party Mix', 'http://example.com/image4', 4);
-INSERT INTO playlist (title, image_url, user_id)
+INSERT INTO playlist (title, thumbnail_url, user_id)
 VALUES ('Study Beats', 'http://example.com/image5', 5);
 
 

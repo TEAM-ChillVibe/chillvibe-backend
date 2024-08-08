@@ -14,7 +14,7 @@ public interface PlaylistService {
   // 모달창 - 플레이리스트들 출력
   List<PlaylistSelectDto> getUserPlaylistsForSelection();
   // 마이 페이지 - 플레이리스트들 조회 (10개 단위 페이지네이션)
-  Page<Playlist> getUserPlaylists(int page, int size);
+  Page<PlaylistSimpleResponseDto> getMyPlaylists(int page, int size);
   // 플레이리스트 수정(상세) 페이지 조회
   PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId);
   // 빈 플레이리스트 생성

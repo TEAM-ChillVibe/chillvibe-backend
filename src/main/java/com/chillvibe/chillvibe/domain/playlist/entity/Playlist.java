@@ -37,22 +37,24 @@ public class Playlist extends BaseTimeEntity {
   @Column(nullable = false)
   private String title;
 
-  @Column(name = "image_url", nullable = true)
-  private String imageUrl;
+  // 처음 빈 플레이리스트를 생성할 때, 기본 이미지를 가져옵니다.
+  private String thumbnailUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 
   // Playlist가 삭제되면, 연관된 모든 PlaylistTrack 엔티티들도 삭제
+  @Builder.Default
   @OneToMany(mappedBy = "playlist", cascade =  CascadeType.ALL, orphanRemoval = true)
   private List<PlaylistTrack> tracks = new ArrayList<>();
 
   // 우선, 플레이리스트가 삭제되면, 해당 플레이리스트가 올라간 모든 글이 삭제된다.
+  @Builder.Default
   @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Post> posts = new ArrayList<>();
 
-  public void updateImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
+  public void updateImageUrl(String thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
   }
 }

@@ -59,10 +59,13 @@ public class PlaylistController {
 
 
   // 마이 페이지 - 플레이리스트들 조회 (10개 단위 페이지네이션)
+  // 최신 게시글이 맨 앞에 나와야 한다.
   @GetMapping("/my")
-  public ResponseEntity<Page<PlaylistResponseDto>> getMyPlaylists(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size) {
-    Page<Playlist> playlists = playlistService.getUserPlaylists(page,size);
-    return ResponseEntity.ok(playlistMapper.playlistPageToPlaylistDtoPage(playlists));
+  public ResponseEntity<Page<PlaylistSimpleResponseDto>> getMyPlaylists(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    Page<PlaylistSimpleResponseDto> playlists = playlistService.getMyPlaylists(page,size);
+    return ResponseEntity.ok(playlists);
   }
 
   // 플레이리스트 제거

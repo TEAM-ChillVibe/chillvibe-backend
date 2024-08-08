@@ -14,5 +14,4 @@ public class PlaylistSelectDto {
 
   private Long id;
   private String title;
-  private int trackCount; // 트랙 수 추가
 }
