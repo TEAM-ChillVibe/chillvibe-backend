@@ -194,21 +194,27 @@ VALUES (1, 1),
 
 -- Comment
 INSERT INTO comment(content, user_id, post_id, created_at, modified_at)
-VALUES ("comment1", 1, 1, NOW(), NOW()),
-       ("comment2", 2, 1, NOW(), NOW()),
-       ("comment3", 3, 1, NOW(), NOW()),
-       ("comment4", 4, 1, NOW(), NOW()),
-       ("comment5", 5, 1, NOW(), NOW()),
-       ("comment1", 1, 2, NOW(), NOW()),
-       ("comment2", 2, 2, NOW(), NOW()),
-       ("comment3", 3, 2, NOW(), NOW()),
-       ("comment4", 4, 2, NOW(), NOW()),
-       ("comment5", 5, 2, NOW(), NOW()),
-       ("comment1", 1, 3, NOW(), NOW()),
-       ("comment2", 2, 3, NOW(), NOW()),
-       ("comment3", 3, 3, NOW(), NOW()),
-       ("comment4", 4, 3, NOW(), NOW()),
-       ("comment5", 5, 3, NOW(), NOW());
+VALUES ("첫번째 게시글의 댓글1입니다.", 1, 1, NOW(), NOW()),
+       ("첫번째 게시글의 댓글2입니다.", 2, 1, NOW(), NOW()),
+       ("첫번째 게시글의 댓글3입니다.", 3, 1, NOW(), NOW()),
+       ("첫번째 게시글의 댓글4입니다.", 4, 1, NOW(), NOW()),
+       ("첫번째 게시글의 댓글5입니다.", 5, 1, NOW(), NOW()),
+       ("두번째 게시글의 댓글1입니다.", 1, 2, NOW(), NOW()),
+       ("두번째 게시글의 댓글2입니다.", 2, 2, NOW(), NOW()),
+       ("두번째 게시글의 댓글3입니다.", 3, 2, NOW(), NOW()),
+       ("두번째 게시글의 댓글4입니다.", 4, 2, NOW(), NOW()),
+       ("두번째 게시글의 댓글5입니다.", 5, 2, NOW(), NOW()),
+       ("세번째 게시글의 댓글1입니다.", 1, 3, NOW(), NOW()),
+       ("세번째 게시글의 댓글2입니다.", 2, 3, NOW(), NOW()),
+       ("세번째 게시글의 댓글3입니다.", 3, 3, NOW(), NOW()),
+       ("세번째 게시글의 댓글4입니다.", 4, 3, NOW(), NOW()),
+       ("세번째 게시글의 댓글5입니다.", 5, 3, NOW(), NOW()),
+       ("네번째 게시글의 댓글1입니다.", 1, 4, NOW(), NOW()),
+       ("네번째 게시글의 댓글2입니다.", 2, 4, NOW(), NOW()),
+       ("네번째 게시글의 댓글3입니다.", 3, 4, NOW(), NOW()),
+       ("다섯번째 게시글의 댓글1입니다.", 1, 5, NOW(), NOW()),
+       ("다섯번째 게시글의 댓글2입니다.", 2, 5, NOW(), NOW()),
+       ("다섯번째 게시글의 댓글3입니다.", 3, 5, NOW(), NOW());
 
 -- POSTLIKE
 INSERT INTO post_like (user_id, post_id, created_at, modified_at)
