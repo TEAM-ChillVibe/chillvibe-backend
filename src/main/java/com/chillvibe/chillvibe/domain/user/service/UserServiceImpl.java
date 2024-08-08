@@ -3,7 +3,9 @@ package com.chillvibe.chillvibe.domain.user.service;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.user.dto.JoinRequestDto;
+import com.chillvibe.chillvibe.domain.user.dto.LoginResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
+import com.chillvibe.chillvibe.domain.user.dto.ReAuthResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
@@ -219,6 +221,15 @@ public class UserServiceImpl implements UserService {
   public User getUserById(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+  }
+
+  public ReAuthResponseDto doReAuth() {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    return new ReAuthResponseDto(user);
   }
 
   private void performLogout(HttpServletRequest request, HttpServletResponse response) {

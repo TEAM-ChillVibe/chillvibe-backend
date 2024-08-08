@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.user.controller;
 
 import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
+import com.chillvibe.chillvibe.domain.user.dto.ReAuthResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.service.UserService;
@@ -68,5 +69,11 @@ public class UserController {
   public ResponseEntity<UserInfoResponseDto> getUserInfo(@RequestParam Long userId) {
     UserInfoResponseDto userInfo = userService.getUserInfo(userId);
     return ResponseEntity.ok(userInfo);
+  }
+
+  @GetMapping("/reauth")
+  public ResponseEntity<ReAuthResponseDto> doReAuth() {
+    ReAuthResponseDto reAuthResponseDto = userService.doReAuth();
+    return ResponseEntity.ok(reAuthResponseDto);
   }
 }
