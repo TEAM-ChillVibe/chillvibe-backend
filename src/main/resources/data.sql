@@ -120,17 +120,13 @@ VALUES (1, '0qsv5I5fEnRoX2Enb3mBNr', 'V (Peace) (feat. AKMU)', 'Zion.T', '02:28'
 
 
 -- POST
-INSERT INTO post (title, description, post_title_image_url, like_count, is_deleted, created_at,
-                  modified_at, playlist_id, user_id)
-VALUES ('첫 번째 게시글 제목', '첫 번째 게시글 설명', 'https://via.placeholder.com/150', 10, FALSE, NOW(), NOW(), 1,
-        1),
-       ('두 번째 게시글 제목', '두 번째 게시글 설명', 'https://via.placeholder.com/150', 5, FALSE, NOW(), NOW(), 1,
-        2),
-       ('세 번째 게시글 제목', '세 번째 게시글 설명', 'https://via.placeholder.com/150', 20, FALSE, NOW(), NOW(), 2,
-        3),
-       ('네 번째 게시글 제목', '네 번째 게시글 설명', NULL, 15, FALSE, NOW(), NOW(), 2, 4),
-       ('다섯 번째 게시글 제목', '다섯 번째 게시글 설명', 'https://via.placeholder.com/150', 25, FALSE, NOW(), NOW(),
-        3, 5);
+INSERT INTO post (title, description, post_title_image_url, like_count, created_at, modified_at, playlist_id, user_id)
+VALUES
+('첫 번째 게시글 제목', '첫 번째 게시글 설명', 'https://via.placeholder.com/150', 10, NOW(), NOW(), 1, 1),
+('두 번째 게시글 제목', '두 번째 게시글 설명', 'https://via.placeholder.com/150', 5, NOW(), NOW(), 1, 2),
+('세 번째 게시글 제목', '세 번째 게시글 설명', 'https://via.placeholder.com/150', 20, NOW(), NOW(), 2, 3),
+('네 번째 게시글 제목', '네 번째 게시글 설명', NULL, 15, NOW(), NOW(), 2, 4),
+('다섯 번째 게시글 제목', '다섯 번째 게시글 설명', 'https://via.placeholder.com/150', 25, NOW(), NOW(), 3, 5);
 
 -- post_hashtag
 INSERT INTO post_hashtag (post_id, hashtag_id)

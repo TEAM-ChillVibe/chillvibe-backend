@@ -52,9 +52,9 @@ public class PostServiceImpl implements PostService {
     Page<Post> postPage;
 
     if ("popular".equalsIgnoreCase(sortBy)) {
-      postPage = postRepository.findByIsDeletedFalseOrderByLikeCountDesc(pageRequest);
+      postPage = postRepository.findByOrderByLikeCountDesc(pageRequest);
     } else {
-      postPage = postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageRequest);
+      postPage = postRepository.findByOrderByCreatedAtDesc(pageRequest);
     }
 
     return postPage.map(PostListResponseDto::new);
@@ -99,7 +99,7 @@ public class PostServiceImpl implements PostService {
       return Page.empty(pageable);
     }
 
-    Page<Post> postPage = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
+    Page<Post> postPage = postRepository.findByUserId(userId, pageable);
 
     return postPage.map(PostListResponseDto::new);
   }
@@ -120,9 +120,8 @@ public class PostServiceImpl implements PostService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    // Soft Delete로 구현.
-    post.setDeleted(true);
-    postRepository.save(post);
+    // Hard Delete로 변경 구현.
+    postRepository.delete(post);
   }
 
   /**
@@ -157,7 +156,6 @@ public class PostServiceImpl implements PostService {
     post.setPostTitleImageUrl("default image");
     post.setUser(user);
     post.setPlaylist(playlist);
-    post.setDeleted(false);
     post.setLikeCount(0);
 
     Post savedPost = postRepository.save(post);

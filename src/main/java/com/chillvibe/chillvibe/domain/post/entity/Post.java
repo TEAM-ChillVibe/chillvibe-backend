@@ -32,8 +32,6 @@ import org.hibernate.annotations.Where;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE post_id = ?")
-@Where(clause = "is_deleted = false")
 @Table(name = "post")
 @Entity
 public class Post extends BaseTimeEntity {
@@ -71,6 +69,4 @@ public class Post extends BaseTimeEntity {
   @ColumnDefault("0")
   @Column(name = "likeCount", nullable = true)
   private Integer likeCount;
-
-  private boolean isDeleted;
 }
