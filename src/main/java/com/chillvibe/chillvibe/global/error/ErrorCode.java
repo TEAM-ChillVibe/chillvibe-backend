@@ -34,6 +34,8 @@ public enum ErrorCode {
 
   // PLAYLIST
   PLAYLIST_NOT_FOUND(404, "PL001", "Playlist not found", LogLevel.ERROR),
+  THUMBNAIL_GENERATION_FAILED(500, "PL002", "Failed to generate thumbnail for playlist", LogLevel.ERROR),
+  THUMBNAIL_UPDATE_FAILED(500, "PL003", "Failed to update thumbnail for playlist", LogLevel.ERROR),
 
   // POST
   POST_NOT_FOUND(404, "p001", "Post not found", LogLevel.ERROR),
@@ -60,7 +62,6 @@ public enum ErrorCode {
   // SECURE
   UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN),
 
-  ;
 
   private final String code;
   private final String message;

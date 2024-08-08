@@ -35,7 +35,7 @@ public class Playlist extends BaseTimeEntity {
   @Column(nullable = false)
   private String title;
 
-  @Column(name = "image_url", nullable = false)
+  @Column(name = "image_url", nullable = true)
   private String imageUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -46,4 +46,7 @@ public class Playlist extends BaseTimeEntity {
   @OneToMany(mappedBy = "playlist", cascade =  CascadeType.ALL, orphanRemoval = true)
   private List<PlaylistTrack> tracks;
 
+  public void updateImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 }

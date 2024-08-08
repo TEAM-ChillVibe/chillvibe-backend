@@ -12,10 +12,14 @@ import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistTrackRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
+import com.chillvibe.chillvibe.global.common.ThumbnailGenerator;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,23 +35,22 @@ public class PlaylistServiceImpl implements PlaylistService {
   private final PlaylistMapper playlistMapper;
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserRepository userRepository;
+  private final ThumbnailGenerator thumbnailGenerator;
   private final UserUtil userUtil;
-
-  // 플레이리스트 기본 이미지 입니다.
-  @Value("${playlist.default.image.url}")
-  private String defaultImageUrl;
 
   public PlaylistServiceImpl(PlaylistRepository playlistRepository,
       PlaylistTrackRepository playlistTrackRepository,
       PlaylistMapper playlistMapper,
       PlaylistTrackMapper playlistTrackMapper,
       UserRepository userRepository,
+      ThumbnailGenerator thumbnailGenerator,
       UserUtil userUtil) {
     this.playlistRepository = playlistRepository;
     this.playlistTrackRepository = playlistTrackRepository;
     this.playlistMapper = playlistMapper;
     this.playlistTrackMapper = playlistTrackMapper;
     this.userRepository = userRepository;
+    this.thumbnailGenerator = thumbnailGenerator;
     this.userUtil = userUtil;
   }
 
@@ -68,7 +71,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   // 로그인 한 유저가 빈 플레이리스트를 생성한다.
   @Override
   @Transactional
-  public Playlist createEmptyPlaylist(String title) {
+  public Playlist createEmptyPlaylist(String title){
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED); // 인증된 유저가 아닙니다.
@@ -81,10 +84,23 @@ public class PlaylistServiceImpl implements PlaylistService {
     Playlist playlist = Playlist.builder()
         .title(title)
         .user(user)
-        .imageUrl(defaultImageUrl) // 이미지 호스팅 사이트에 업로드하고 가져왔습니다.
         .build();
 
-    return playlistRepository.save(playlist);
+    playlist = playlistRepository.save(playlist);
+
+    // 기본 이미지 설정
+    try {
+      String thumbnailUrl = thumbnailGenerator.generateAndUploadThumbnail(
+          Collections.emptyList(), "playlists", playlist.getId());
+      playlist.updateImageUrl(thumbnailUrl);
+    } catch (IOException e) {
+      // 플레이리스트 삭제 (롤백)
+      playlistRepository.delete(playlist);
+      // ApiException 발생
+      throw new ApiException(ErrorCode.THUMBNAIL_GENERATION_FAILED);
+    }
+
+    return playlist;
   }
 
   @Override
@@ -149,7 +165,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         .createdAt(playlist.getCreatedAt())
         .modifiedAt(playlist.getModifiedAt())
         .tracks(trackDtos)
-        .thumbnailUrls(thumbnailUrls)
+        .imageUrl(playlist.getImageUrl())
         .build();
 
   }
@@ -181,6 +197,12 @@ public class PlaylistServiceImpl implements PlaylistService {
         .build();
 
     PlaylistTrack savedTrack = playlistTrackRepository.save(playlistTrack);
+
+    int trackCount = playlist.getTracks().size();
+    if (trackCount <= 4) {
+      updatePlaylistThumbnail(playlistId);
+    }
+
     return playlistTrackMapper.toDto(savedTrack);
   }
 
@@ -208,6 +230,28 @@ public class PlaylistServiceImpl implements PlaylistService {
       playlist.getTracks().remove(track);
       playlistTrackRepository.delete(track);
     }
+
+    // 트랙 삭제 후 항상 썸네일 업데이트
+    updatePlaylistThumbnail(playlistId);
   }
 
+
+  // 썸네일 업데이트.
+  @Transactional
+  public void updatePlaylistThumbnail(Long playlistId) {
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    List<String> albumArtUrls = playlist.getTracks().stream()
+        .map(PlaylistTrack::getThumbnailUrl)
+        .collect(Collectors.toList());
+
+    try {
+      String newThumbnailUrl = thumbnailGenerator.updatePlaylistThumbnail(albumArtUrls, playlist.getId());
+      playlist.updateImageUrl(newThumbnailUrl);
+      playlistRepository.save(playlist);
+    } catch (Exception e) {
+      throw new ApiException(ErrorCode.THUMBNAIL_UPDATE_FAILED);
+    }
+  }
 }

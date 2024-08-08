@@ -15,6 +15,6 @@ public class PlaylistEditPageResponseDto {
   private int trackCount;
   private LocalDateTime createdAt;
   private LocalDateTime modifiedAt;
+  private String imageUrl;
   private List<PlaylistTrackResponseDto> tracks;
-  private List<String> thumbnailUrls; // 대표이미지용 썸네일 4개 리스트
 }

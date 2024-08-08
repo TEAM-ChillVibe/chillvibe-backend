@@ -155,4 +155,14 @@ public class PostController {
     Page<PostListResponseDto> resultPage = postService.getPostSearchResults(query, pageable);
     return ResponseEntity.ok(resultPage);
   }
+
+//  @GetMapping("/{postId}/playlist")
+//  public ResponseEntity<Playlist> getPlaylistByPostId(@PathVariable Long postId) {
+//    Playlist playlist = playlistService.getPlaylistByPostId(postId);
+//    if (playlist != null) {
+//      return ResponseEntity.ok(playlist);
+//    } else {
+//      return ResponseEntity.notFound().build();
+//    }
+//  }
 }

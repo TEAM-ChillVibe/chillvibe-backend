@@ -2,7 +2,9 @@ package com.chillvibe.chillvibe.global.s3.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -111,5 +113,20 @@ public class S3Uploader {
     log.info("S3 oldFileName: " + oldFileName);
     deleteFile(oldFileName);
     return upload(newFile, dirName);
+  }
+
+
+  public String uploadOrReplace(byte[] fileContent, String dirName, String fileName){
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(fileContent.length);
+    metadata.setContentType("image/jpeg");
+
+    String fullPath = dirName + "/" + fileName;
+    PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fullPath, new ByteArrayInputStream(fileContent), metadata)
+        .withCannedAcl(CannedAccessControlList.PublicRead);
+
+    amazonS3.putObject(putObjectRequest);
+
+    return amazonS3.getUrl(bucket, fullPath).toString();
   }
 }

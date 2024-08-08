@@ -5,6 +5,7 @@ import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
