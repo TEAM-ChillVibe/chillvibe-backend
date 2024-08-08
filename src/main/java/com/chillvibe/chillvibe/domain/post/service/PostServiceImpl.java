@@ -209,12 +209,13 @@ public class PostServiceImpl implements PostService {
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 페이지 객체, 각 포스트는 {PostRequestDto}로 변환됨
    * @exception ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
    */
-  public Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId, Pageable pageable) {
+  public Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId,
+      Pageable pageable) {
 
     List<PostHashtag> postHashtags = postHashtagRepository.findByHashtagId(hashtagId);
 
     if (postHashtags.isEmpty()) {
-      throw new ApiException(ErrorCode.POST_HASHTAG_NOT_FOUND);
+      return Page.empty(pageable);
     }
 
     List<Long> postIds = postHashtags.stream()
@@ -231,10 +232,11 @@ public class PostServiceImpl implements PostService {
     return posts.map(PostListResponseDto::new);
   }
 
-  public Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable){
+  public Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable) {
 
     // 제목에 검색어가 포함된 게시글을 대소문자 구분 없이 검색
-    Page<Post> postPage = postRepository.findByTitleContainingIgnoreCaseOrderByLikeCountDesc(query, pageable);
+    Page<Post> postPage = postRepository.findByTitleContainingIgnoreCaseOrderByLikeCountDesc(query,
+        pageable);
 
     // Post 엔티티를 PostListResponseDto로 변환
     return postPage.map(PostListResponseDto::new);

@@ -29,12 +29,11 @@ public enum ErrorCode {
 
   // HASHTAG
   HASHTAG_NOT_FOUND(404, "H001", "Hashtag not found", LogLevel.ERROR),
-  USER_HASHTAG_NOT_FOUND(404, "H002", "User hashtag not found", LogLevel.ERROR),
-  POST_HASHTAG_NOT_FOUND(404, "H003", "Post hashtag not found", LogLevel.ERROR),
 
   // PLAYLIST
   PLAYLIST_NOT_FOUND(404, "PL001", "Playlist not found", LogLevel.ERROR),
-  THUMBNAIL_GENERATION_FAILED(500, "PL002", "Failed to generate thumbnail for playlist", LogLevel.ERROR),
+  THUMBNAIL_GENERATION_FAILED(500, "PL002", "Failed to generate thumbnail for playlist",
+      LogLevel.ERROR),
   THUMBNAIL_UPDATE_FAILED(500, "PL003", "Failed to update thumbnail for playlist", LogLevel.ERROR),
 
   // POST
@@ -49,8 +48,10 @@ public enum ErrorCode {
 
   // SPOTIFY
   SPOTIFY_API_ERROR(500, "S001", "Spotify API error occurred, Try Again", LogLevel.ERROR),
-  SPOTIFY_TOKEN_REFRESH_ERROR(500, "S002", "Failed to refresh Spotify access token", LogLevel.ERROR),
-  SPOTIFY_TOKEN_INITIALIZATION_ERROR(500, "S003", "Failed to initialize Spotify access token", LogLevel.ERROR),
+  SPOTIFY_TOKEN_REFRESH_ERROR(500, "S002", "Failed to refresh Spotify access token",
+      LogLevel.ERROR),
+  SPOTIFY_TOKEN_INITIALIZATION_ERROR(500, "S003", "Failed to initialize Spotify access token",
+      LogLevel.ERROR),
 
   // USER
   USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),
@@ -60,8 +61,7 @@ public enum ErrorCode {
   PASSWORDS_DO_NOT_MATCH(400, "U005", "Password do not match", LogLevel.ERROR),
 
   // SECURE
-  UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN)
-  ;
+  UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN);
 
 
   private final String code;
