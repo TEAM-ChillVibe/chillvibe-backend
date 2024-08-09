@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -57,4 +59,20 @@ public class Playlist extends BaseTimeEntity {
   public void updateImageUrl(String thumbnailUrl) {
     this.thumbnailUrl = thumbnailUrl;
   }
+
+  public void addTrack(PlaylistTrack track) {
+    this.tracks.add(track);
+    track.setPlaylist(this);  // 양방향 관계 설정
+  }
+
+  public void removeTracks(List<PlaylistTrack> tracksToRemove) {
+    for (PlaylistTrack track : tracksToRemove) {
+      this.tracks.remove(track);
+      track.setPlaylist(null);  // 양방향 관계 해제
+    }
+  }
+  public void touch() {
+    this.modifiedAt = LocalDateTime.now();  // 직접 수정 시간을 갱신
+  }
+
 }

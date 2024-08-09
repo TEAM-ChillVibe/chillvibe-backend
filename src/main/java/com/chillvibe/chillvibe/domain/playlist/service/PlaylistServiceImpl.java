@@ -196,10 +196,14 @@ public class PlaylistServiceImpl implements PlaylistService {
         .thumbnailUrl(requestDto.getThumbnailUrl())
         .build();
 
+    playlist.addTrack(playlistTrack);
+    playlist.touch(); // 플레이리스트를 "변경된" 상태로 만들기
     PlaylistTrack savedTrack = playlistTrackRepository.save(playlistTrack);
 
-    int trackCount = playlist.getTracks().size();
-    if (trackCount <= 4) {
+    // 플레이리스트 저장 (수정 시간 갱신)
+    playlistRepository.save(playlist);
+
+    if (playlist.getTracks().size() == 4) {  // 4개일 때 썸네일 업데이트
       updatePlaylistThumbnail(playlistId);
     }
 
@@ -221,15 +225,20 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    List<PlaylistTrack> tracks = playlistTrackRepository.findAllById(trackIds);
+    List<PlaylistTrack> tracksToRemove = playlist.getTracks().stream()
+        .filter(track -> trackIds.contains(track.getId()))
+        .collect(Collectors.toList());
 
-    for (PlaylistTrack track : tracks) {
-      if (!track.getPlaylist().equals(playlist)) {
-        throw new ApiException(ErrorCode.TRACK_NOT_IN_PLAYLIST);
-      }
-      playlist.getTracks().remove(track);
-      playlistTrackRepository.delete(track);
+    if (tracksToRemove.size() != trackIds.size()) {
+      throw new ApiException(ErrorCode.TRACK_NOT_IN_PLAYLIST);
     }
+
+    playlist.removeTracks(tracksToRemove);
+    playlist.touch(); // 플레이리스트를 "변경된" 상태로 만들기
+    playlistTrackRepository.deleteAll(tracksToRemove);
+
+    // 플레이리스트 저장 (수정 시간 갱신)
+    playlistRepository.save(playlist);
 
     // 트랙 삭제 후 항상 썸네일 업데이트
     updatePlaylistThumbnail(playlistId);
