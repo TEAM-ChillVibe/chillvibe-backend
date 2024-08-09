@@ -4,7 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-// 플레이리스트를 생성할 때 사용합니다.
+/**
+ * 빈 플레이리스트를 생성할 때 사용하는 DTO 입니다.
+ * <p>
+ * - title : 플레이리스트의 제목 <br>
+ */
 @Getter
 @Setter
 public class PlaylistCreateRequestDto {

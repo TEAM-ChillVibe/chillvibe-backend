@@ -1,17 +1,17 @@
 package com.chillvibe.chillvibe.domain.playlist.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-// 모달창에는 플레이리스트의 ID와 제목들만 전달되면 된다.
+/**
+ * 트랙을 추가할 플레이리스트를 선택할 때 사용하는 DTO입니다.
+ * <p>
+ * - id    : 트랙을 추가할 플레이리스트의 id <br>
+ * - title : 트랙을 추가할 플레이리스트의 제목 <br>
+ */
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class PlaylistSelectResponseDto {
-
   private Long id;
   private String title;
 }
