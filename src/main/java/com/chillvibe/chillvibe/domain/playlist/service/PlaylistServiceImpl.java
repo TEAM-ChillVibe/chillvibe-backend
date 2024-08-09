@@ -162,7 +162,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     // 플레이리스트 저장 (수정 시간 갱신)
     playlistRepository.save(playlist);
 
-    if (playlist.getTracks().size() == 4) {  // 4개일 때 썸네일 업데이트
+    if (playlist.getTracks().size() == 1 || playlist.getTracks().size() == 4) {  // 4개일 때 썸네일 업데이트
       updatePlaylistThumbnail(playlistId);
     }
 
