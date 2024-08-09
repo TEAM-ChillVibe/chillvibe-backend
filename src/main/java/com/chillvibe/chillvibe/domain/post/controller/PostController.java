@@ -145,4 +145,9 @@ public class PostController {
     return ResponseEntity.ok(resultPage);
   }
 
+  @GetMapping("/user/my-liked-posts")
+  public ResponseEntity<Page<PostListResponseDto>> getPostsByUserLiked(Pageable pageable) {
+    Page<PostListResponseDto> likedPostsPage = postService.getPostsByUserLiked(pageable);
+    return ResponseEntity.ok(likedPostsPage);
+  }
 }
