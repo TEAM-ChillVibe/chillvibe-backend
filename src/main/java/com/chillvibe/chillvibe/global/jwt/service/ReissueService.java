@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReissueService {
 
-  private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*10L;
-  private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000*60*60L;
+  private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*60*2L;
+  private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000*60*60*10L;
 
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
