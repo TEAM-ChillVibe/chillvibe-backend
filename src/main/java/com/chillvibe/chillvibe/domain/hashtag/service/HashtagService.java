@@ -142,13 +142,12 @@ public class HashtagService {
   /**
    * 특정 사용자의 프로필에 설정될 해시태그를 설정(변경)합니다.
    *
-   * @param userId     사용자 ID
    * @param hashtagIds 해시태그 ID list
    * @exception ApiException UNAUTHENTICATED 인증되지 않은 사용자일 경우
    */
   @Transactional
-  public void updateHashtagsOfUser(Long userId, List<Long> hashtagIds) {
-    userId = userUtil.getAuthenticatedUserId();
+  public void updateHashtagsOfUser(List<Long> hashtagIds) {
+    Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
       throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }

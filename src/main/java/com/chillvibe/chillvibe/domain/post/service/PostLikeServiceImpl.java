@@ -88,7 +88,12 @@ public class PostLikeServiceImpl implements PostLikeService {
   }
 
   @Transactional(readOnly = true)
-  public List<Long> getLikedPostIdsByUser(Long userId) {
+  public List<Long> getLikedPostIdsByUser() {
+    Long userId = userUtil.getAuthenticatedUserId();
+    if (userId == null) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
     return postLikeRepository.findPostIdsByUserId(userId);
   }
 

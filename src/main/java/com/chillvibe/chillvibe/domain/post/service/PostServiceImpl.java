@@ -45,6 +45,7 @@ public class PostServiceImpl implements PostService {
   private final PlaylistMapper playlistMapper;
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserUtil userUtil;
+  private final PostLikeService postLikeService;
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
   public Page<PostListResponseDto> getPosts(String sortBy, int page, int size) {
@@ -77,7 +78,8 @@ public class PostServiceImpl implements PostService {
     List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(
         playlist.getTracks());
 
-    PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistResponseDto(playlist);
+    PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistResponseDto(
+        playlist);
     playlistResponseDto.setTracks(playlistTrackResponseDtos);
 
     List<CommentResponseDto> commentResponseDtos = comments.stream()
@@ -237,6 +239,20 @@ public class PostServiceImpl implements PostService {
         pageable);
 
     // Post 엔티티를 PostListResponseDto로 변환
+    return postPage.map(PostListResponseDto::new);
+  }
+
+  // 사용자가 좋아요한 게시글 리스트 조회 (마이페이지)
+  @Transactional(readOnly = true)
+  public Page<PostListResponseDto> getPostsByUserLiked(Pageable pageable) {
+    List<Long> likedPostIds = postLikeService.getLikedPostIdsByUser();
+
+    if (likedPostIds.isEmpty()) {
+      return Page.empty();
+    }
+
+    Page<Post> postPage = postRepository.findAllByIdInOrderByCreatedAtDesc(likedPostIds, pageable);
+    
     return postPage.map(PostListResponseDto::new);
   }
 }

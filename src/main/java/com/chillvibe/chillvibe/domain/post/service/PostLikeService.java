@@ -11,5 +11,6 @@ public interface PostLikeService {
   // 게시글에 좋아요 취소
   void unlikePost(Long postId);
 
-  List<Long> getLikedPostIdsByUser(Long userId);
+  List<Long> getLikedPostIdsByUser();
+
 }
