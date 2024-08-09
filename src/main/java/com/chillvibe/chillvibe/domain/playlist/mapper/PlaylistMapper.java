@@ -1,7 +1,7 @@
 package com.chillvibe.chillvibe.domain.playlist.mapper;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import java.util.List;
@@ -16,10 +16,10 @@ public interface PlaylistMapper {
   PlaylistResponseDto playlistToPlaylistResponseDto(Playlist playlist);
 
   // Playlist -> PlaylistSelectDto
-  PlaylistSelectDto playlistToPlaylistSelectDto(Playlist playlist);
+  PlaylistSelectResponseDto playlistToPlaylistSelectDto(Playlist playlist);
 
   // List<Playlist> -> List<PlaylistSelectDto>
-  List<PlaylistSelectDto> playlistListToPlaylistSelectDtoList(List<Playlist> playlists);
+  List<PlaylistSelectResponseDto> playlistListToPlaylistSelectDtoList(List<Playlist> playlists);
   // Playlist -> PlaylistSimpleResponseDto
   @Mapping(target = "trackCount", expression = "java(playlist.getTracks().size())")
   PlaylistSimpleResponseDto playlistToPlaylistSimpleResponseDto(Playlist playlist);

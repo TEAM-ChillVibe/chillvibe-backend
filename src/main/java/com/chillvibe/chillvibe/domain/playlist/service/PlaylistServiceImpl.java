@@ -1,7 +1,7 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +57,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   // 플레이리스트에 트랙을 추가하려는 유저에게 본인이 가진 플레이리스트들을 보여준다.
   @Override
-  public List<PlaylistSelectDto> getUserPlaylistsForSelection() {
+  public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
     // 현재 해당 작업을 시작하려는 유저를 확인한다.
     Long currentUserId = userUtil.getAuthenticatedUserId();
     if (currentUserId == null) {

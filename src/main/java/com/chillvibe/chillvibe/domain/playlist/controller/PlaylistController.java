@@ -1,17 +1,16 @@
 package com.chillvibe.chillvibe.domain.playlist.controller;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistRequestDto;
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistCreateRequestDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
+import jakarta.validation.Valid;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,25 +24,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/playlists")
-@Slf4j
+@RequiredArgsConstructor
 public class PlaylistController {
 
   private final PlaylistService playlistService;
-  public PlaylistController(PlaylistService playlistService){
-    this.playlistService = playlistService;
-  }
 
   // 빈 플레이리스트 생성
   @PostMapping
-  public ResponseEntity<Long> createPlaylist(@RequestBody PlaylistRequestDto request) {
+  public ResponseEntity<Long> createPlaylist(@RequestBody @Valid PlaylistCreateRequestDto request) {
     Playlist createdPlaylist = playlistService.createEmptyPlaylist(request.getTitle());
     return ResponseEntity.ok(createdPlaylist.getId());
   }
 
   // 본인의 플레이리스트 조회
   @GetMapping("/selection")
-  public ResponseEntity<List<PlaylistSelectDto>> getPlaylistsForSelection() {
-    List<PlaylistSelectDto> playlists = playlistService.getUserPlaylistsForSelection();
+  public ResponseEntity<List<PlaylistSelectResponseDto>> getPlaylistsForSelection() {
+    List<PlaylistSelectResponseDto> playlists = playlistService.getUserPlaylistsForSelection();
     return ResponseEntity.ok(playlists);
   }
 

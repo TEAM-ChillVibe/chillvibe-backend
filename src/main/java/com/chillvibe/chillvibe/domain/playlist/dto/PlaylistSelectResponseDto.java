@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlaylistSelectDto {
+public class PlaylistSelectResponseDto {
 
   private Long id;
   private String title;
