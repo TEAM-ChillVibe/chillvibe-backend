@@ -33,7 +33,7 @@ import org.springframework.util.StreamUtils;
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-  private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*10L;
+  private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*10L;
   private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000*60*60L;
 
   private final AuthenticationManager authenticationManager;

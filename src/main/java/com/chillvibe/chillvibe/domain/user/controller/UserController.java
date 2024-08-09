@@ -32,7 +32,7 @@ public class UserController {
   }
 
   @PutMapping("/users")
-  public ResponseEntity<String> update(@RequestPart(value = "userUpdateDto") String userUpdateDto, @RequestPart(value = "profileImg") MultipartFile multipartFile) {
+  public ResponseEntity<String> update(@RequestPart(value = "userUpdateDto") String userUpdateDto, @RequestPart(value = "profileImg", required = false) MultipartFile multipartFile) {
 
     userService.update(userUpdateDto, multipartFile);
 

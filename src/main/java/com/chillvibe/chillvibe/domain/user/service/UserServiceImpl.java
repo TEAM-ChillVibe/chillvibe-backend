@@ -124,6 +124,10 @@ public class UserServiceImpl implements UserService {
       }
     }
 
+    else {
+      imageUrl = user.getProfileUrl(); // 기존 이미지 유지
+    }
+
     hashtagService.updateHashtagsOfUser(parsedUserUpdateDto.getHashtagIds());
 
     // 수정된 정보와 imageUrl 세팅
