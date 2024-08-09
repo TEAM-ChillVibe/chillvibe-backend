@@ -58,7 +58,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   @Override
   @Transactional
-  public Playlist createEmptyPlaylist(String title){
+  public Long createEmptyPlaylist(String title){
     Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     User user = userRepository.findById(currentUserId)
@@ -84,7 +84,7 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.THUMBNAIL_GENERATION_FAILED);
     }
 
-    return playlist;
+    return playlist.getId();
   }
 
   @Override
@@ -109,7 +109,6 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }
 
-    // 가장 먼저 만든 게시글이 앞으로 나와야 한다.
     Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
     Page<Playlist> playlistPages = playlistRepository.findByUserId(currentUserId, pageable);
 

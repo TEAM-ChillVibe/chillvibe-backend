@@ -32,8 +32,8 @@ public class PlaylistController {
   // 빈 플레이리스트 생성
   @PostMapping
   public ResponseEntity<Long> createPlaylist(@RequestBody @Valid PlaylistCreateRequestDto request) {
-    Playlist createdPlaylist = playlistService.createEmptyPlaylist(request.getTitle());
-    return ResponseEntity.ok(createdPlaylist.getId());
+    Long playlistId = playlistService.createEmptyPlaylist(request.getTitle());
+    return ResponseEntity.ok(playlistId);
   }
 
   // 본인의 플레이리스트 조회

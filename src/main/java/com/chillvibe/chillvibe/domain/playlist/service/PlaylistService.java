@@ -17,7 +17,7 @@ public interface PlaylistService {
   // 플레이리스트 상세(수정) 페이지 조회
   PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId);
   // 마이 페이지 - 빈 플레이리스트 생성
-  Playlist createEmptyPlaylist(String title);
+  Long createEmptyPlaylist(String title);
   // 플레이리스트에 트랙 추가하기.
   PlaylistTrackResponseDto addTrackToPlaylist(Long PlaylistId, PlaylistTrackRequestDto requestDto);
   // 플레이리스트 상세(수정) 페이지 - 플레이리스트 삭제
