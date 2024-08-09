@@ -40,7 +40,10 @@ public class SecurityConfig {
       "/api/comments/byUser",
       "/api/hashtags/**",
       "/api/posts/**",
-      "/api/tracks/**"
+      "/api/tracks/**",
+      /* Swagger UI */
+      "/swagger-ui/**",
+      "/v3/api-docs/**",
   };
 
 
