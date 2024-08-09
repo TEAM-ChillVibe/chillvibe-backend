@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PlaylistServiceImpl implements PlaylistService {
 
   private final PlaylistRepository playlistRepository;
@@ -39,30 +41,19 @@ public class PlaylistServiceImpl implements PlaylistService {
   private final ThumbnailGenerator thumbnailGenerator;
   private final UserUtil userUtil;
 
-  public PlaylistServiceImpl(PlaylistRepository playlistRepository,
-      PlaylistTrackRepository playlistTrackRepository,
-      PlaylistMapper playlistMapper,
-      PlaylistTrackMapper playlistTrackMapper,
-      UserRepository userRepository,
-      ThumbnailGenerator thumbnailGenerator,
-      UserUtil userUtil) {
-    this.playlistRepository = playlistRepository;
-    this.playlistTrackRepository = playlistTrackRepository;
-    this.playlistMapper = playlistMapper;
-    this.playlistTrackMapper = playlistTrackMapper;
-    this.userRepository = userRepository;
-    this.thumbnailGenerator = thumbnailGenerator;
-    this.userUtil = userUtil;
+  // 인증된 사용자의 ID를 반환하거나, 예외를 던져주는 메서드
+  private Long getAuthenticatedUserIdOrThrow() {
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+    return currentUserId;
   }
 
   // 플레이리스트에 트랙을 추가하려는 유저에게 본인이 가진 플레이리스트들을 보여준다.
   @Override
   public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
-    // 현재 해당 작업을 시작하려는 유저를 확인한다.
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
 
@@ -73,12 +64,9 @@ public class PlaylistServiceImpl implements PlaylistService {
   @Override
   @Transactional
   public Playlist createEmptyPlaylist(String title){
-    Long userId = userUtil.getAuthenticatedUserId();
-    if (userId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED); // 인증된 유저가 아닙니다.
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
-    User user = userRepository.findById(userId)
+    User user = userRepository.findById(currentUserId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     // 빈 플레이리스트 객체 생성
@@ -107,11 +95,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   @Override
   @Transactional
   public void deletePlaylist(Long playlistId) {
-    // 해당 작업을 진행하려는 유저를 확인한다.
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
@@ -125,28 +109,22 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   @Override
   public Page<PlaylistSimpleResponseDto> getMyPlaylists(int page, int size) {
-    Long userId = userUtil.getAuthenticatedUserId();
-    if (userId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
-    if (!userRepository.existsById(userId)) {
+    if (!userRepository.existsById(currentUserId)) {
       throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }
 
     // 가장 먼저 만든 게시글이 앞으로 나와야 한다.
     Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-    Page<Playlist> playlistPages = playlistRepository.findByUserId(userId, pageable);
+    Page<Playlist> playlistPages = playlistRepository.findByUserId(currentUserId, pageable);
 
     return playlistMapper.playlistPageToPlaylistSimpleResponseDtoPage(playlistPages);
   }
 
   @Override
   public PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId) {
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
@@ -176,10 +154,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ApiException(
         ErrorCode.PLAYLIST_NOT_FOUND));
 
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -215,10 +190,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -245,10 +217,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
   // PostID로 해당 플레이리스트 찾아서 반환
   public PlaylistSimpleResponseDto getPlaylistByPostId(Long postId){
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null){
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     Playlist playlist = playlistRepository.findByPostsId(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
