@@ -1,12 +1,11 @@
 package com.chillvibe.chillvibe.domain.playlist.controller;
 
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistCreateRequestDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
-import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -45,8 +44,8 @@ public class PlaylistController {
 
   // 플레이리스트 수정(상세) 페이지 조회
   @GetMapping("/edit")
-  public ResponseEntity<PlaylistEditPageResponseDto> getPlaylistForEditing(@RequestParam Long playlistId){
-    PlaylistEditPageResponseDto responseDto = playlistService.getPlaylistForEditing(playlistId);
+  public ResponseEntity<PlaylistResponseDto> getPlaylistForEditing(@RequestParam Long playlistId){
+    PlaylistResponseDto responseDto = playlistService.getPlaylistForEditing(playlistId);
     return ResponseEntity.ok(responseDto);
   }
 
@@ -87,5 +86,12 @@ public class PlaylistController {
   public ResponseEntity<PlaylistSimpleResponseDto> getPlaylistByPostId(@PathVariable Long postId) {
     PlaylistSimpleResponseDto playlist = playlistService.getPlaylistByPostId(postId);
     return ResponseEntity.ok(playlist);
+  }
+
+  // 플레이리스트 수정 페이지 - 트랙들 가져오기.
+  @GetMapping("/my/{playlistId}/tracks")
+  public ResponseEntity<List<PlaylistTrackResponseDto>> getMyPlaylistTracks(@PathVariable Long playlistId){
+    List<PlaylistTrackResponseDto> tracks = playlistService.getMyPlaylistTracks(playlistId);
+    return ResponseEntity.ok(tracks);
   }
 }

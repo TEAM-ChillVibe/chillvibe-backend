@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
@@ -116,7 +116,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
-  public PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId) {
+  public PlaylistResponseDto getPlaylistForEditing(Long playlistId) {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     Playlist playlist = playlistRepository.findById(playlistId)
@@ -129,15 +129,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     List<PlaylistTrack> tracks = playlistTrackRepository.findByPlaylistId(playlistId);
     List<PlaylistTrackResponseDto> trackDtos = playlistTrackMapper.toDtoList(tracks);
 
-    return PlaylistEditPageResponseDto.builder()
-        .title(playlist.getTitle())
-        .trackCount(tracks.size())
-        .createdAt(playlist.getCreatedAt())
-        .modifiedAt(playlist.getModifiedAt())
-        .tracks(trackDtos)
-        .thumbnailUrl(playlist.getThumbnailUrl())
-        .build();
-
+    return playlistMapper.playlistToPlaylistResponseDto(playlist, trackDtos);
   }
 
   @Override
@@ -223,6 +215,20 @@ public class PlaylistServiceImpl implements PlaylistService {
     return playlistMapper.playlistToPlaylistSimpleResponseDto(playlist);
   }
 
+  public List<PlaylistTrackResponseDto> getMyPlaylistTracks(Long playlistId){
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
+
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    if (!playlist.getUser().getId().equals(currentUserId)) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    List<PlaylistTrack> tracks = playlistTrackRepository.findByPlaylistId(playlistId);
+
+    return playlistTrackMapper.toDtoList(tracks);
+  }
 
   // 썸네일 업데이트를 진행하는 코드.
   @Transactional

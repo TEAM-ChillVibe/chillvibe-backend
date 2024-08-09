@@ -79,8 +79,7 @@ public class PostServiceImpl implements PostService {
         playlist.getTracks());
 
     PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistResponseDto(
-        playlist);
-    playlistResponseDto.setTracks(playlistTrackResponseDtos);
+        playlist, playlistTrackResponseDtos);
 
     List<CommentResponseDto> commentResponseDtos = comments.stream()
         .map(CommentResponseDto::new)
