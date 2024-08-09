@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Long> {
-  Optional<PlaylistTrack> findByPlaylistIdAndId(Long playlistId, Long id);
   List<PlaylistTrack> findByPlaylistId(Long playlistId);
 }
