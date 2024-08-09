@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReissueService {
 
-  private static final long ACCESS_TOKEN_EXPIRATION_MS = 60*60*60*10L;
-  private static final long REFRESH_TOKEN_EXPIRATION_MS = 60*60*60*24L;
+  private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*60*2L;
+  private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000*60*60*10L;
 
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
@@ -66,13 +66,19 @@ public class ReissueService {
     String newAccess = jwtUtil.createJwt("access", userId, email, ACCESS_TOKEN_EXPIRATION_MS);
     String newRefresh = jwtUtil.createJwt("refresh", userId, email, REFRESH_TOKEN_EXPIRATION_MS);
 
+    // 기존 쿠키 무효화
+    Cookie oldCookie = new Cookie("refresh", "");
+    oldCookie.setMaxAge(0); // 즉시 만료
+    oldCookie.setPath("/"); // 모든 경로에서 쿠키를 삭제하도록 설정
+    response.addCookie(oldCookie);
+
     // DB에 있는 기존의 refreshToken 삭제 후 새로 발급한 refreshToken 저장
     refreshRepository.deleteByToken(refresh);
 
     Refresh refreshEntity = Refresh.createRefreshEntity(email, newRefresh, ACCESS_TOKEN_EXPIRATION_MS);
     refreshRepository.save(refreshEntity);
 
-    response.setHeader("access", newAccess);
+    response.setHeader("Authorization", "Bearer " + newAccess);
     response.addCookie(createCookie("refresh", newRefresh));
 
     return new ResponseEntity<>(HttpStatus.OK);

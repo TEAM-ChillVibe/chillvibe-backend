@@ -45,6 +45,7 @@ public class PostServiceImpl implements PostService {
   private final PlaylistMapper playlistMapper;
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserUtil userUtil;
+  private final PostLikeService postLikeService;
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
   public Page<PostListResponseDto> getPosts(String sortBy, int page, int size) {
@@ -52,9 +53,9 @@ public class PostServiceImpl implements PostService {
     Page<Post> postPage;
 
     if ("popular".equalsIgnoreCase(sortBy)) {
-      postPage = postRepository.findByIsDeletedFalseOrderByLikeCountDesc(pageRequest);
+      postPage = postRepository.findByOrderByLikeCountDesc(pageRequest);
     } else {
-      postPage = postRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageRequest);
+      postPage = postRepository.findByOrderByCreatedAtDesc(pageRequest);
     }
 
     return postPage.map(PostListResponseDto::new);
@@ -77,7 +78,8 @@ public class PostServiceImpl implements PostService {
     List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(
         playlist.getTracks());
 
-    PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistResponseDto(playlist);
+    PlaylistResponseDto playlistResponseDto = playlistMapper.playlistToPlaylistResponseDto(
+        playlist);
     playlistResponseDto.setTracks(playlistTrackResponseDtos);
 
     List<CommentResponseDto> commentResponseDtos = comments.stream()
@@ -99,7 +101,7 @@ public class PostServiceImpl implements PostService {
       return Page.empty(pageable);
     }
 
-    Page<Post> postPage = postRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
+    Page<Post> postPage = postRepository.findByUserId(userId, pageable);
 
     return postPage.map(PostListResponseDto::new);
   }
@@ -120,9 +122,8 @@ public class PostServiceImpl implements PostService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
-    // Soft Delete로 구현.
-    post.setDeleted(true);
-    postRepository.save(post);
+    // Hard Delete로 변경 구현.
+    postRepository.delete(post);
   }
 
   /**
@@ -157,7 +158,6 @@ public class PostServiceImpl implements PostService {
     post.setPostTitleImageUrl("default image");
     post.setUser(user);
     post.setPlaylist(playlist);
-    post.setDeleted(false);
     post.setLikeCount(0);
 
     Post savedPost = postRepository.save(post);
@@ -239,6 +239,20 @@ public class PostServiceImpl implements PostService {
         pageable);
 
     // Post 엔티티를 PostListResponseDto로 변환
+    return postPage.map(PostListResponseDto::new);
+  }
+
+  // 사용자가 좋아요한 게시글 리스트 조회 (마이페이지)
+  @Transactional(readOnly = true)
+  public Page<PostListResponseDto> getPostsByUserLiked(Pageable pageable) {
+    List<Long> likedPostIds = postLikeService.getLikedPostIdsByUser();
+
+    if (likedPostIds.isEmpty()) {
+      return Page.empty();
+    }
+
+    Page<Post> postPage = postRepository.findAllByIdInOrderByCreatedAtDesc(likedPostIds, pageable);
+    
     return postPage.map(PostListResponseDto::new);
   }
 }

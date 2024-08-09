@@ -93,7 +93,7 @@ public class HashtagController {
       @RequestBody HashtagRequestDto hashtagRequestDto) {
     List<Long> hashtagIds = hashtagRequestDto.getHashtagIds();
     if (userId != null) {
-      hashtagService.updateHashtagsOfUser(userId, hashtagIds);
+      hashtagService.updateHashtagsOfUser(hashtagIds);
     } else if (postId != null) {
       hashtagService.updateHashtagsOfPost(postId, hashtagIds);
     } else {

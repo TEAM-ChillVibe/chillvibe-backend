@@ -1,6 +1,5 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
@@ -9,7 +8,6 @@ import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
-import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -99,12 +97,7 @@ public class PostController {
 
   @GetMapping("/user/liked-posts")
   public ResponseEntity<List<Long>> getUserLikedPosts() {
-    Long userId = userUtil.getAuthenticatedUserId();
-//    if (userId == null) {
-//      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
-//    }
-
-    List<Long> likedPostIds = postLikeService.getLikedPostIdsByUser(userId);
+    List<Long> likedPostIds = postLikeService.getLikedPostIdsByUser();
     return ResponseEntity.ok(likedPostIds);
   }
 
@@ -152,4 +145,9 @@ public class PostController {
     return ResponseEntity.ok(resultPage);
   }
 
+  @GetMapping("/user/my-liked-posts")
+  public ResponseEntity<Page<PostListResponseDto>> getPostsByUserLiked(Pageable pageable) {
+    Page<PostListResponseDto> likedPostsPage = postService.getPostsByUserLiked(pageable);
+    return ResponseEntity.ok(likedPostsPage);
+  }
 }

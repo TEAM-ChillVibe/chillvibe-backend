@@ -32,7 +32,7 @@ public class SecurityConfig {
   private static final String[] WHITER_LIST = {
       "/login",
       "/logout",
-      "/",
+      "/api/reissue",
       "/api/signup",
       "/api/userpage",
       "/api/search**",

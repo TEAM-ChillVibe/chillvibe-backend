@@ -39,6 +39,10 @@ public class PlaylistTrack {
   @Column(nullable = false)
   private String thumbnailUrl;
 
+  public void setPlaylist(Playlist playlist) {
+    this.playlist = playlist;
+  }
+
   // 빌더 패턴 구현
   @Builder
   public PlaylistTrack(Playlist playlist,

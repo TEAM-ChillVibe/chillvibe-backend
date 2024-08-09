@@ -33,8 +33,8 @@ import org.springframework.util.StreamUtils;
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-  private static final long ACCESS_TOKEN_EXPIRATION_MS = 60*60*60*10L;
-  private static final long REFRESH_TOKEN_EXPIRATION_MS = 60*60*60*24L;
+  private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*60*2L;
+  private static final long REFRESH_TOKEN_EXPIRATION_MS = 1000*60*60*10L;
 
   private final AuthenticationManager authenticationManager;
   private final JwtUtil jwtUtil;
@@ -144,7 +144,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   private Cookie createCookie(String value) {
 
     Cookie cookie = new Cookie("refresh", value);
-    cookie.setMaxAge(24*60*60);
+    cookie.setMaxAge(60*60*6);
     // https에서만 쿠키 전송
     //cookie.setSecure(true);
     // 쿠키의 유효 범위
