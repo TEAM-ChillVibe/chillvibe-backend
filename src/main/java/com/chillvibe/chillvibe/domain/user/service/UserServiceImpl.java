@@ -93,6 +93,7 @@ public class UserServiceImpl implements UserService {
     userRepository.save(newUser);
   }
 
+  @Transactional
   public void update(String userUpdateDto, MultipartFile multipartFile) {
 
     Long userId = userUtil.getAuthenticatedUserId();
@@ -124,12 +125,15 @@ public class UserServiceImpl implements UserService {
       }
     }
 
+    hashtagService.updateHashtagsOfUser(userId, parsedUserUpdateDto.getHashtagIds());
+
     // 수정된 정보와 imageUrl 세팅
     User updatedUser = user.updateUser(parsedUserUpdateDto, imageUrl);
 
     userRepository.save(updatedUser);
   }
 
+  @Transactional
   public void updatePassword(PasswordUpdateRequestDto passwordUpdateRequestDto) {
     Long userId = userUtil.getAuthenticatedUserId();
 
