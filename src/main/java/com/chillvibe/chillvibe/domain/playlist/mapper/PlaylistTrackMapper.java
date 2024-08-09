@@ -9,9 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PlaylistTrackMapper {
-
   PlaylistTrackResponseDto toDto(PlaylistTrack track);
-
   List<PlaylistTrackResponseDto> toDtoList(List<PlaylistTrack> tracks);
 
 }

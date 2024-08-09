@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
-import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistEditPageResponseDto;
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
@@ -41,7 +41,6 @@ public class PlaylistServiceImpl implements PlaylistService {
   private final ThumbnailGenerator thumbnailGenerator;
   private final UserUtil userUtil;
 
-  // 인증된 사용자의 ID를 반환하거나, 예외를 던져주는 메서드
   private Long getAuthenticatedUserIdOrThrow() {
     Long currentUserId = userUtil.getAuthenticatedUserId();
     if (currentUserId == null) {
@@ -50,20 +49,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     return currentUserId;
   }
 
-  // 플레이리스트에 트랙을 추가하려는 유저에게 본인이 가진 플레이리스트들을 보여준다.
   @Override
   public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
-
     List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
-
     return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 
-  // 로그인 한 유저가 빈 플레이리스트를 생성한다.
   @Override
   @Transactional
-  public Playlist createEmptyPlaylist(String title){
+  public Long createEmptyPlaylist(String title){
     Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     User user = userRepository.findById(currentUserId)
@@ -89,7 +84,7 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.THUMBNAIL_GENERATION_FAILED);
     }
 
-    return playlist;
+    return playlist.getId();
   }
 
   @Override
@@ -100,7 +95,6 @@ public class PlaylistServiceImpl implements PlaylistService {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
-    // 삭제를 사도하려는 유저와 플레이리스트의 주인이 맞는지 확인한다.
     if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
@@ -115,7 +109,6 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }
 
-    // 가장 먼저 만든 게시글이 앞으로 나와야 한다.
     Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
     Page<Playlist> playlistPages = playlistRepository.findByUserId(currentUserId, pageable);
 
@@ -123,7 +116,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   }
 
   @Override
-  public PlaylistEditPageResponseDto getPlaylistForEditing(Long playlistId) {
+  public PlaylistResponseDto getPlaylistForEditing(Long playlistId) {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     Playlist playlist = playlistRepository.findById(playlistId)
@@ -136,15 +129,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     List<PlaylistTrack> tracks = playlistTrackRepository.findByPlaylistId(playlistId);
     List<PlaylistTrackResponseDto> trackDtos = playlistTrackMapper.toDtoList(tracks);
 
-    return PlaylistEditPageResponseDto.builder()
-        .title(playlist.getTitle())
-        .trackCount(tracks.size())
-        .createdAt(playlist.getCreatedAt())
-        .modifiedAt(playlist.getModifiedAt())
-        .tracks(trackDtos)
-        .thumbnailUrl(playlist.getThumbnailUrl())
-        .build();
-
+    return playlistMapper.playlistToPlaylistResponseDto(playlist, trackDtos);
   }
 
   @Override
@@ -230,6 +215,20 @@ public class PlaylistServiceImpl implements PlaylistService {
     return playlistMapper.playlistToPlaylistSimpleResponseDto(playlist);
   }
 
+  public List<PlaylistTrackResponseDto> getMyPlaylistTracks(Long playlistId){
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
+
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    if (!playlist.getUser().getId().equals(currentUserId)) {
+      throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    List<PlaylistTrack> tracks = playlistTrackRepository.findByPlaylistId(playlistId);
+
+    return playlistTrackMapper.toDtoList(tracks);
+  }
 
   // 썸네일 업데이트를 진행하는 코드.
   @Transactional
