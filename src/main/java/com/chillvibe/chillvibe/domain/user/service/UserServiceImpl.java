@@ -3,7 +3,6 @@ package com.chillvibe.chillvibe.domain.user.service;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.user.dto.JoinRequestDto;
-import com.chillvibe.chillvibe.domain.user.dto.LoginResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.ReAuthResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
       }
     }
 
-    hashtagService.updateHashtagsOfUser(userId, parsedUserUpdateDto.getHashtagIds());
+    hashtagService.updateHashtagsOfUser(parsedUserUpdateDto.getHashtagIds());
 
     // 수정된 정보와 imageUrl 세팅
     User updatedUser = user.updateUser(parsedUserUpdateDto, imageUrl);
@@ -138,14 +137,15 @@ public class UserServiceImpl implements UserService {
     Long userId = userUtil.getAuthenticatedUserId();
 
     User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     String oldPassword = passwordUpdateRequestDto.getOldPassword();
     String newPassword = passwordUpdateRequestDto.getNewPassword();
     String confirmPassword = passwordUpdateRequestDto.getConfirmPassword();
 
     // 비밀번호 값이 모두 존재하는지 확인 (null이 아니고 공백이 아닌지 확인)
-    if (StringUtils.isBlank(oldPassword) || StringUtils.isBlank(newPassword) || StringUtils.isBlank(confirmPassword)) {
+    if (StringUtils.isBlank(oldPassword) || StringUtils.isBlank(newPassword) || StringUtils.isBlank(
+        confirmPassword)) {
       throw new ApiException(ErrorCode.INVALID_INPUT_VALUE); // INVALID_INPUT_VALUE 오류 코드 추가
     }
 
