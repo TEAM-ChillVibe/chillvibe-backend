@@ -41,7 +41,6 @@ public class PlaylistServiceImpl implements PlaylistService {
   private final ThumbnailGenerator thumbnailGenerator;
   private final UserUtil userUtil;
 
-  // 인증된 사용자의 ID를 반환하거나, 예외를 던져주는 메서드
   private Long getAuthenticatedUserIdOrThrow() {
     Long currentUserId = userUtil.getAuthenticatedUserId();
     if (currentUserId == null) {
@@ -50,17 +49,13 @@ public class PlaylistServiceImpl implements PlaylistService {
     return currentUserId;
   }
 
-  // 플레이리스트에 트랙을 추가하려는 유저에게 본인이 가진 플레이리스트들을 보여준다.
   @Override
   public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
-
     List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
-
     return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 
-  // 로그인 한 유저가 빈 플레이리스트를 생성한다.
   @Override
   @Transactional
   public Playlist createEmptyPlaylist(String title){
@@ -100,7 +95,6 @@ public class PlaylistServiceImpl implements PlaylistService {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
-    // 삭제를 사도하려는 유저와 플레이리스트의 주인이 맞는지 확인한다.
     if (!playlist.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
