@@ -15,7 +15,4 @@ public interface PlaylistTrackMapper {
 
   List<PlaylistTrackResponseDto> toDtoList(List<PlaylistTrack> tracks);
 
-//  @Mapping(target = "PlaylistTrack.id", ignore = true)
-//  PlaylistTrack playlistTrackRequestDto(PlaylistRequestDto playlistRequestDto);
-
 }

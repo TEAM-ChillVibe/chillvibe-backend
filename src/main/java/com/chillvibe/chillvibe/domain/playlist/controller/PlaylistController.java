@@ -29,11 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaylistController {
 
   private final PlaylistService playlistService;
-  private final PlaylistMapper playlistMapper;
-
-  public PlaylistController(PlaylistService playlistService, PlaylistMapper playlistMapper){
+  public PlaylistController(PlaylistService playlistService){
     this.playlistService = playlistService;
-    this.playlistMapper = playlistMapper;
   }
 
   // 빈 플레이리스트 생성
