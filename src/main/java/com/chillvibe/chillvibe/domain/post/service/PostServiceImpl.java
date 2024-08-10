@@ -3,7 +3,9 @@ package com.chillvibe.chillvibe.domain.post.service;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
+import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
+import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
@@ -48,6 +50,7 @@ public class PostServiceImpl implements PostService {
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserUtil userUtil;
   private final PostLikeService postLikeService;
+  private final HashtagRepository hashtagRepository;
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
   public Page<PostListResponseDto> getPosts(String sortBy, int page, int size) {
@@ -130,12 +133,10 @@ public class PostServiceImpl implements PostService {
   /**
    * 새 게시글을 생성하고, 지정된 해시태그를 설정합니다.
    *
-   * @param requestDto 게시글 생성에 필요한 정보를 담고 있는 DTO 객체.
-   *                   제목, 설명, 플레이리스트 ID 및 해시태그 ID 목록을 포함합니다.
+   * @param requestDto 게시글 생성에 필요한 정보를 담고 있는 DTO 객체. 제목, 설명, 플레이리스트 ID 및 해시태그 ID 목록을 포함합니다.
    * @return 생성된 게시글의 정보를 담고 있는 {PostListResponseDto} 객체를 반환합니다.
-   * @exception ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우
-   *                         {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을 경우
-   *                         {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
+   * @throws ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우 {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을
+   *                      경우 {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
    */
   @Transactional
   public PostListResponseDto createPost(PostCreateRequestDto requestDto) {
@@ -191,14 +192,26 @@ public class PostServiceImpl implements PostService {
     post.setDescription(postUpdateRequestDto.getDescription());
 
     // 기존 해시태그 관계 모두 제거
-    post.getPostHashtag().clear();
+//    post.getPostHashtag().clear();
+//
+//    postRepository.save(post);
+//
+//    List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
+//    hashtagService.updateHashtagsOfPost(post.getId(), hashtagIds);
+//
+//    return post.getId();
 
-    postRepository.save(post);
+    postHashtagRepository.deleteByPostId(postId);
 
     List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
-    hashtagService.updateHashtagsOfPost(post.getId(), hashtagIds);
+    for (Long hashtagId : hashtagIds) {
+      Hashtag hashtag = hashtagRepository.findById(hashtagId)
+          .orElseThrow(() -> new ApiException(ErrorCode.HASHTAG_NOT_FOUND));
+      PostHashtag newPostHashtag = new PostHashtag(post, hashtag);
+      postHashtagRepository.save(newPostHashtag);
+    }
 
-    return post.getId();
+    return postRepository.save(post).getId();
   }
 
 
@@ -208,7 +221,7 @@ public class PostServiceImpl implements PostService {
    * @param hashtagId 조회할 해시태그의 ID
    * @param pageable  페이지네이션 정보를 담고 있는 객체 (페이지 번호, 페이지 크기 등)
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 페이지 객체, 각 포스트는 {PostRequestDto}로 변환됨
-   * @exception ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
+   * @throws ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
    */
   public Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId,
       Pageable pageable) {
@@ -253,7 +266,7 @@ public class PostServiceImpl implements PostService {
     }
 
     Page<Post> postPage = postRepository.findAllByIdInOrderByCreatedAtDesc(likedPostIds, pageable);
-    
+
     return postPage.map(PostListResponseDto::new);
   }
 
