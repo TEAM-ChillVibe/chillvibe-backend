@@ -130,7 +130,9 @@ VALUES ('첫 번째 게시글 제목', '첫 번째 게시글 설명', 'https://v
         3),
        ('네 번째 게시글 제목', '네 번째 게시글 설명', NULL, 15, FALSE, NOW(), NOW(), 2, 4),
        ('다섯 번째 게시글 제목', '다섯 번째 게시글 설명', 'https://via.placeholder.com/150', 25, FALSE, NOW(), NOW(),
-        3, 5);
+        3, 5),
+        ('여섯 번째 게시글 제목', '여섯 번째 게시글 설명', 'https://via.placeholder.com/150', 2, FALSE, NOW(), NOW(), 2, 5),
+        ('일곱 번째 게시글 제목', '일곱 번째 게시글 설명', 'https://via.placeholder.com/150', 1, FALSE, NOW(), NOW(), 2, 5);
 
 -- post_hashtag
 INSERT INTO post_hashtag (post_id, hashtag_id)

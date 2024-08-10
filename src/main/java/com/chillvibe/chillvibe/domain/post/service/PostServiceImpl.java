@@ -15,10 +15,12 @@ import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
+import com.chillvibe.chillvibe.domain.user.dto.UserSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
@@ -239,4 +241,21 @@ public class PostServiceImpl implements PostService {
     // Post 엔티티를 PostListResponseDto로 변환
     return postPage.map(PostListResponseDto::new);
   }
+
+  public List<PostSimpleResponseDto> getMainPostsByLikes() {
+    Pageable pageable = PageRequest.of(0, 6); // 첫 번째 페이지, 6개의 항목
+    Page<Post> pagePosts = postRepository.findByOrderByLikeCountDesc(pageable);
+
+    return pagePosts.stream()
+        .map(this::convertToDto)
+        .collect(Collectors.toList());
 }
+    private PostSimpleResponseDto convertToDto (Post post){
+      return new PostSimpleResponseDto(
+          post.getId(),
+          post.getTitle(),
+          new UserSimpleResponseDto(post.getUser().getId(), post.getUser().getNickname(), post.getUser().getProfileUrl()),
+          post.getThumbnailUrl()
+      );
+    }
+  }

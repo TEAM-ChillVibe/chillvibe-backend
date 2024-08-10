@@ -3,7 +3,10 @@ package com.chillvibe.chillvibe.domain.post.controller;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
+import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
@@ -150,13 +153,9 @@ public class PostController {
     return ResponseEntity.ok(resultPage);
   }
 
-//  @GetMapping("/{postId}/playlist")
-//  public ResponseEntity<Playlist> getPlaylistByPostId(@PathVariable Long postId) {
-//    Playlist playlist = playlistService.getPlaylistByPostId(postId);
-//    if (playlist != null) {
-//      return ResponseEntity.ok(playlist);
-//    } else {
-//      return ResponseEntity.notFound().build();
-//    }
-//  }
+  @GetMapping("/main")
+  public ResponseEntity<List<PostSimpleResponseDto>> getMainpagePosts() {
+    List<PostSimpleResponseDto> mainPosts = postService.getMainPostsByLikes();
+    return ResponseEntity.ok(mainPosts);
+  }
 }

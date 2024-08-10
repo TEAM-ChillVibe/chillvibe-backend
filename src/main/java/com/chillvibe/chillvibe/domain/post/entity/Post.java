@@ -73,4 +73,6 @@ public class Post extends BaseTimeEntity {
   private Integer likeCount;
 
   private boolean isDeleted;
+
+  private String thumbnailUrl;
 }

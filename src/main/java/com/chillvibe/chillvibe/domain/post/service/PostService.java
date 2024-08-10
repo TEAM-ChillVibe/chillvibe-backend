@@ -10,6 +10,7 @@ import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
@@ -49,4 +50,7 @@ public interface PostService {
 
   // 게시글 검색 (좋아요 순으로 내림차순)
   Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable);
+
+  // 전체 게시글중 좋아요순으로 상위6개의 게시글 가져오기
+  List<PostSimpleResponseDto> getMainPostsByLikes();
 }
