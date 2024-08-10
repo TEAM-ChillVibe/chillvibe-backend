@@ -69,4 +69,6 @@ public class Post extends BaseTimeEntity {
   @ColumnDefault("0")
   @Column(name = "likeCount", nullable = true)
   private Integer likeCount;
+
+  private String thumbnailUrl;
 }

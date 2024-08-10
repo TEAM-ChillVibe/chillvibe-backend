@@ -4,6 +4,7 @@ import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
+import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
@@ -149,5 +150,11 @@ public class PostController {
   public ResponseEntity<Page<PostListResponseDto>> getPostsByUserLiked(Pageable pageable) {
     Page<PostListResponseDto> likedPostsPage = postService.getPostsByUserLiked(pageable);
     return ResponseEntity.ok(likedPostsPage);
+  }
+
+  @GetMapping("/main")
+  public ResponseEntity<List<PostSimpleResponseDto>> getMainpagePosts() {
+    List<PostSimpleResponseDto> mainPosts = postService.getMainPostsByLikes();
+    return ResponseEntity.ok(mainPosts);
   }
 }
