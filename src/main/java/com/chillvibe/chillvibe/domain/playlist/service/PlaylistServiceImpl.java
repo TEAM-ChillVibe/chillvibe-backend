@@ -52,7 +52,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   @Override
   public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
-    List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
+    List<Playlist> playlists = playlistRepository.findByUserIdOrderByCreatedAtDesc(currentUserId);
     return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 
