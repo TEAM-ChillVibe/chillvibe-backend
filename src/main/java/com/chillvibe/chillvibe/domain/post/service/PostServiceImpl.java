@@ -191,25 +191,8 @@ public class PostServiceImpl implements PostService {
     post.setTitle(postUpdateRequestDto.getTitle());
     post.setDescription(postUpdateRequestDto.getDescription());
 
-    // 기존 해시태그 관계 모두 제거
-//    post.getPostHashtag().clear();
-//
-//    postRepository.save(post);
-//
-//    List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
-//    hashtagService.updateHashtagsOfPost(post.getId(), hashtagIds);
-//
-//    return post.getId();
-
-    postHashtagRepository.deleteByPostId(postId);
-
     List<Long> hashtagIds = postUpdateRequestDto.getHashtagIds();
-    for (Long hashtagId : hashtagIds) {
-      Hashtag hashtag = hashtagRepository.findById(hashtagId)
-          .orElseThrow(() -> new ApiException(ErrorCode.HASHTAG_NOT_FOUND));
-      PostHashtag newPostHashtag = new PostHashtag(post, hashtag);
-      postHashtagRepository.save(newPostHashtag);
-    }
+    hashtagService.updateHashtagsOfPost(post.getId(), hashtagIds);
 
     return postRepository.save(post).getId();
   }

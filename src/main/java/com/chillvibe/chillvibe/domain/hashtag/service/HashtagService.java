@@ -17,6 +17,7 @@ import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -176,13 +177,12 @@ public class HashtagService {
 
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
-    List<Hashtag> hashtags = hashtagRepository.findAllById(hashtagIds);
-    List<PostHashtag> postHashtags = hashtags.stream()
-        .map(hashtag -> new PostHashtag(post, hashtag))
-        .toList();
 
-    post.setPostHashtag(new HashSet<>(postHashtags));
-
-    postHashtagRepository.saveAll(postHashtags);
+    for (Long hashtagId : hashtagIds) {
+      Hashtag hashtag = hashtagRepository.findById(hashtagId)
+          .orElseThrow(() -> new ApiException(ErrorCode.HASHTAG_NOT_FOUND));
+      PostHashtag newPostHashtag = new PostHashtag(post, hashtag);
+      postHashtagRepository.save(newPostHashtag);
+    }
   }
 }
