@@ -36,6 +36,6 @@ public class CommentResponseDto {
     this.postTitle = comment.getPost().getTitle();
     this.postAuthor = comment.getPost().getUser().getNickname();
     this.postAuthorProfileUrl = comment.getPost().getUser().getProfileUrl();
-    this.postTitleImageUrl = comment.getPost().getPostTitleImageUrl();
+    this.postTitleImageUrl = comment.getPost().getPlaylist().getThumbnailUrl();
   }
 }
