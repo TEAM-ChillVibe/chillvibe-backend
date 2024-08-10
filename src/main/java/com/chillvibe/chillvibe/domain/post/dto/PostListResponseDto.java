@@ -20,6 +20,7 @@ public class PostListResponseDto {
   private Set<String> hashtags;
   private UserSimpleResponseDto user;
   private Integer likeCount;
+  private String thumbnailUrl;
 
   public PostListResponseDto(Post post) {
     this.id = post.getId();
@@ -36,5 +37,6 @@ public class PostListResponseDto {
         post.getUser().getProfileUrl()
     ) : null;
     this.likeCount = post.getLikeCount() != null ? post.getLikeCount() : 0;
+    this.thumbnailUrl = post.getPlaylist().getThumbnailUrl();
   }
 }
