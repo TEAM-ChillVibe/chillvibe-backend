@@ -1,7 +1,6 @@
 package com.chillvibe.chillvibe.domain.user.entity;
 
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
-import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.UserHashtag;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
@@ -23,17 +22,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE user SET is_delete = true WHERE id=?")
+@Where(clause = "is_delete = false")
 public class User extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "user_id")
   private Long id;
 
   @Column(nullable = false, unique = true)
@@ -48,16 +50,15 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String profileUrl;
 
-  @Column(nullable = false)
   private String introduction;
 
   @Column(nullable = false)
   @Builder.Default
-  private boolean isPublic = true;
+  private boolean isPublic = Boolean.TRUE;
 
   @Column(nullable = false)
   @Builder.Default
-  private boolean isDelete = false;
+  private boolean isDelete = Boolean.FALSE;
 
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -87,4 +88,25 @@ public class User extends BaseTimeEntity {
 
     return this;
   }
+
+  public void updatePassword(String newPassword, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    this.password = bCryptPasswordEncoder.encode(newPassword);
+  }
+
+  public static User createUser(String nickname, String email, String password, String profileUrl, String introduction) {
+    return User.builder()
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .profileUrl(profileUrl)
+            .introduction(introduction)
+            .isPublic(true)
+            .isDelete(false)
+            .build();
+  }
+
+  public void passwordEncode(BCryptPasswordEncoder bCryptPasswordEncoder) {
+    this.password = bCryptPasswordEncoder.encode(this.password);
+  }
+
 }

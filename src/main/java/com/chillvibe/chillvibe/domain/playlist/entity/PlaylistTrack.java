@@ -20,24 +20,28 @@ public class PlaylistTrack {
   @JoinColumn(name = "playlist_id", nullable = false)
   private Playlist playlist;
 
-  @Column(name = "track_id", nullable = false)
+  @Column(nullable = false)
   private String trackId;
 
-  @Column(name = "name", nullable = false)
+  @Column(nullable = false)
   private String name;
 
-  @Column(name = "artist", nullable = false)
+  @Column(nullable = false)
   private String artist;
 
-  @Column(name = "duration", nullable = false)
+  @Column(nullable = false)
   private String duration;
 
-  // 미리보기는 Null일수도 있고 이와 관련한 처리는 이미 프론트엔드에서 진행했습니다.
-  @Column(name = "preview_url")
+  // 미리보기는 Null일수도 있습니다.
+  // 이와 관련한 처리는 이미 프론트엔드에서 진행했습니다.
   private String previewUrl;
 
-  @Column(name = "thumbnail_url", nullable = false)
+  @Column(nullable = false)
   private String thumbnailUrl;
+
+  public void setPlaylist(Playlist playlist) {
+    this.playlist = playlist;
+  }
 
   // 빌더 패턴 구현
   @Builder

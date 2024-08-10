@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface UserHashtagRepository extends JpaRepository<UserHashtag, Long> {
 
   List<UserHashtag> findByUserId(Long userId);
+
+  void deleteByUserId(Long userId);
 }
