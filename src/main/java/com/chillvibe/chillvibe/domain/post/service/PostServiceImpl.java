@@ -66,7 +66,7 @@ public class PostServiceImpl implements PostService {
       postPage = postRepository.findByOrderByCreatedAtDesc(pageRequest);
     }
 
-    return postPage.map(PostListResponseDto::new);
+    return postPage.map(postMapper::toPostListDto);
   }
 
 
@@ -110,7 +110,7 @@ public class PostServiceImpl implements PostService {
 
     Page<Post> postPage = postRepository.findByUserId(userId, pageable);
 
-    return postPage.map(PostListResponseDto::new);
+    return postPage.map(postMapper::toPostListDto);
   }
 
   // 게시글 삭제
@@ -138,8 +138,9 @@ public class PostServiceImpl implements PostService {
    *
    * @param requestDto 게시글 생성에 필요한 정보를 담고 있는 DTO 객체. 제목, 설명, 플레이리스트 ID 및 해시태그 ID 목록을 포함합니다.
    * @return 생성된 게시글의 ID를 반환합니다.
-   * @throws ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우 {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을
-   *                      경우 {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
+   * @throws ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우
+   *                      {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을 경우
+   *                      {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
    */
   @Transactional
   public Long createPost(PostCreateRequestDto requestDto) {
@@ -222,7 +223,7 @@ public class PostServiceImpl implements PostService {
       posts = postRepository.findAllByIdInOrderByCreatedAtDesc(postIds, pageable);
     }
 
-    return posts.map(PostListResponseDto::new);
+    return posts.map(postMapper::toPostListDto);
   }
 
   public Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable) {
@@ -232,7 +233,7 @@ public class PostServiceImpl implements PostService {
         pageable);
 
     // Post 엔티티를 PostListResponseDto로 변환
-    return postPage.map(PostListResponseDto::new);
+    return postPage.map(postMapper::toPostListDto);
   }
 
   // 사용자가 좋아요한 게시글 리스트 조회 (마이페이지)
@@ -246,7 +247,7 @@ public class PostServiceImpl implements PostService {
 
     Page<Post> postPage = postRepository.findAllByIdInOrderByCreatedAtDesc(likedPostIds, pageable);
 
-    return postPage.map(PostListResponseDto::new);
+    return postPage.map(postMapper::toPostListDto);
   }
 
   public List<PostSimpleResponseDto> getMainPostsByLikes() {
