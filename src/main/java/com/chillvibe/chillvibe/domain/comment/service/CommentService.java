@@ -11,6 +11,7 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import com.chillvibe.chillvibe.global.mapper.CommentMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,16 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final UserRepository userRepository;
   public final PostRepository postRepository;
+  private final CommentMapper commentMapper;
   public final UserUtil userUtil;
 
   @Autowired
   public CommentService(CommentRepository commentRepository, UserRepository userRepository,
-      PostRepository postRepository, UserUtil userUtil) {
+      PostRepository postRepository, CommentMapper commentMapper, UserUtil userUtil) {
     this.commentRepository = commentRepository;
     this.userRepository = userRepository;
     this.postRepository = postRepository;
+    this.commentMapper = commentMapper;
     this.userUtil = userUtil;
   }
 
@@ -43,7 +46,7 @@ public class CommentService {
     List<Comment> comments = commentRepository.findByPostOrderByCreatedAtDesc(post);
 
     return comments.stream()
-        .map(CommentResponseDto::new)
+        .map(commentMapper::toDto)
         .collect(Collectors.toList());
   }
 
@@ -57,13 +60,8 @@ public class CommentService {
 
     List<Comment> comments = commentRepository.findByUserOrderByCreatedAtDesc(user);
 
-    return comments.stream()
-        .map(comment -> {
-          CommentResponseDto dto = new CommentResponseDto(comment);
-          dto.setPostAuthor(comment.getUser().getNickname());
-          dto.setPostAuthorProfileUrl(comment.getUser().getProfileUrl());
-          return dto;
-        })
+    return  comments.stream()
+        .map(commentMapper::toDto)
         .collect(Collectors.toList());
   }
 
@@ -88,7 +86,7 @@ public class CommentService {
 
     Comment savedComment = commentRepository.save(comment);
 
-    return new CommentResponseDto(savedComment);
+    return commentMapper.toDto(savedComment);
   }
 
   // 댓글 수정
@@ -112,7 +110,7 @@ public class CommentService {
     comment.setContent(requestDto.getContent());
 
     Comment updatedComment = commentRepository.save(comment);
-    return new CommentResponseDto(updatedComment);
+    return commentMapper.toDto(updatedComment);
   }
 
   // 댓글 삭제

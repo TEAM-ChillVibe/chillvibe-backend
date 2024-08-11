@@ -51,6 +51,9 @@ dependencies {
 	// AWS S3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	// JAXB (to improve XML processing performance for AWS SDK)
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
 	// Spotify
 	implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.4.1'
 

@@ -7,8 +7,8 @@ import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.entity.PlaylistTrack;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistTrackMapper;
+import com.chillvibe.chillvibe.global.mapper.PlaylistMapper;
+import com.chillvibe.chillvibe.global.mapper.PlaylistTrackMapper;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistTrackRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
@@ -52,7 +52,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   @Override
   public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
-    List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
+    List<Playlist> playlists = playlistRepository.findByUserIdOrderByCreatedAtDesc(currentUserId);
     return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 

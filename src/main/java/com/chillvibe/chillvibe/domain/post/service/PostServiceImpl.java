@@ -3,7 +3,6 @@ package com.chillvibe.chillvibe.domain.post.service;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
-import com.chillvibe.chillvibe.domain.hashtag.entity.Hashtag;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
 import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
@@ -11,8 +10,9 @@ import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistTrackMapper;
+import com.chillvibe.chillvibe.global.mapper.CommentMapper;
+import com.chillvibe.chillvibe.global.mapper.PlaylistMapper;
+import com.chillvibe.chillvibe.global.mapper.PlaylistTrackMapper;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
@@ -48,9 +48,10 @@ public class PostServiceImpl implements PostService {
   private final UserRepository userRepository;
   private final PlaylistMapper playlistMapper;
   private final PlaylistTrackMapper playlistTrackMapper;
-  private final UserUtil userUtil;
   private final PostLikeService postLikeService;
+  private final CommentMapper commentMapper;
   private final HashtagRepository hashtagRepository;
+  private final UserUtil userUtil;
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
   public Page<PostListResponseDto> getPosts(String sortBy, int page, int size) {
@@ -87,7 +88,7 @@ public class PostServiceImpl implements PostService {
         playlist, playlistTrackResponseDtos);
 
     List<CommentResponseDto> commentResponseDtos = comments.stream()
-        .map(CommentResponseDto::new)
+        .map(commentMapper::toDto)
         .collect(Collectors.toList());
 
     return new PostDetailResponseDto(post, userInfoResponseDto, playlistResponseDto,

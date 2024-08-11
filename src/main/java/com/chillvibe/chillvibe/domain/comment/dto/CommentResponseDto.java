@@ -22,20 +22,4 @@ public class CommentResponseDto {
   private String postAuthor;
   private String postAuthorProfileUrl;
   private String postTitleImageUrl;
-
-  public CommentResponseDto(Comment comment) {
-    this.id = comment.getId();
-    this.content = comment.getContent();
-    this.createdAt = comment.getCreatedAt();
-    this.modifiedAt = comment.getModifiedAt();
-    this.userId = comment.getUser().getId();
-    this.postId = comment.getPost().getId();
-    this.userNickname = comment.getUser().getNickname();
-    this.userProfileUrl = comment.getUser().getProfileUrl();
-    this.userEmail = comment.getUser().getEmail();
-    this.postTitle = comment.getPost().getTitle();
-    this.postAuthor = comment.getPost().getUser().getNickname();
-    this.postAuthorProfileUrl = comment.getPost().getUser().getProfileUrl();
-    this.postTitleImageUrl = comment.getPost().getPlaylist().getThumbnailUrl();
-  }
 }
