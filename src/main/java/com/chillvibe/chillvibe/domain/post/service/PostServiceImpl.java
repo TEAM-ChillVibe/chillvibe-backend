@@ -93,7 +93,7 @@ public class PostServiceImpl implements PostService {
         .map(commentMapper::toDto)
         .collect(Collectors.toList());
 
-    return new PostDetailResponseDto(post, userInfoResponseDto, playlistResponseDto,
+    return postMapper.toPostDetailDto(post, userInfoResponseDto, playlistResponseDto,
         hashtagResponseDtos, commentResponseDtos);
   }
 

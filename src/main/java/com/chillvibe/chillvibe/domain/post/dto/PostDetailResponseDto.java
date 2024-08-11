@@ -23,18 +23,4 @@ public class PostDetailResponseDto {
   private List<HashtagResponseDto> hashtags; // 게시글에 달린 해시태그
   private List<CommentResponseDto> comments; // 게시글에 달린 댓글
 
-  public PostDetailResponseDto(Post post, UserInfoResponseDto user, PlaylistResponseDto playlists,
-      List<HashtagResponseDto> hashtags, List<CommentResponseDto> comments) {
-    this.id = post.getId();
-    this.title = post.getTitle();
-    this.description = post.getDescription();
-    this.likeCount = post.getLikeCount();
-    this.createdAt = post.getCreatedAt();
-    this.modifiedAt = post.getModifiedAt();
-    this.user = user;
-    this.playlists = playlists;
-    this.hashtags = hashtags;
-    this.comments = comments;
-
-  }
 }

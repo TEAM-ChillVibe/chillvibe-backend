@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PostListResponseDto {
-
   private Long id;
   private String title;
   private LocalDateTime createdAt;
@@ -21,22 +20,4 @@ public class PostListResponseDto {
   private UserSimpleResponseDto user;
   private Integer likeCount;
   private String thumbnailUrl;
-
-  public PostListResponseDto(Post post) {
-    this.id = post.getId();
-    this.title = post.getTitle();
-    this.createdAt = post.getCreatedAt();
-    this.trackCount = post.getPlaylist() != null ? post.getPlaylist().getTracks().size() : 0;
-    this.hashtags = post.getPostHashtag().stream()
-        .map(postHashtag -> postHashtag.getHashtag().getName())
-        .collect(Collectors.toSet());
-//        .toList();
-    this.user = post.getUser() != null ? new UserSimpleResponseDto(
-        post.getUser().getId(),
-        post.getUser().getNickname(),
-        post.getUser().getProfileUrl()
-    ) : null;
-    this.likeCount = post.getLikeCount() != null ? post.getLikeCount() : 0;
-    this.thumbnailUrl = post.getPlaylist().getThumbnailUrl();
-  }
 }
