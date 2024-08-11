@@ -78,12 +78,10 @@ public class PostController {
 
   // 게시글 생성
   @PostMapping
-  public ResponseEntity<PostListResponseDto> createPost(
+  public ResponseEntity<Long> createPost(
       @Valid @RequestBody PostCreateRequestDto requestDto) {
-
-    PostListResponseDto postResponseDto = postService.createPost(requestDto);
-
-    return ResponseEntity.ok(postResponseDto);
+    Long postId = postService.createPost(requestDto);
+    return ResponseEntity.ok(postId);
   }
 
   // 게시글 수정

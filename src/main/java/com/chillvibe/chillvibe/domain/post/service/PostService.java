@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
 
   // 게시글 생성
-  PostListResponseDto createPost(PostCreateRequestDto requestDto);
+  Long createPost(PostCreateRequestDto requestDto);
 
   // 전체 게시글 조회 - 최신순 & 인기순
   Page<PostListResponseDto> getPosts(String sortBy, int page, int size);

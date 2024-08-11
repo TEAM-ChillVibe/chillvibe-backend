@@ -28,6 +28,7 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import com.chillvibe.chillvibe.global.mapper.PostMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,7 @@ public class PostServiceImpl implements PostService {
   private final PostLikeService postLikeService;
   private final CommentMapper commentMapper;
   private final HashtagRepository hashtagRepository;
+  private final PostMapper postMapper;
   private final UserUtil userUtil;
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
@@ -135,40 +137,33 @@ public class PostServiceImpl implements PostService {
    * 새 게시글을 생성하고, 지정된 해시태그를 설정합니다.
    *
    * @param requestDto 게시글 생성에 필요한 정보를 담고 있는 DTO 객체. 제목, 설명, 플레이리스트 ID 및 해시태그 ID 목록을 포함합니다.
-   * @return 생성된 게시글의 정보를 담고 있는 {PostListResponseDto} 객체를 반환합니다.
+   * @return 생성된 게시글의 ID를 반환합니다.
    * @throws ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우 {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을
    *                      경우 {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
    */
   @Transactional
-  public PostListResponseDto createPost(PostCreateRequestDto requestDto) {
+  public Long createPost(PostCreateRequestDto requestDto) {
     Long userId = userUtil.getAuthenticatedUserId();
     if (userId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED); // 인증된 유저가 아닙니다.
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
     }
 
-    // 유저 받아오기.
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     long playlistId = requestDto.getPlaylistId();
-
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
 
-    Post post = new Post();
-    post.setTitle(requestDto.getTitle());
-    post.setDescription(requestDto.getDescription());
-    post.setPostTitleImageUrl("default image");
+    Post post = postMapper.toEntity(requestDto);
     post.setUser(user);
     post.setPlaylist(playlist);
-    post.setLikeCount(0);
 
     Post savedPost = postRepository.save(post);
 
-    List<Long> hashtagIds = requestDto.getHashtagIds();
-    hashtagService.updateHashtagsOfPost(savedPost.getId(), hashtagIds);
+    hashtagService.updateHashtagsOfPost(savedPost.getId(), requestDto.getHashtagIds());
 
-    return new PostListResponseDto(savedPost);
+    return savedPost.getId();
   }
 
   // 게시글 수정
