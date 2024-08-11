@@ -4,7 +4,6 @@ import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.entity.PostHashtag;
-import com.chillvibe.chillvibe.domain.hashtag.repository.HashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.repository.PostHashtagRepository;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
@@ -45,15 +44,26 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final PlaylistRepository playlistRepository;
   private final PostHashtagRepository postHashtagRepository;
+
   private final HashtagService hashtagService;
   private final UserRepository userRepository;
+  private final PostLikeService postLikeService;
+
   private final PlaylistMapper playlistMapper;
   private final PlaylistTrackMapper playlistTrackMapper;
-  private final PostLikeService postLikeService;
   private final CommentMapper commentMapper;
-  private final HashtagRepository hashtagRepository;
   private final PostMapper postMapper;
+
   private final UserUtil userUtil;
+
+  // 유저 검증 로직 모듈화
+  private Long getAuthenticatedUserIdOrThrow() {
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+    if (currentUserId == null) {
+      throw new ApiException(ErrorCode.UNAUTHENTICATED);
+    }
+    return currentUserId;
+  }
 
   // 전체 게시글 가져오기 - 생성일 순 & 좋아요 순
   public Page<PostListResponseDto> getPosts(String sortBy, int page, int size) {
@@ -117,10 +127,8 @@ public class PostServiceImpl implements PostService {
   @Transactional
   public void deletePost(Long postId) {
     // 삭제하려는 유저 정보를 가져온다.
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
+
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
@@ -144,12 +152,9 @@ public class PostServiceImpl implements PostService {
    */
   @Transactional
   public Long createPost(PostCreateRequestDto requestDto) {
-    Long userId = userUtil.getAuthenticatedUserId();
-    if (userId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId  = getAuthenticatedUserIdOrThrow();
 
-    User user = userRepository.findById(userId)
+    User user = userRepository.findById(currentUserId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     long playlistId = requestDto.getPlaylistId();
@@ -170,17 +175,11 @@ public class PostServiceImpl implements PostService {
   // 게시글 수정
   @Transactional
   public Long updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto) {
-    // 유저 찾기.
-    Long currentUserId = userUtil.getAuthenticatedUserId();
-    if (currentUserId == null) {
-      throw new ApiException(ErrorCode.UNAUTHENTICATED);
-    }
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
-    // 게시글 찾기.
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
-    // 게시글 작성자와 현재 사용자가 같은지 확인
     if (!post.getUser().getId().equals(currentUserId)) {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
