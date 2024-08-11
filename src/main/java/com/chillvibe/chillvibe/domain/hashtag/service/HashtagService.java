@@ -14,6 +14,7 @@ import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import com.chillvibe.chillvibe.global.mapper.HashtagMapper;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ public class HashtagService {
   private final PostRepository postRepository;
   public final UserUtil userUtil;
   private final UserRepository userRepository;
+  private final HashtagMapper hashtagMapper;
 
   /**
    * 시스템에 존재하는 모든 해시태그를 조회합니다.
@@ -47,9 +49,14 @@ public class HashtagService {
     if (hashtagRepository.count() == 0) {
       throw new ApiException(ErrorCode.HASHTAG_NOT_FOUND);
     }
-    return hashtagRepository.findAll().stream()
-        .map(Hashtag::toDto)
-        .collect(Collectors.toList());
+    // Mapper / 추가 코드
+    List<Hashtag> hashtags = hashtagRepository.findAll();
+    return hashtagMapper.hashtagsToHashtagResponseDtos(hashtags);
+
+    // Mapper / 기존 코드
+//    return hashtagRepository.findAll().stream()
+//        .map(Hashtag::toDto)
+//        .collect(Collectors.toList());
   }
 
   /**
@@ -75,9 +82,12 @@ public class HashtagService {
       return Collections.emptyList();
     }
 
-    return popularHashtags.stream()
-        .map(Hashtag::toDto)
-        .toList();
+    // Mapper / 추가 코드
+    return hashtagMapper.hashtagsToHashtagResponseDtos(popularHashtags.getContent());
+    // Mapper / 기존 코드
+//    return popularHashtags.stream()
+//        .map(Hashtag::toDto)
+//        .toList();
   }
 
   /**
@@ -92,9 +102,15 @@ public class HashtagService {
     if (postHashtags.isEmpty()) {
       return Collections.emptyList();
     }
-    return postHashtags.stream()
-        .map(postHashtag -> postHashtag.getHashtag().toDto())
+    // Mapper / 추가 코드
+    List<Hashtag> hashtags = postHashtags.stream()
+        .map(PostHashtag::getHashtag)
         .toList();
+    return hashtagMapper.hashtagsToHashtagResponseDtos(hashtags);
+    // Mapper / 기존 코드
+//    return postHashtags.stream()
+//        .map(postHashtag -> postHashtag.getHashtag().toDto())
+//        .toList();
   }
 
   /**
@@ -109,9 +125,17 @@ public class HashtagService {
     if (userHashtags.isEmpty()) {
       return Collections.emptyList();
     }
-    return userHashtags.stream()
-        .map(userHashtag -> userHashtag.getHashtag().toDto())
+    // Mapper / 추가 코드
+    List<Hashtag> hashtags = userHashtags.stream()
+        .map(UserHashtag::getHashtag)
         .toList();
+    return hashtagMapper.hashtagsToHashtagResponseDtos(hashtags);
+
+    //
+    // Mapper / 기존 코드
+//    return userHashtags.stream()
+//        .map(userHashtag -> userHashtag.getHashtag().toDto())
+//        .toList();
   }
 
   /**
