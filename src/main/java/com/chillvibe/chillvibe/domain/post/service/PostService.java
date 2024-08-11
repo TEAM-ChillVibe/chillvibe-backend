@@ -26,8 +26,6 @@ public interface PostService {
 
   // 게시글 수정
   Long updatePost(Long id, PostUpdateRequestDto postUpdateRequestDto);
-  // PostResponseDto updatePost(Long postId, String title, String description, String
-  // postTitleImageUrl, Long playlistId, List<Long> hashtagIds);
 
   // 게시글 삭제
   void deletePost(Long postId);
@@ -38,9 +36,9 @@ public interface PostService {
   // 게시글 검색 (좋아요 순으로 내림차순)
   Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable);
 
-
   // 좋아요한 게시글 조회
   Page<PostListResponseDto> getPostsByUserLiked(Pageable pageable);
+
   // 전체 게시글중 좋아요순으로 상위6개의 게시글 가져오기
   List<PostSimpleResponseDto> getMainPostsByLikes();
 }
