@@ -6,8 +6,10 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoResponseDto {
@@ -19,14 +21,4 @@ public class UserInfoResponseDto {
   private String introduction;
   private boolean isPublic;
   private List<HashtagResponseDto> hashtags;
-
-  public UserInfoResponseDto(User user, List<HashtagResponseDto> hashtags) {
-    this.userId = user.getId();
-    this.email = user.getEmail();
-    this.nickname = user.getNickname();
-    this.profileUrl = user.getProfileUrl();
-    this.introduction = user.getIntroduction();
-    this.isPublic = user.isPublic();
-    this.hashtags = hashtags;
-  }
 }

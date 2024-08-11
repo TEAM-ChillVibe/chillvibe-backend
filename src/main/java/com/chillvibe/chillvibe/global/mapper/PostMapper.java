@@ -24,6 +24,9 @@ public interface PostMapper {
   @Mapping(target = "user", ignore = true)
   @Mapping(target = "playlist", ignore = true)
   @Mapping(target = "postHashtag", ignore = true)
+  @Mapping(target = "postLike", ignore = true)
+  @Mapping(target = "comments", ignore = true)
+  @Mapping(target = "thumbnailUrl", ignore = true)
   @Mapping(target = "likeCount", constant = "0")
   Post toEntity(PostCreateRequestDto dto);
 

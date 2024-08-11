@@ -14,6 +14,7 @@ import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
 import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import com.chillvibe.chillvibe.global.mapper.UserMapper;
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
   private final HttpServletRequest request;
   private final HttpServletResponse response;
   private final HashtagService hashtagService;
+  private final UserMapper userMapper;
 
   public void join(String joinDto, MultipartFile multipartFile) {
 
@@ -206,15 +208,15 @@ public class UserServiceImpl implements UserService {
 //        .filter(Objects::nonNull)
 //        .toList();
 
-    return new UserInfoResponseDto(user, hashtags);
+//    return new UserInfoResponseDto(user, hashtags);
+    return userMapper.userToUserInfoResponseDto(user, hashtags);
   }
 
   public UserInfoResponseDto getUserInfo(Long userId) {
-
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
-//    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
+    //    List<UserHashtag> userHashtag = userHashtagRepository.findByUserId(userId);
 //
 //    List<Hashtag> hashtags = userHashtag.stream()
 //        .map(UserHashtag::getHashtag)
@@ -223,7 +225,7 @@ public class UserServiceImpl implements UserService {
 
     List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfUser(userId);
 
-    return new UserInfoResponseDto(user, hashtags);
+    return userMapper.userToUserInfoResponseDto(user, hashtags);
   }
 
   public User getUserById(Long userId) {

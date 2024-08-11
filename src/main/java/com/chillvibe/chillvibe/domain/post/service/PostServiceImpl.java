@@ -28,6 +28,7 @@ import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import com.chillvibe.chillvibe.global.mapper.PostMapper;
+import com.chillvibe.chillvibe.global.mapper.UserMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,7 @@ public class PostServiceImpl implements PostService {
   private final PlaylistTrackMapper playlistTrackMapper;
   private final CommentMapper commentMapper;
   private final PostMapper postMapper;
+  private final UserMapper userMapper;
 
   private final UserUtil userUtil;
 
@@ -91,7 +93,7 @@ public class PostServiceImpl implements PostService {
 
     List<HashtagResponseDto> hashtagResponseDtos = hashtagService.getHashtagsOfPost(postId);
 
-    UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(user, hashtagResponseDtos);
+    UserInfoResponseDto userInfoResponseDto = userMapper.userToUserInfoResponseDto(user, hashtagResponseDtos);
 
     List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(
         playlist.getTracks());
