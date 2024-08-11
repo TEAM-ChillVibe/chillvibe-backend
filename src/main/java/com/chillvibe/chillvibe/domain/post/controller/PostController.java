@@ -61,11 +61,12 @@ public class PostController {
   @GetMapping("/user/{userId}")
   public ResponseEntity<Page<PostListResponseDto>> getPostsByUserId(
       @PathVariable Long userId,
+      @RequestParam(defaultValue = "latest") String sortBy,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
 
-    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-    Page<PostListResponseDto> posts = postService.getPostsByUserId(userId, pageable);
+    Pageable pageable = PageRequest.of(page, size);
+    Page<PostListResponseDto> posts = postService.getPostsByUserId(userId, sortBy, pageable);
     return ResponseEntity.ok(posts);
   }
 

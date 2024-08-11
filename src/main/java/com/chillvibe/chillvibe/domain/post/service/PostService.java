@@ -22,7 +22,7 @@ public interface PostService {
   PostDetailResponseDto getPostById(Long postId);
 
   // 유저 페이지의 게시글 보기 (isPublic 확인 필요)
-  Page<PostListResponseDto> getPostsByUserId(Long userId, Pageable pageable);
+  Page<PostListResponseDto> getPostsByUserId(Long userId, String sortby, Pageable pageable);
 
   // 게시글 수정
   Long updatePost(Long id, PostUpdateRequestDto postUpdateRequestDto);

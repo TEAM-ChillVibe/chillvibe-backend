@@ -110,7 +110,7 @@ public class PostServiceImpl implements PostService {
   }
 
   // 사용자 ID로 게시글 목록 조회 (isPublic)
-  public Page<PostListResponseDto> getPostsByUserId(Long userId, Pageable pageable) {
+  public Page<PostListResponseDto> getPostsByUserId(Long userId, String sortBy, Pageable pageable) {
     // 유저 정보 조회.
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
@@ -120,7 +120,12 @@ public class PostServiceImpl implements PostService {
       return Page.empty(pageable);
     }
 
-    Page<Post> postPage = postRepository.findByUserId(userId, pageable);
+    Page<Post> postPage;
+    if ("popular".equalsIgnoreCase(sortBy)) {
+      postPage = postRepository.findByUserIdOrderByLikeCountDesc(userId, pageable);
+    } else {
+      postPage = postRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+    }
 
     return postPage.map(postMapper::toPostListDto);
   }
