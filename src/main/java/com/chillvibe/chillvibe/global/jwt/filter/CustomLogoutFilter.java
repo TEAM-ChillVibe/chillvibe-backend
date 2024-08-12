@@ -36,7 +36,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
     // POST/logout 엔트포인트 요청이 왔는지 확인
     String requestUri = request.getRequestURI();
-    if (!requestUri.matches("^\\/logout$")) {
+    if (!requestUri.matches("^\\/api/logout$")) {
 
       filterChain.doFilter(request, response);
       return;
