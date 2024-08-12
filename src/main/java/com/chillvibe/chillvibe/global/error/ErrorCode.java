@@ -52,6 +52,7 @@ public enum ErrorCode {
       LogLevel.ERROR),
   SPOTIFY_TOKEN_INITIALIZATION_ERROR(500, "S003", "Failed to initialize Spotify access token",
       LogLevel.ERROR),
+  SPOTIFY_INVALID_CATEGORY(400, "S004", "Invalid Categery", LogLevel.ERROR),
 
   // USER
   USER_NOT_FOUND(404, "U001", "User not found", LogLevel.ERROR),

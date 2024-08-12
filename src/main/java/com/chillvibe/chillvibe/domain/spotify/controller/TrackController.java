@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.spotify.controller;
 
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.service.SpotifyService;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,14 @@ public class TrackController {
     Pageable pageable = PageRequest.of(page, size);
     Page<TrackSearchDto> resultPage = spotifyService.searchTracks(query, pageable);
     return ResponseEntity.ok(resultPage);
+  }
+
+  @GetMapping("/recommendations")
+  public ResponseEntity<List<TrackSearchDto>> getRecommendations(
+      @RequestParam(defaultValue = "relax") String category
+  ){
+    List<TrackSearchDto> tracks = spotifyService.recommendTracks(category);
+    return ResponseEntity.ok(tracks);
   }
 
 }
