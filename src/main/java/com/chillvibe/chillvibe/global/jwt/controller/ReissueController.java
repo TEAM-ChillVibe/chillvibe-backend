@@ -1,6 +1,7 @@
 package com.chillvibe.chillvibe.global.jwt.controller;
 
 import com.chillvibe.chillvibe.global.jwt.service.ReissueService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Tag(name = "Reissue", description = "토큰 재발급")
 public class ReissueController {
 
   private final ReissueService reissueService;

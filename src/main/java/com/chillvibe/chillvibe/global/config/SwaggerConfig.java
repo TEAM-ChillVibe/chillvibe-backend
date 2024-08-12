@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+// API 문서 링크 => localhost:8080/swagger-ui/index.html
 @Configuration
 public class SwaggerConfig {
   @Bean
@@ -33,7 +34,7 @@ public class SwaggerConfig {
   private Info apiInfo() {
     return new Info()
         .title("ChillVibe")
-        .description("REST API for ChillVibe application")
+        .description("ChillVibe API 문서")
         .version("1.0.0");
   }
 }

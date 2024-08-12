@@ -7,6 +7,7 @@ import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/playlists")
 @RequiredArgsConstructor
+@Tag(name = "Playlist", description = "플레이리스트 API")
 public class PlaylistController {
 
   private final PlaylistService playlistService;

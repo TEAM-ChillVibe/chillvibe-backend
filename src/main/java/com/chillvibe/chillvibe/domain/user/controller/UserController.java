@@ -4,6 +4,7 @@ import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.ReAuthResponseDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Tag(name = "User", description = "유저 API")
 public class UserController {
 
   private final UserService userService;

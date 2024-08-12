@@ -3,6 +3,7 @@ package com.chillvibe.chillvibe.domain.comment.controller;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentRequestDto;
 import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.service.CommentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/comments")
+@Tag(name = "Comment", description = "댓글 API")
 public class CommentController {
 
   private final CommentService commentService;

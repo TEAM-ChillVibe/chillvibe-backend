@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.spotify.controller;
 
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.service.SpotifyService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tracks")
+@Tag(name = "Track", description = "트랙 API (Spotify API)")
 public class TrackController {
 
   private final SpotifyService spotifyService;
