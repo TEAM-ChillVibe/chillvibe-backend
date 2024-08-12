@@ -7,6 +7,7 @@ import com.chillvibe.chillvibe.global.jwt.filter.LoginFilter;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
 import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -78,7 +79,8 @@ public class SecurityConfig {
 
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+//                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kdt-cloud-3-team02-final.elicecoding.com"));
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
