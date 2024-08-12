@@ -30,7 +30,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
   private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*60*2L;
@@ -40,6 +40,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
   private final UserRepository userRepository;
+
+  public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+      RefreshRepository refreshRepository, UserRepository userRepository) {
+    this.authenticationManager = authenticationManager;
+    this.jwtUtil = jwtUtil;
+    this.refreshRepository = refreshRepository;
+    this.userRepository = userRepository;
+    setFilterProcessesUrl("/api/login"); // 로그인 경로 변경
+  }
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
