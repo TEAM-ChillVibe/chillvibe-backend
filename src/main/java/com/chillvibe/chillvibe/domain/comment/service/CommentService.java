@@ -25,7 +25,7 @@ public class CommentService {
   private final UserRepository userRepository;
   public final PostRepository postRepository;
   private final CommentMapper commentMapper;
-  public final UserUtil userUtil;
+  private final UserUtil userUtil;
 
   @Autowired
   public CommentService(CommentRepository commentRepository, UserRepository userRepository,

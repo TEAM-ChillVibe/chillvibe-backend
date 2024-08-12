@@ -35,9 +35,9 @@ public class HashtagService {
   private final PostHashtagRepository postHashtagRepository;
   private final UserHashtagRepository userHashtagRepository;
   private final PostRepository postRepository;
-  public final UserUtil userUtil;
   private final UserRepository userRepository;
   private final HashtagMapper hashtagMapper;
+  private final UserUtil userUtil;
 
   /**
    * 시스템에 존재하는 모든 해시태그를 조회합니다.
