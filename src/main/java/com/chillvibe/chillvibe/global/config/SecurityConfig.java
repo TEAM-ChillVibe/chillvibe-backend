@@ -101,19 +101,6 @@ public class SecurityConfig {
     httpSecurity
         .httpBasic(AbstractHttpConfigurer::disable);
 
-//    // 스프링 시큐리티 로그인 기본 엔드포인트 커스텀
-//    httpSecurity
-//        .formLogin(form -> form
-//            .loginProcessingUrl("/api/login")
-//            .permitAll());
-//
-//    // 스프링 시큐리티 로그아웃 기본 엔드포인트 커스텀
-//    httpSecurity
-//        .logout(logout -> logout
-//            .logoutUrl("/api/logout")
-//            .logoutSuccessUrl("/")
-//            .permitAll());
-
     // 경로별 인가 작업
     httpSecurity
         .authorizeHttpRequests((auth) -> auth
