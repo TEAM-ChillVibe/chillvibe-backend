@@ -17,12 +17,6 @@ import org.springframework.web.filter.GenericFilterBean;
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
 
-  private static final String LOGOUT_URI = "/logout";
-  private static final String LOGOUT_METHOD = "POST";
-  private static final String ACCESS_COOKIE_NAME = "access";
-  private static final String REFRESH_COOKIE_NAME = "refresh";
-
-
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
 

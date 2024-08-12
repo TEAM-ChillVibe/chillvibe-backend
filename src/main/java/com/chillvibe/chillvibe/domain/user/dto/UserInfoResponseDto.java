@@ -1,7 +1,6 @@
 package com.chillvibe.chillvibe.domain.user.dto;
 
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
-import com.chillvibe.chillvibe.domain.user.entity.User;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
