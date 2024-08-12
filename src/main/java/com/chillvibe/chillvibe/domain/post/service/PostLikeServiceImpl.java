@@ -84,7 +84,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     postRepository.save(post);
 
     // 해시태그 누적 좋아요 수 변경
-    hashtagService.adjustHashtagLikes(postId, true);
+    hashtagService.adjustHashtagLikes(postId, false);
   }
 
   @Transactional(readOnly = true)
