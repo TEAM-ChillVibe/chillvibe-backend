@@ -145,6 +145,7 @@ public class HashtagService {
    * @param increase 좋아요 수를 증가시킬지 감소시킬지 결정하는 플래그.
    *                 `true`일 경우 총 좋아요 수를 증가시키고, `false`일 경우 감소시킵니다.
    */
+  @Transactional
   public void adjustHashtagLikes(Long postId, boolean increase) {
     List<PostHashtag> postHashtags = postHashtagRepository.findByPostId(postId);
 
