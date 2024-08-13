@@ -5,6 +5,7 @@ import com.chillvibe.chillvibe.domain.comment.dto.CommentResponseDto;
 import com.chillvibe.chillvibe.domain.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,7 @@ public class CommentController {
   @PostMapping
   @Operation(summary = "댓글 생성하기", description = "유저가 댓글을 작성하는데 사용하는 API")
   public ResponseEntity<CommentResponseDto> createComment(
-      @RequestBody CommentRequestDto requestDto) {
+      @RequestBody @Valid CommentRequestDto requestDto) {
     CommentResponseDto responseDto = commentService.createComment(requestDto);
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
