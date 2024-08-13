@@ -62,6 +62,7 @@ public class Post extends BaseTimeEntity {
   private String title;
 
   @Lob
+  @Column(columnDefinition = "LONGTEXT")
   private String description;
 
   @ColumnDefault("0")
