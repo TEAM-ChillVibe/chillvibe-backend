@@ -60,6 +60,8 @@ public enum ErrorCode {
   USER_ACCOUNT_DELETED(403, "U003", "User account has been deleted", LogLevel.ERROR),
   INVALID_PASSWORD(400, "U004", "Invalid password", LogLevel.ERROR),
   PASSWORDS_DO_NOT_MATCH(400, "U005", "Password do not match", LogLevel.ERROR),
+  INVALID_EMAIL(400, "U006", "Invalid Email", LogLevel.ERROR),
+  INVALID_NICKNAME(400, "U007", "Invalid Nickname", LogLevel.ERROR),
 
   // SECURE
   UNAUTHENTICATED(401, "SC001", "User not authenticated", LogLevel.WARN);

@@ -62,6 +62,22 @@ public class UserServiceImpl implements UserService {
     // 이메일 가져와서 이미 존재하는 이메일인지 확인
     String email = parsedJoinDto.getEmail();
     String password = parsedJoinDto.getPassword();
+    String nickname = parsedJoinDto.getNickname();
+
+    // 이메일 유효성 검증
+    if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+      throw new ApiException(ErrorCode.INVALID_EMAIL);
+    }
+
+    // 비밀번호 검증 (최소 8자, 숫자와 특수문자 포함)
+    if (password == null || !password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_])[a-zA-Z\\d\\W_]{8,}$")) {
+      throw new ApiException(ErrorCode.INVALID_PASSWORD);
+    }
+
+    // 닉네임 검증 (빈 값 확인)
+    if (nickname == null || nickname.trim().isEmpty()) {
+      throw new ApiException(ErrorCode.INVALID_NICKNAME);
+    }
 
     Boolean isExist = userRepository.existsByEmail(email);
 
