@@ -46,7 +46,7 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body("비밀번호 변경 완료");
   }
 
-  @DeleteMapping("/users/delete")
+  @PostMapping("/users/delete")
   public ResponseEntity<String> softDeleteUser(@RequestBody UserDeleteRequestDto userDeleteRequestDto) {
     userService.softDeleteUser(userDeleteRequestDto);
     return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴 완료");
