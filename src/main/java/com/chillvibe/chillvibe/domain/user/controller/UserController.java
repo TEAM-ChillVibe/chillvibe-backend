@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.user.controller;
 
 import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.ReAuthResponseDto;
+import com.chillvibe.chillvibe.domain.user.dto.UserDeleteRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,9 +46,9 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body("비밀번호 변경 완료");
   }
 
-  @PatchMapping("/users/delete")
-  public ResponseEntity<String> softDeleteUser() {
-    userService.softDeleteUser();
+  @DeleteMapping("/users/delete")
+  public ResponseEntity<String> softDeleteUser(@RequestBody UserDeleteRequestDto userDeleteRequestDto) {
+    userService.softDeleteUser(userDeleteRequestDto);
     return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴 완료");
   }
 

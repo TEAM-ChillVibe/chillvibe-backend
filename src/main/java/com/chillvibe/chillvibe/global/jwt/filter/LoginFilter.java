@@ -85,9 +85,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     // 탈퇴된 사용자일 경우
-//    if (user.isDelete()) {
-//      throw new ApiException(ErrorCode.USER_ACCOUNT_DELETED);
-//    }
     if (user.isDelete()) {
       response.setStatus(HttpStatus.FORBIDDEN.value());  // 403 Forbidden
       try {
