@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.spotify.controller;
 
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.chillvibe.chillvibe.domain.spotify.service.SpotifyService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ public class TrackController {
     this.spotifyService = spotifyService;
   }
 
+  @Operation(summary = "트랙 검색", description = "Spotify API를 이용하여 트랙을 검색하는데 사용하는 API")
   @GetMapping("/search")
   public ResponseEntity<Page<TrackSearchDto>> getTracksSearchResults(
       @RequestParam String query,
@@ -34,6 +36,7 @@ public class TrackController {
     return ResponseEntity.ok(resultPage);
   }
 
+  @Operation(summary = "트랙 추천", description = "Spotify API를 이용하여 카테고리별 트랙을 추천받는데 사용하는 API")
   @GetMapping("/recommendations")
   public ResponseEntity<List<TrackSearchDto>> getRecommendations(
       @RequestParam(defaultValue = "relax") String category
