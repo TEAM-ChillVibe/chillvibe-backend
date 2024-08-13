@@ -11,6 +11,7 @@ public class PlaylistResponseDto {
   private Long id;
   private String title;
   private String thumbnailUrl;
+  private LocalDateTime createdAt;
   private LocalDateTime modifiedAt;
   private int trackCount;
   private List<PlaylistTrackResponseDto> tracks;
