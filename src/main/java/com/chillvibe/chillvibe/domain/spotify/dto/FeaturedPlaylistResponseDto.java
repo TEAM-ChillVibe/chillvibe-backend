@@ -16,7 +16,7 @@ public class FeaturedPlaylistResponseDto {
   @Schema(description = "플레이리스트 썸네일 URL")
   private String imageUrl;
   @Schema(description = "플레이리스트에 들어있는 트랙들")
-  private List<TrackSearchDto> tracks;
+  private List<TrackResponseDto> tracks;
   @Schema(description = "총 곡의 수")
   private long totalTracks; // 총 곡의 수
   @Schema(description = "총 페이지")

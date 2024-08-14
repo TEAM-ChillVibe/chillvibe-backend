@@ -1,11 +1,10 @@
 package com.chillvibe.chillvibe.domain.spotify.controller;
 
 import com.chillvibe.chillvibe.domain.spotify.dto.FeaturedPlaylistResponseDto;
-import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
+import com.chillvibe.chillvibe.domain.spotify.dto.TrackResponseDto;
 import com.chillvibe.chillvibe.domain.spotify.service.SpotifyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,12 +31,12 @@ public class TrackController {
 
   @Operation(summary = "트랙 검색", description = "Spotify API를 이용하여 트랙을 검색하는데 사용하는 API")
   @GetMapping("/search")
-  public ResponseEntity<Page<TrackSearchDto>> getTracksSearchResults(
+  public ResponseEntity<Page<TrackResponseDto>> getTracksSearchResults(
       @RequestParam String query,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Page<TrackSearchDto> resultPage = spotifyService.searchTracks(query, pageable);
+    Page<TrackResponseDto> resultPage = spotifyService.searchTracks(query, pageable);
     return ResponseEntity.ok(resultPage);
   }
 

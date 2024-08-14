@@ -1,6 +1,6 @@
 package com.chillvibe.chillvibe.global.mapper;
 
-import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
+import com.chillvibe.chillvibe.domain.spotify.dto.TrackResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import se.michaelthelin.spotify.model_objects.specification.Track;
@@ -15,7 +15,7 @@ public interface SpotifyMapper {
   @Mapping(target = "thumbnailUrl", expression = "java(track.getAlbum().getImages()[0].getUrl())")
   @Mapping(target = "previewUrl", source = "previewUrl")
   @Mapping(target = "duration", expression = "java(formatDuration(track.getDurationMs()))")
-  TrackSearchDto trackToTrackSearchDto(Track track);
+  TrackResponseDto trackToTrackSearchDto(Track track);
 
   // Spotify API는 ms 단위로 재생시간이 들어온다.
   // 이것을 분:초로 변환 (예 : 03:30초)

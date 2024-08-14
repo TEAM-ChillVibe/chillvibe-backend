@@ -1,18 +1,16 @@
 package com.chillvibe.chillvibe.domain.spotify.service;
 
 import com.chillvibe.chillvibe.domain.spotify.dto.FeaturedPlaylistResponseDto;
-import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
+import com.chillvibe.chillvibe.domain.spotify.dto.TrackResponseDto;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.mapper.SpotifyMapper;
 import com.neovisionaries.i18n.CountryCode;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.core5.http.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,15 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-import se.michaelthelin.spotify.model_objects.special.FeaturedPlaylists;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
-import se.michaelthelin.spotify.model_objects.specification.Recommendations;
 import se.michaelthelin.spotify.model_objects.specification.Track;
-import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
-import se.michaelthelin.spotify.requests.data.browse.GetRecommendationsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 
 @Service
@@ -48,7 +41,7 @@ public class SpotifyService {
     this.spotifyMapper = spotifyMapper;
   }
 
-  public Page<TrackSearchDto> searchTracks(String query, Pageable pageable) {
+  public Page<TrackResponseDto> searchTracks(String query, Pageable pageable) {
     try {
       log.info("== 트랙 검색 API 호출 확인 == 검색어: {}", query);
 
@@ -64,7 +57,7 @@ public class SpotifyService {
       // 우리가 구성한 페이지 구성으로 SPOTIFY에 페이지 요청
       Paging<Track> trackPaging = searchRequest.execute();
 
-      List<TrackSearchDto> tracks = Arrays.stream(trackPaging.getItems())
+      List<TrackResponseDto> tracks = Arrays.stream(trackPaging.getItems())
           .map(spotifyMapper::trackToTrackSearchDto)
           .collect(Collectors.toList());
 
@@ -102,14 +95,14 @@ public class SpotifyService {
         });
   }
 
-  private CompletableFuture<Page<TrackSearchDto>> getPlaylistTracks(String playlistId, int page, int size) {
+  private CompletableFuture<Page<TrackResponseDto>> getPlaylistTracks(String playlistId, int page, int size) {
     return spotifyApi.getPlaylistsItems(playlistId)
         .limit(size)
         .offset(page * size)
         .build()
         .executeAsync()
         .thenApply(playlistTrackPaging -> {
-          List<TrackSearchDto> tracks = Arrays.stream(playlistTrackPaging.getItems())
+          List<TrackResponseDto> tracks = Arrays.stream(playlistTrackPaging.getItems())
               .map(PlaylistTrack::getTrack)
               .filter(track -> track instanceof Track)
               .map(track -> (Track) track)
