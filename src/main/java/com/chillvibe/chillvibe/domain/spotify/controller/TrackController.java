@@ -41,15 +41,6 @@ public class TrackController {
     return ResponseEntity.ok(resultPage);
   }
 
-  @Operation(summary = "트랙 추천", description = "Spotify API를 이용하여 카테고리별 트랙을 추천받는데 사용하는 API")
-  @GetMapping("/recommendations")
-  public ResponseEntity<List<TrackSearchDto>> getRecommendations(
-      @RequestParam(defaultValue = "relax") String category
-  ){
-    List<TrackSearchDto> tracks = spotifyService.recommendTracks(category);
-    return ResponseEntity.ok(tracks);
-  }
-
   @Operation(summary = "Spotify 인기 플레이리스트 가져오기", description = "Spotify API를 이용하여 인기 플레이리스트를 가져옵니다.")
   @GetMapping("/featured-playlists")
   public CompletableFuture<ResponseEntity<FeaturedPlaylistResponseDto>> getFeaturedPlaylist(
