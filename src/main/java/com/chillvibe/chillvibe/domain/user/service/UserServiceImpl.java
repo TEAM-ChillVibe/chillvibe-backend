@@ -79,6 +79,9 @@ public class UserServiceImpl implements UserService {
     if (nickname == null || nickname.trim().isEmpty()) {
       throw new ApiException(ErrorCode.INVALID_NICKNAME);
     }
+    if (nickname.length() > 12) {
+      throw new ApiException(ErrorCode.INVALID_NICKNAME);
+    }
 
     Boolean isExist = userRepository.existsByEmail(email);
 
