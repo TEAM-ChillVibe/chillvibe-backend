@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.spotify.service;
 
+import com.chillvibe.chillvibe.domain.spotify.dto.FeaturedPlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
@@ -8,19 +9,25 @@ import com.neovisionaries.i18n.CountryCode;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.special.FeaturedPlaylists;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Recommendations;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.requests.data.browse.GetRecommendationsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 
@@ -152,5 +159,49 @@ public class SpotifyService {
 
   }
 
+  public CompletableFuture<FeaturedPlaylistResponseDto> getFeaturedPlaylist(String locale, int page, int size) {
+    return spotifyApi.getListOfFeaturedPlaylists()
+        .limit(1)
+        .offset(0)
+        .country(CountryCode.KR)
+        .locale(locale)
+        .build()
+        .executeAsync()
+        .thenCompose(featuredPlaylists -> {
+          PlaylistSimplified playlist = featuredPlaylists.getPlaylists().getItems()[0];
+          return getPlaylistTracks(playlist.getId(), page, size)
+              .thenApply(tracksPage -> new FeaturedPlaylistResponseDto(
+                  featuredPlaylists.getMessage(),
+                  playlist.getName(),
+                  playlist.getImages()[0].getUrl(),
+                  tracksPage.getContent(),
+                  tracksPage.getTotalElements(),
+                  tracksPage.getTotalPages(),
+                  tracksPage.getNumber()
+              ));
+        });
+  }
+
+  private CompletableFuture<Page<TrackSearchDto>> getPlaylistTracks(String playlistId, int page, int size) {
+    return spotifyApi.getPlaylistsItems(playlistId)
+        .limit(size)
+        .offset(page * size)
+        .build()
+        .executeAsync()
+        .thenApply(playlistTrackPaging -> {
+          List<TrackSearchDto> tracks = Arrays.stream(playlistTrackPaging.getItems())
+              .map(PlaylistTrack::getTrack)
+              .filter(track -> track instanceof Track)
+              .map(track -> (Track) track)
+              .map(spotifyMapper::trackToTrackSearchDto)
+              .collect(Collectors.toList());
+
+          return new PageImpl<>(
+              tracks,
+              PageRequest.of(page, size),
+              playlistTrackPaging.getTotal()
+          );
+        });
+  }
 
 }
