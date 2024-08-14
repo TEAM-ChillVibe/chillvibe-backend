@@ -17,6 +17,7 @@ import com.chillvibe.chillvibe.global.common.ThumbnailGenerator;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserRepository userRepository;
   private final ThumbnailGenerator thumbnailGenerator;
+  private final S3Uploader s3Uploader;
   private final UserUtil userUtil;
 
   private Long getAuthenticatedUserIdOrThrow() {
@@ -235,6 +237,11 @@ public class PlaylistServiceImpl implements PlaylistService {
   public void updatePlaylistThumbnail(Long playlistId) {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    String oldThumbnailUrl = playlist.getThumbnailUrl();
+    if (oldThumbnailUrl != null) {
+      s3Uploader.deleteFile(oldThumbnailUrl);
+    }
 
     List<String> albumArtUrls = playlist.getTracks().stream()
         .map(PlaylistTrack::getThumbnailUrl)

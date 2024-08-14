@@ -2,6 +2,8 @@ package com.chillvibe.chillvibe.global.common;
 
 import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import jakarta.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Slf4j
@@ -40,16 +43,15 @@ public class ThumbnailGenerator {
     return generateAndUploadThumbnail(albumArtUrls, "playlists", playlistId);
   }
 
-  // 썸네일을 생성하고 JPG 형태로 변환하고 S3에 업로드
-  public String generateAndUploadThumbnail(List<String> albumArtUrls, String dirName,
-      Long playlistId) throws IOException {
+  public String generateAndUploadThumbnail(List<String> albumArtUrls, String dirName, Long playlistId) throws IOException {
     BufferedImage thumbnail = generateThumbnail(albumArtUrls);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ImageIO.write(thumbnail, "jpg", baos);
     byte[] imageBytes = baos.toByteArray();
 
-    String fileName = String.format("playlist_%d_thumbnail.jpg", playlistId);
-    return s3Uploader.uploadOrReplace(imageBytes, dirName, fileName);
+    InputStream inputStream = new ByteArrayInputStream(imageBytes);
+    String originalFileName = "thumbnail.jpg";
+    return s3Uploader.upload(inputStream, originalFileName, dirName);
   }
 
   // 트랙 수에 따라 적절한 썸네일 생성 메서드 호출
