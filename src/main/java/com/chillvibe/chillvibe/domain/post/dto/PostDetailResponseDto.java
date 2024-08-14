@@ -30,6 +30,8 @@ public class PostDetailResponseDto {
   @Schema(description = "게시글 수정일")
   private LocalDateTime modifiedAt; // 게시글 수정일
 
+  @Schema(description = "로그인한 유저가 좋아요 눌렀는지 여부")
+  private boolean userLike;
 
   @Schema(description = "게시글 작성자")
   private UserInfoResponseDto user; // 게시글 작성자

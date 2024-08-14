@@ -9,6 +9,7 @@ import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
+import com.chillvibe.chillvibe.domain.post.repository.PostLikeRepository;
 import com.chillvibe.chillvibe.global.mapper.CommentMapper;
 import com.chillvibe.chillvibe.global.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.global.mapper.PlaylistTrackMapper;
@@ -45,6 +46,7 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final PlaylistRepository playlistRepository;
   private final PostHashtagRepository postHashtagRepository;
+  private final PostLikeRepository postLikeRepository;
 
   private final HashtagService hashtagService;
   private final UserRepository userRepository;
@@ -84,6 +86,11 @@ public class PostServiceImpl implements PostService {
 
   // 특정 게시글 조회
   public PostDetailResponseDto getPostById(Long postId) {
+    // 유저 좋아요 여부를 확인
+    Long currentUserId = userUtil.getAuthenticatedUserId();
+
+    boolean userLike = postLikeRepository.existsByUserIdAndPostId(currentUserId, postId);
+
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
 
@@ -105,7 +112,7 @@ public class PostServiceImpl implements PostService {
         .map(commentMapper::toDto)
         .collect(Collectors.toList());
 
-    return postMapper.toPostDetailDto(post, userInfoResponseDto, playlistResponseDto,
+    return postMapper.toPostDetailDto(post, userLike, userInfoResponseDto, playlistResponseDto,
         hashtagResponseDtos, commentResponseDtos);
   }
 

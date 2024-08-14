@@ -43,11 +43,12 @@ public interface PostMapper {
   @Mapping(target = "likeCount", source = "post.likeCount")
   @Mapping(target = "createdAt", source = "post.createdAt")
   @Mapping(target = "modifiedAt", source = "post.modifiedAt")
+  @Mapping(target = "userLike", source = "userLike")
   @Mapping(target = "user", source = "userInfoResponseDto")
   @Mapping(target = "playlists", source = "playlistResponseDto")
   @Mapping(target = "hashtags", source = "hashtagResponseDtos")
   @Mapping(target = "comments", source = "commentResponseDtos")
-  PostDetailResponseDto toPostDetailDto(Post post,
+  PostDetailResponseDto toPostDetailDto(Post post, boolean userLike,
       UserInfoResponseDto userInfoResponseDto,
       PlaylistResponseDto playlistResponseDto,
       List<HashtagResponseDto> hashtagResponseDtos,
