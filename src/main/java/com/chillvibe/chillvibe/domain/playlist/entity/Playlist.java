@@ -64,6 +64,10 @@ public class Playlist extends BaseTimeEntity {
     track.setPlaylist(this);  // 양방향 관계 설정
   }
 
+  public void editTitle(String newTitle) {
+    this.title = newTitle;
+  }
+
   public void removeTracks(List<PlaylistTrack> tracksToRemove) {
     for (PlaylistTrack track : tracksToRemove) {
       this.tracks.remove(track);

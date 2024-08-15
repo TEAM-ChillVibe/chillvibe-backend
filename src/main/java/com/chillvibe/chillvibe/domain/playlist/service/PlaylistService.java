@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistCreateRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
@@ -20,6 +21,8 @@ public interface PlaylistService {
   Long createEmptyPlaylist(String title);
   // 플레이리스트에 트랙 추가하기.
   PlaylistTrackResponseDto addTrackToPlaylist(Long PlaylistId, PlaylistTrackRequestDto requestDto);
+  // 플레이리스트 제목 수정
+  void editPlaylistTitle(PlaylistCreateRequestDto playlistCreateRequestDto, Long playlistId);
   // 플레이리스트 상세(수정) 페이지 - 플레이리스트 삭제
   void deletePlaylist(Long playlistId);
   // 플레이리스트 상세(수정) 페이지 - 선택한 트랙들 삭제하기
