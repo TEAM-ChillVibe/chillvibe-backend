@@ -1,6 +1,5 @@
 package com.chillvibe.chillvibe.domain.post.controller;
 
-import com.chillvibe.chillvibe.domain.playlist.service.PlaylistService;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
@@ -8,9 +7,7 @@ import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
-import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,8 +35,6 @@ public class PostController {
 
   private final PostLikeService postLikeService;
   private final PostService postService;
-  private final PlaylistService playlistService;
-  private final UserUtil userUtil;
 
 
   // 전체 게시글 조회
@@ -138,7 +132,7 @@ public class PostController {
    * @param size      페이지 크기 (기본값: 10)
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 Page 객체, 각 포스트는 PostRequestDto로 변환됨
    */
-  @Operation(summary = "게시글에 해당하는 해쉬태그 조회", description = "주어진 해시태그 ID에 해당하는 포스트를 페이지네이션하여 조회하는 API")
+  @Operation(summary = "게시글에 해당하는 해시태그 조회", description = "주어진 해시태그 ID에 해당하는 포스트를 페이지네이션하여 조회하는 API")
   @GetMapping("/hashtags")
   public ResponseEntity<Page<PostListResponseDto>> getPostsByHashtagId(
       @RequestParam(defaultValue = "latest") String sortBy,

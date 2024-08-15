@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Schema(description = "PostListItem 컴포넌트에 필요한 DTO \n\n" +
+    "게시글 조회, 마이페이지 - 내 게시글 등의 곳에서 사용됩니다.")
 @Data
 @NoArgsConstructor
 public class PostListResponseDto {

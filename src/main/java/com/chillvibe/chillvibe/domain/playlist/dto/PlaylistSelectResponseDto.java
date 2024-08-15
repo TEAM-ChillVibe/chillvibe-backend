@@ -8,8 +8,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PlaylistSelectResponseDto {
+
   @Schema(description = "트랙을 추가할 플레이리스트 ID")
   private Long id;
+
   @Schema(description = "트랙을 추가할 플레이리스트의 제목")
   private String title;
 }

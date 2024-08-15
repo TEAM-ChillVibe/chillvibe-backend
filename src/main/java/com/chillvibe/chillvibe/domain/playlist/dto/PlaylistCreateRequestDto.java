@@ -10,8 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlaylistCreateRequestDto {
+
+  @Schema(description = "플레이리스트 제목")
   @NotBlank(message = "플레이리스트 제목을 입력하세요.")
   @Size(min = 1, max = 50, message = "플레이리스트의 제목은 1자 이상, 50자 이하여야 합니다.")
-  @Schema(description = "플레이리스트 제목")
   private String title;
 }

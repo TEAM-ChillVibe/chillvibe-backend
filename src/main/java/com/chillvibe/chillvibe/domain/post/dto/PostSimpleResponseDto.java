@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Schema(description = "PostListItemMini 컴포넌트에 필요한 DTO \n\n" +
+    "메인 페이지에서 사용됩니다.")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -18,6 +20,7 @@ public class PostSimpleResponseDto {
 
   @Schema(description = "게시글 작성자 정보(유저Id, nickname, 프로필URL")
   private UserSimpleResponseDto user;
-  private String thumbnailUrl;
 
+  @Schema(description = "게시글 썸네일 이미지")
+  private String thumbnailUrl;
 }

@@ -11,12 +11,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PlaylistSimpleResponseDto {
+
   @Schema(description = "플레이리스트 ID")
   private Long id;
+
   @Schema(description = "플레이리스트 제목")
   private String title;
+
   @Schema(description = "플레이리스트의 총 트랙 수")
   private int trackCount;
+
   @Schema(description = "플레이리스트 썸네일 URL")
   private String thumbnailUrl;
 }
