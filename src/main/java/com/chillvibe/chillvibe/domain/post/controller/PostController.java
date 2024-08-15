@@ -58,6 +58,19 @@ public class PostController {
     return ResponseEntity.ok(responseDto);
   }
 
+  // 로그인한 유저 자신의 게시글 조회
+  @Operation(summary = "로그인한 사용자ID로 게시글 조회", description = "로그인한 사용자가 작성한 게시글 불러오는 API")
+  @GetMapping("/user")
+  public ResponseEntity<Page<PostListResponseDto>> getUSerPosts(
+      @RequestParam(defaultValue = "latest") String sortBy,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    Pageable pageable = PageRequest.of(page, size);
+    Page<PostListResponseDto> posts = postService.getUserPosts(sortBy, pageable);
+    return ResponseEntity.ok(posts);
+  }
+
   // 특정 유저 게시글 조회
   @Operation(summary = "userId로 게시글 조회", description = "특정 userId가 작성한 게시글 불러오는 API")
   @GetMapping("/user/{userId}")

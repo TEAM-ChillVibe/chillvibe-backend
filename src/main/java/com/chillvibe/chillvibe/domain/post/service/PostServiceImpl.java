@@ -210,7 +210,18 @@ public class PostServiceImpl implements PostService {
         hashtagResponseDtos, commentResponseDtos);
   }
 
+  // 로그인한 사용자 자신의 게시글 목록 조회
+  public Page<PostListResponseDto> getUserPosts(String sortBy, Pageable pageable) {
+    // 로그인한 사용자의 정보 조회
+    Long userId = userUtil.getAuthenticatedUserId();
 
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    Page<Post> postPage = postRepository.findByUserId(userId, pageable);
+
+    return postPage.map(postMapper::toPostListDto);
+  }
 
   // 사용자 ID로 게시글 목록 조회 (isPublic)
   public Page<PostListResponseDto> getPostsByUserId(Long userId, String sortBy, Pageable pageable) {
