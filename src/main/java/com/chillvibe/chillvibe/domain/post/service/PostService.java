@@ -19,6 +19,9 @@ public interface PostService {
   // 특정 게시글 상세 조회
   PostDetailResponseDto getPostById(Long postId);
 
+  // 로그인한 유저 자신의 게시글 보기
+  Page<PostListResponseDto> getUserPosts(String sortBy, Pageable pageable);
+
   // 유저 페이지의 게시글 보기 (isPublic 확인 필요)
   Page<PostListResponseDto> getPostsByUserId(Long userId, String sortby, Pageable pageable);
 
