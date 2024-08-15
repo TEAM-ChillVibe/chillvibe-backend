@@ -3,9 +3,7 @@ package com.chillvibe.chillvibe.domain.post.service;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
-import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -39,6 +37,6 @@ public interface PostService {
   // 좋아요한 게시글 조회
   Page<PostListResponseDto> getPostsByUserLiked(Pageable pageable);
 
-  // 전체 게시글중 좋아요순으로 상위6개의 게시글 가져오기
-  List<PostSimpleResponseDto> getMainPostsByLikes();
+  // 메인 페이지 - 전체 게시글 좋아요 순으로 6개씩 페이지네이션
+  Page<PostListResponseDto> getMainPostsByLikes(int page, int size);
 }

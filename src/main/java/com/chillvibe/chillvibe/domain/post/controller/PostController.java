@@ -3,7 +3,6 @@ package com.chillvibe.chillvibe.domain.post.controller;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
-import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.service.PostLikeService;
 import com.chillvibe.chillvibe.domain.post.service.PostService;
@@ -165,8 +164,11 @@ public class PostController {
 
   @Operation(summary = "메인페이지 표시용 전체 게시글 조회", description = "메인 페이지에 전체 게시글을 불러오는 API")
   @GetMapping("/main")
-  public ResponseEntity<List<PostSimpleResponseDto>> getMainpagePosts() {
-    List<PostSimpleResponseDto> mainPosts = postService.getMainPostsByLikes();
+  public ResponseEntity<Page<PostListResponseDto>> getMainPagePosts(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "6") int size) {
+    Page<PostListResponseDto> mainPosts = postService.getMainPostsByLikes(page, size);
     return ResponseEntity.ok(mainPosts);
   }
+
 }

@@ -19,7 +19,6 @@ import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
-import com.chillvibe.chillvibe.domain.post.dto.PostSimpleResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
@@ -72,7 +71,6 @@ public class PostServiceImpl implements PostService {
     }
     return currentUserId;
   }
-
 
 
   /**
@@ -295,20 +293,17 @@ public class PostServiceImpl implements PostService {
     return postPage.map(postMapper::toPostListDto);
   }
 
-  public List<PostSimpleResponseDto> getMainPostsByLikes() {
-    Pageable pageable = PageRequest.of(0, 6); // 첫 번째 페이지, 6개의 항목
-    Page<Post> pagePosts = postRepository.findByOrderByLikeCountDesc(pageable);
+  @Transactional(readOnly = true)
+  public Page<PostListResponseDto> getMainPostsByLikes(int page, int size) {
+    // 페이지와 크기 제한
+    int limitedPage = Math.min(page, 2); // 최대 페이지 번호는 2 (0, 1, 2)
+    int limitedSize = Math.min(size, 6); // 페이지 크기는 6으로 제한
 
-    return pagePosts.stream()
-        .map(this::convertToDto)
-        .collect(Collectors.toList());
-}
-  private PostSimpleResponseDto convertToDto (Post post){
-    return new PostSimpleResponseDto(
-        post.getId(),
-        post.getTitle(),
-        new UserSimpleResponseDto(post.getUser().getId(), post.getUser().getNickname(), post.getUser().getProfileUrl()),
-        post.getThumbnailUrl()
-      );
+    Pageable pageable = PageRequest.of(limitedPage, limitedSize);
+    Page<Post> postPage = postRepository.findByOrderByLikeCountDesc(pageable);
+
+    // Post 엔티티를 PostSimpleResponseDto로 매핑
+    return postPage.map(postMapper::toPostListDto);
   }
+
 }
