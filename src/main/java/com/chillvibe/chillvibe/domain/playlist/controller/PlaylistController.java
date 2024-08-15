@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +44,13 @@ public class PlaylistController {
   public ResponseEntity<List<PlaylistSelectResponseDto>> getPlaylistsForSelection() {
     List<PlaylistSelectResponseDto> playlists = playlistService.getUserPlaylistsForSelection();
     return ResponseEntity.ok(playlists);
+  }
+
+  @Operation(summary = "플레이리스트 제목 수정", description = "플레이리스트 제목을 수정하는데 사용하는 API")
+  @PutMapping("/edit/title")
+  public ResponseEntity<Void> editPlaylistTitle(@RequestBody PlaylistCreateRequestDto playlistCreateRequestDto, @RequestParam Long playlistId){
+    playlistService.editPlaylistTitle(playlistCreateRequestDto, playlistId);
+    return ResponseEntity.ok().build();
   }
 
   @Operation(summary = "플레이리스트 수정(상세) 페이지 조회", description = "트랙 추가를 위해 본인의 플레이리스트를 확인하는데 사용하는 API")

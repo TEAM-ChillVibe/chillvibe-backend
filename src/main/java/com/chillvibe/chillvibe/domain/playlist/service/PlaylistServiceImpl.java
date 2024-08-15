@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistCreateRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
@@ -101,6 +102,20 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
     playlistRepository.delete(playlist);
+  }
+
+  @Override
+  @Transactional
+  public void editPlaylistTitle(PlaylistCreateRequestDto playlistCreateRequestDto, Long playlistId) {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHENTICATED));
+
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    playlist.editTitle(playlistCreateRequestDto.getTitle());
   }
 
   @Override
