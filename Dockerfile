@@ -11,4 +11,4 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/chillvibe-0.0.1-SNAPSHOT.jar /app/
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=dev", "/app/chillvibe-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Seoul", "-Dspring.profiles.active=dev", "/app/chillvibe-0.0.1-SNAPSHOT.jar"]
