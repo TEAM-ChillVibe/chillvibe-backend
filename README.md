@@ -1,5 +1,7 @@
 # 🎧 chillvibe
 
+#### “음악으로 소통하고 취향을 공유하는 스마트한 웹 서비스"
+
 <img src="./src/main/resources/static/images/logo.png" width="200" alt="Logo">
 
 ### 주제 선정 배경
