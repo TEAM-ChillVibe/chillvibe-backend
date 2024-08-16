@@ -49,7 +49,7 @@
 ### ERD
 
 ---
-![img_1.png](src/main/resources/static/images/img_1.png)
+![erd.png](src/main/resources/static/images/erd.png)
 
 ### 와이어프레임
 
