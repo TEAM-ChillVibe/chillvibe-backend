@@ -11,7 +11,7 @@
 ### 프로젝트 구조
 
 ---
-![Architecture](./src/main/resources/static/images/architecture.png)
+![architecture.png](src/main/resources/static/images/architecture.png)
 
 ### 기술 스택
 
@@ -49,8 +49,7 @@
 ### ERD
 
 ---
-
-![Erd](./src/main/resources/static/images/erd.png)
+![img_1.png](src/main/resources/static/images/img_1.png)
 
 ### 와이어프레임
 
