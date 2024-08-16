@@ -83,7 +83,7 @@
 ---
 ![Wireframe.png](src/main/resources/static/images/wireframe.png)
 
-#### <https://www.figma.com/design/xDXj2JncIlU8C4ePFsdcUF/elice-final-pj.?t=FsLwT5vFGMplhdX8-0>
+#### 🔗 <https://www.figma.com/design/xDXj2JncIlU8C4ePFsdcUF/elice-final-pj.?t=FsLwT5vFGMplhdX8-0>
 
 ### 기능 소개
 
