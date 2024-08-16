@@ -1,76 +1,17 @@
 package com.chillvibe.chillvibe.domain.spotify.service;
 
-import com.chillvibe.chillvibe.domain.spotify.dto.TrackSearchDto;
-import com.chillvibe.chillvibe.global.error.ErrorCode;
-import com.chillvibe.chillvibe.global.error.exception.ApiException;
-import com.neovisionaries.i18n.CountryCode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.chillvibe.chillvibe.domain.spotify.dto.FeaturedPlaylistResponseDto;
+import com.chillvibe.chillvibe.domain.spotify.dto.TrackResponseDto;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
-import se.michaelthelin.spotify.model_objects.specification.Track;
-import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 
-@Service
-@Slf4j
-public class SpotifyService {
 
-  private final SpotifyApi spotifyApi;
+public interface SpotifyService {
+  // Spotify API를 이용해 트랙을 검색하여,  트랙의 검색 결과를 반환한다.
+  Page<TrackResponseDto> searchTracks(String query, Pageable pageable);
 
-  @Autowired
-  public SpotifyService(SpotifyApi spotifyApi) {
-    this.spotifyApi = spotifyApi;
-  }
+  // Spotify API 트랙을 사용하여 현재 인기 플레이리스트를 가져온다.
+  CompletableFuture<FeaturedPlaylistResponseDto> getFeaturedPlaylist(String locale, int page, int size) ;
 
-  public Page<TrackSearchDto> searchTracks(String query, Pageable pageable) {
-    try {
-      log.info("== 트랙 검색 API 호출 확인 ==");
-      // 현재 코드 상으로, 페이지를 누를때나, 계속 호출이 되게 됨.
-      // 현재 SPOTIFY - 백 - 프론트 형태로,
-      // SPOTIFY - 프론트로 API를 놓는 것도 고려 필요
-
-      int offset = (int) pageable.getOffset();
-      int limit = pageable.getPageSize();
-
-      SearchTracksRequest searchRequest = spotifyApi.searchTracks(query)
-          .market(CountryCode.KR)
-          .limit(limit)
-          .offset(offset)
-          .build();
-
-      // 우리가 구성한 페이지 구성으로 SPOTIFY에 페이지 요청
-      Paging<Track> trackPaging = searchRequest.execute();
-
-      List<TrackSearchDto> tracks = Arrays.stream(trackPaging.getItems())
-          .map(this::convertToTrackSearchDto)
-          .collect(Collectors.toList());
-
-      // 페이지 인터페이스 구현
-      // tracks = 현재 페이지에 포함된 실제 데이터 목록
-      // pageable = 페이지네이션 정보
-      // trackPaging.getTotal() = 전체 검색 결과의 총 항목
-      return new PageImpl<>(tracks, pageable, trackPaging.getTotal());
-    } catch (Exception e) {
-      throw new ApiException(ErrorCode.SPOTIFY_API_ERROR);
-    }
-  }
-
-  // API로 가져온 정보를 다 가져오지 말고 필요한 정보만 Dto로 변환
-  private TrackSearchDto convertToTrackSearchDto(Track track) {
-    return new TrackSearchDto(
-        track.getId(),
-        track.getName(),
-        track.getArtists()[0].getName(),
-        track.getAlbum().getImages()[0].getUrl(),
-        track.getPreviewUrl(),
-        track.getDurationMs()
-    );
-  }
 }

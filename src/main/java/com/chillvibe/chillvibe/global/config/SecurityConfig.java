@@ -7,6 +7,7 @@ import com.chillvibe.chillvibe.global.jwt.filter.LoginFilter;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
 import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
   private static final String[] WHITER_LIST = {
-      "/login",
-      "/logout",
+      "/api/login",
+      "/api/logout",
       "/api/reissue",
       "/api/signup",
       "/api/userpage",
@@ -78,7 +79,8 @@ public class SecurityConfig {
 
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+//                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kdt-cloud-3-team02-final.elicecoding.com"));
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -100,19 +102,6 @@ public class SecurityConfig {
     // http basic 인증 방식 disable
     httpSecurity
         .httpBasic(AbstractHttpConfigurer::disable);
-
-//    // 스프링 시큐리티 로그인 기본 엔드포인트 커스텀
-//    httpSecurity
-//        .formLogin(form -> form
-//            .loginProcessingUrl("/api/login")
-//            .permitAll());
-//
-//    // 스프링 시큐리티 로그아웃 기본 엔드포인트 커스텀
-//    httpSecurity
-//        .logout(logout -> logout
-//            .logoutUrl("/api/logout")
-//            .logoutSuccessUrl("/")
-//            .permitAll());
 
     // 경로별 인가 작업
     httpSecurity

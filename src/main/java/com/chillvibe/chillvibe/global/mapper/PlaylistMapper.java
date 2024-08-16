@@ -1,4 +1,4 @@
-package com.chillvibe.chillvibe.domain.playlist.mapper;
+package com.chillvibe.chillvibe.global.mapper;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
@@ -26,6 +26,7 @@ public interface PlaylistMapper {
   // Playlist -> PlaylistSimpleResponseDto
   @Mapping(target = "trackCount", expression = "java(playlist.getTracks().size())")
   PlaylistSimpleResponseDto playlistToPlaylistSimpleResponseDto(Playlist playlist);
+
   // Page<Playlist> -> Page<PlaylistSimpleResponseDto>
   default Page<PlaylistSimpleResponseDto> playlistPageToPlaylistSimpleResponseDtoPage(Page<Playlist> playlistPage) {
     return playlistPage.map(this::playlistToPlaylistSimpleResponseDto);

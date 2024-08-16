@@ -5,6 +5,8 @@ import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
 import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/hashtags")
+@Tag(name = "Hashtag", description = "해시태그 API")
 public class HashtagController {
 
   private final HashtagService hashtagService;
@@ -30,6 +33,7 @@ public class HashtagController {
    *
    * @return 모든 해시태그 목록을 담은 ResponseEntity
    */
+  @Operation(summary = "모든 해시태그 조회", description = "모든 해시태그를 조회하는 API")
   @GetMapping("/all")
   public ResponseEntity<List<HashtagResponseDto>> getAllHashtags() {
     List<HashtagResponseDto> hashtags = hashtagService.getAllHashtags();
@@ -45,6 +49,7 @@ public class HashtagController {
    *
    *     1~10위의 태그를 가져오고 싶은 경우: GET /popular?page=0&size=10
    */
+  @Operation(summary = "인기 해시태그 조회", description = "인기 해시태그를 페이지네이션을 통해 조회하는 API")
   @GetMapping("/popular")
   public ResponseEntity<List<HashtagResponseDto>> getPopularHashtags(
       @RequestParam(defaultValue = "0") int page,
@@ -60,6 +65,7 @@ public class HashtagController {
    * @param postId 게시글 ID
    * @return 해당 게시글의 해시태그 목록을 담은 ResponseEntity
    */
+  @Operation(summary = "특정 게시글에 속한 해시태그 조회", description = "특정 게시글에 속한 해시태그 조회하는 API")
   @GetMapping(params = "postId")
   public ResponseEntity<List<HashtagResponseDto>> getHashtagsOfPost(@RequestParam Long postId) {
     List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfPost(postId);
@@ -72,6 +78,7 @@ public class HashtagController {
    * @param userId 사용자 ID
    * @return 해당 사용자의 프로필 해시태그 목록을 담은 ResponseEntity
    */
+  @Operation(summary = "특정 사용자의 프로필에 설정된 해시태그를 조회", description = "특정 사용자의 프로필에 설정된 해시태그를 조회하는 API")
   @GetMapping(params = "userId")
   public ResponseEntity<List<HashtagResponseDto>> getHashtagsOfUser(@RequestParam Long userId) {
     List<HashtagResponseDto> hashtags = hashtagService.getHashtagsOfUser(userId);
@@ -87,6 +94,7 @@ public class HashtagController {
    * @return 성공적으로 업데이트된 경우 HTTP 200 OK 반환
    */
   @PutMapping
+  @Operation(summary = "특정 사용자의 프로필 또는 특정 게시글에 설정될 해시태그를 변경", description = "특정 사용자의 프로필 또는 특정 게시글에 설정될 해시태그를 변경하는 API")
   public ResponseEntity<Void> updateHashtags(
       @RequestParam(required = false) Long userId,
       @RequestParam(required = false) Long postId,

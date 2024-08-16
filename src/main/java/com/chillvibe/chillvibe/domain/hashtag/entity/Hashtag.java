@@ -12,9 +12,11 @@ import jakarta.persistence.OneToMany;
 import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Hashtag extends BaseTimeEntity {
 

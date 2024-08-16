@@ -10,7 +10,6 @@ import com.chillvibe.chillvibe.global.jwt.dto.CustomUserDetails;
 import com.chillvibe.chillvibe.global.jwt.entity.Refresh;
 import com.chillvibe.chillvibe.global.jwt.repository.RefreshRepository;
 import com.chillvibe.chillvibe.global.jwt.util.JwtUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -19,9 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +26,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
-@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
   private static final long ACCESS_TOKEN_EXPIRATION_MS = 1000*60*60*2L;
@@ -40,6 +35,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
   private final UserRepository userRepository;
+
+  public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+      RefreshRepository refreshRepository, UserRepository userRepository) {
+    this.authenticationManager = authenticationManager;
+    this.jwtUtil = jwtUtil;
+    this.refreshRepository = refreshRepository;
+    this.userRepository = userRepository;
+    setFilterProcessesUrl("/api/login"); // 로그인 경로 변경
+  }
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -81,9 +85,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
     // 탈퇴된 사용자일 경우
-//    if (user.isDelete()) {
-//      throw new ApiException(ErrorCode.USER_ACCOUNT_DELETED);
-//    }
     if (user.isDelete()) {
       response.setStatus(HttpStatus.FORBIDDEN.value());  // 403 Forbidden
       try {
@@ -148,7 +149,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // https에서만 쿠키 전송
     //cookie.setSecure(true);
     // 쿠키의 유효 범위
-    //cookie.setPath("/");
+    cookie.setPath("/");
     cookie.setHttpOnly(true);
 
     return cookie;

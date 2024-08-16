@@ -1,5 +1,6 @@
 package com.chillvibe.chillvibe.domain.playlist.service;
 
+import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistCreateRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSelectResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistSimpleResponseDto;
@@ -7,8 +8,8 @@ import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackRequestDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
 import com.chillvibe.chillvibe.domain.playlist.entity.PlaylistTrack;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistMapper;
-import com.chillvibe.chillvibe.domain.playlist.mapper.PlaylistTrackMapper;
+import com.chillvibe.chillvibe.global.mapper.PlaylistMapper;
+import com.chillvibe.chillvibe.global.mapper.PlaylistTrackMapper;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistRepository;
 import com.chillvibe.chillvibe.domain.playlist.repository.PlaylistTrackRepository;
 import com.chillvibe.chillvibe.domain.user.entity.User;
@@ -17,6 +18,7 @@ import com.chillvibe.chillvibe.global.common.ThumbnailGenerator;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
 import com.chillvibe.chillvibe.global.error.exception.ApiException;
 import com.chillvibe.chillvibe.global.jwt.util.UserUtil;
+import com.chillvibe.chillvibe.global.s3.service.S3Uploader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +41,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   private final PlaylistTrackMapper playlistTrackMapper;
   private final UserRepository userRepository;
   private final ThumbnailGenerator thumbnailGenerator;
+  private final S3Uploader s3Uploader;
   private final UserUtil userUtil;
 
   private Long getAuthenticatedUserIdOrThrow() {
@@ -52,7 +55,7 @@ public class PlaylistServiceImpl implements PlaylistService {
   @Override
   public List<PlaylistSelectResponseDto> getUserPlaylistsForSelection() {
     Long currentUserId = getAuthenticatedUserIdOrThrow();
-    List<Playlist> playlists = playlistRepository.findByUserId(currentUserId);
+    List<Playlist> playlists = playlistRepository.findByUserIdOrderByCreatedAtDesc(currentUserId);
     return playlistMapper.playlistListToPlaylistSelectDtoList(playlists);
   }
 
@@ -99,6 +102,20 @@ public class PlaylistServiceImpl implements PlaylistService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
     playlistRepository.delete(playlist);
+  }
+
+  @Override
+  @Transactional
+  public void editPlaylistTitle(PlaylistCreateRequestDto playlistCreateRequestDto, Long playlistId) {
+    Long userId = userUtil.getAuthenticatedUserId();
+
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHENTICATED));
+
+    Playlist playlist = playlistRepository.findById(playlistId)
+        .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    playlist.editTitle(playlistCreateRequestDto.getTitle());
   }
 
   @Override
@@ -235,6 +252,11 @@ public class PlaylistServiceImpl implements PlaylistService {
   public void updatePlaylistThumbnail(Long playlistId) {
     Playlist playlist = playlistRepository.findById(playlistId)
         .orElseThrow(() -> new ApiException(ErrorCode.PLAYLIST_NOT_FOUND));
+
+    String oldThumbnailUrl = playlist.getThumbnailUrl();
+    if (oldThumbnailUrl != null) {
+      s3Uploader.deleteFile(oldThumbnailUrl);
+    }
 
     List<String> albumArtUrls = playlist.getTracks().stream()
         .map(PlaylistTrack::getThumbnailUrl)

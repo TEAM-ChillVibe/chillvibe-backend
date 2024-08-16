@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,8 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String nickname;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "LONGTEXT")
+  @Lob
   private String profileUrl;
 
   private String introduction;

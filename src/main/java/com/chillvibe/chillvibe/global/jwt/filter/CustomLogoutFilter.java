@@ -17,12 +17,6 @@ import org.springframework.web.filter.GenericFilterBean;
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
 
-  private static final String LOGOUT_URI = "/logout";
-  private static final String LOGOUT_METHOD = "POST";
-  private static final String ACCESS_COOKIE_NAME = "access";
-  private static final String REFRESH_COOKIE_NAME = "refresh";
-
-
   private final JwtUtil jwtUtil;
   private final RefreshRepository refreshRepository;
 
@@ -36,7 +30,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
     // POST/logout 엔트포인트 요청이 왔는지 확인
     String requestUri = request.getRequestURI();
-    if (!requestUri.matches("^\\/logout$")) {
+    if (!requestUri.matches("^\\/api/logout$")) {
 
       filterChain.doFilter(request, response);
       return;

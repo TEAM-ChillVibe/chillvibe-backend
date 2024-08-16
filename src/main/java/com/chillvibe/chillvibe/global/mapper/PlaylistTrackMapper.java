@@ -1,4 +1,4 @@
-package com.chillvibe.chillvibe.domain.playlist.mapper;
+package com.chillvibe.chillvibe.global.mapper;
 
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.PlaylistTrack;

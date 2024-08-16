@@ -2,6 +2,7 @@ package com.chillvibe.chillvibe.domain.user.service;
 
 import com.chillvibe.chillvibe.domain.user.dto.PasswordUpdateRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.ReAuthResponseDto;
+import com.chillvibe.chillvibe.domain.user.dto.UserDeleteRequestDto;
 import com.chillvibe.chillvibe.domain.user.dto.UserInfoResponseDto;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +15,7 @@ public interface UserService {
 
   void updatePassword(PasswordUpdateRequestDto passwordUpdateRequestDto);
 
-  void softDeleteUser();
+  void softDeleteUser(UserDeleteRequestDto userDeleteRequestDto);
 
   void restoreUser();
 

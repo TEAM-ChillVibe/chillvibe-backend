@@ -46,4 +46,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findAllByIdInOrderByLikeCountDesc(List<Long> postIds, Pageable pageable);
 
   Page<Post> findAllByIdInOrderByCreatedAtDesc(List<Long> postIds, Pageable pageable);
+
+  // 유저 페이지 조회 / 인기순
+  Page<Post> findByUserIdOrderByLikeCountDesc(Long userId, Pageable pageable);
+  // 유저 페이지 조회 / 최신순
+  Page<Post> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+
 }

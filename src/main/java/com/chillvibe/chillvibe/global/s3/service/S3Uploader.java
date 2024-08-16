@@ -4,10 +4,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.util.IOUtils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.UUID;
@@ -48,6 +50,25 @@ public class S3Uploader {
     // 로컬 파일 시스템에서 임시 파일을 삭제
     removeNewFile(uploadFile);
     return uploadImageUrl;
+  }
+
+  // 파일 S3 업로드 오버로딩
+  public String upload(InputStream inputStream, String originalFileName, String dirName) throws IOException {
+    String uuid = UUID.randomUUID().toString();
+    String uniqueFileName = uuid + "_" + originalFileName.replaceAll("\\s", "_");
+    String fileName = dirName + "/" + uniqueFileName;
+
+    log.info("fileName: " + fileName);
+
+    ObjectMetadata metadata = new ObjectMetadata();
+    byte[] bytes = IOUtils.toByteArray(inputStream);
+    metadata.setContentLength(bytes.length);
+    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+
+    amazonS3.putObject(new PutObjectRequest(bucket, fileName, byteArrayInputStream, metadata)
+        .withCannedAcl(CannedAccessControlList.PublicRead));
+
+    return amazonS3.getUrl(bucket, fileName).toString();
   }
 
   // 파일 변환
@@ -115,18 +136,4 @@ public class S3Uploader {
     return upload(newFile, dirName);
   }
 
-
-  public String uploadOrReplace(byte[] fileContent, String dirName, String fileName){
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentLength(fileContent.length);
-    metadata.setContentType("image/jpeg");
-
-    String fullPath = dirName + "/" + fileName;
-    PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, fullPath, new ByteArrayInputStream(fileContent), metadata)
-        .withCannedAcl(CannedAccessControlList.PublicRead);
-
-    amazonS3.putObject(putObjectRequest);
-
-    return amazonS3.getUrl(bucket, fullPath).toString();
-  }
 }

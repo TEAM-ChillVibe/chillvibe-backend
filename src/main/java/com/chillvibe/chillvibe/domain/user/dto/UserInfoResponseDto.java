@@ -1,32 +1,38 @@
 package com.chillvibe.chillvibe.domain.user.dto;
 
 import com.chillvibe.chillvibe.domain.hashtag.dto.HashtagResponseDto;
-import com.chillvibe.chillvibe.domain.user.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Schema(description = "유저의 정보가 담겨있는 DTO")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoResponseDto {
 
+  @Schema(description = "유저 ID")
   private Long userId;
-  private String email;
-  private String nickname;
-  private String profileUrl;
-  private String introduction;
-  private boolean isPublic;
-  private List<HashtagResponseDto> hashtags;
 
-  public UserInfoResponseDto(User user, List<HashtagResponseDto> hashtags) {
-    this.userId = user.getId();
-    this.email = user.getEmail();
-    this.nickname = user.getNickname();
-    this.profileUrl = user.getProfileUrl();
-    this.introduction = user.getIntroduction();
-    this.isPublic = user.isPublic();
-    this.hashtags = hashtags;
-  }
+  @Schema(description = "유저 이메일")
+  private String email;
+
+  @Schema(description = "유저 닉네임")
+  private String nickname;
+
+  @Schema(description = "유저 프로필 이미지")
+  private String profileUrl;
+
+  @Schema(description = "유저 소개 글")
+  private String introduction;
+
+  @Schema(description = "유저 페이지 공개 여부")
+  private boolean isPublic;
+
+  @Schema(description = "유저 선호 해시태그 정보")
+  private List<HashtagResponseDto> hashtags;
 }
