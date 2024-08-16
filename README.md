@@ -40,6 +40,33 @@
 2. Docker
 3. Nginx
 
+<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
+<img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
+<img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+<img src="https://img.shields.io/badge/Spotify%20API-1DB954?style=for-the-badge&logo=spotify&logoColor=white"> <br>
+
+
+
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white">
+<img src="https://img.shields.io/badge/MUI-007FFF?style=for-the-badge&logo=mui&logoColor=white">
+<img src="https://img.shields.io/badge/Zustand-7630C3?style=for-the-badge&logo=zustand&logoColor=white">
+<img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white">
+<img src="https://img.shields.io/badge/React%20Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white">
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"> <br>
+
+
+<img src="https://img.shields.io/badge/Google%20Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white">
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+<img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"> <br>
+
+
+<img src="https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white">
+<img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
+<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white">
+<img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">
+
 ### 개발 기간
 
 ---
@@ -54,6 +81,7 @@
 ### 와이어프레임
 
 ---
+![Wireframe.png](src/main/resources/static/images/wireframe.png)
 
 #### <https://www.figma.com/design/xDXj2JncIlU8C4ePFsdcUF/elice-final-pj.?t=FsLwT5vFGMplhdX8-0>
 
@@ -106,5 +134,4 @@
 - 댓글 생성, 수정할 때 0자이거나 255자를 초과할 경우, 댓글 작성 버튼 비활성화
 - 자신이 작성한 댓글만 수정, 삭제 가능 ( 댓글 작성자와 현재 로그인한 사용자 일치할 경우에만 수정 및 삭제 버튼 활성화 )
 - 댓글이 수정될 경우 "(수정됨)"이라는 문자와 함께 수정된 시간으로 변경됨
-
-
+  <br>
