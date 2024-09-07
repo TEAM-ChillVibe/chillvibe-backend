@@ -6,6 +6,7 @@ import com.chillvibe.chillvibe.domain.comment.entity.Comment;
 import com.chillvibe.chillvibe.domain.comment.repository.CommentRepository;
 import com.chillvibe.chillvibe.domain.post.entity.Post;
 import com.chillvibe.chillvibe.domain.post.repository.PostRepository;
+import com.chillvibe.chillvibe.domain.post.service.PostService;
 import com.chillvibe.chillvibe.domain.user.entity.User;
 import com.chillvibe.chillvibe.domain.user.repository.UserRepository;
 import com.chillvibe.chillvibe.global.error.ErrorCode;
@@ -24,15 +25,17 @@ public class CommentServiceImpl implements CommentService {
   private final CommentRepository commentRepository;
   private final UserRepository userRepository;
   public final PostRepository postRepository;
+  public final PostService postService;
   private final CommentMapper commentMapper;
   private final UserUtil userUtil;
 
   @Autowired
   public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository,
-      PostRepository postRepository, CommentMapper commentMapper, UserUtil userUtil) {
+      PostRepository postRepository, PostService postService, CommentMapper commentMapper, UserUtil userUtil) {
     this.commentRepository = commentRepository;
     this.userRepository = userRepository;
     this.postRepository = postRepository;
+    this.postService = postService;
     this.commentMapper = commentMapper;
     this.userUtil = userUtil;
   }
@@ -86,6 +89,8 @@ public class CommentServiceImpl implements CommentService {
 
     Comment savedComment = commentRepository.save(comment);
 
+    postService.updateCommentCount(post.getId());
+
     return commentMapper.toDto(savedComment);
   }
 
@@ -131,7 +136,11 @@ public class CommentServiceImpl implements CommentService {
       throw new ApiException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 
+    Post post = comment.getPost();
+
     commentRepository.delete(comment);
+
+    postService.updateCommentCount(post.getId());
   }
 
 }

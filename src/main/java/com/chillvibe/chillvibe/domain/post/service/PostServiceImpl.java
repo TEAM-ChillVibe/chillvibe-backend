@@ -78,13 +78,13 @@ public class PostServiceImpl implements PostService {
    *
    * @param requestDto 게시글 생성에 필요한 정보를 담고 있는 DTO 객체. 제목, 설명, 플레이리스트 ID 및 해시태그 ID 목록을 포함합니다.
    * @return 생성된 게시글의 ID를 반환합니다.
-   * @throws ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우
-   *                      {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을 경우
-   *                      {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
+   * @exception ApiException {UNAUTHENTICATED} - 인증된 유저가 아닐 경우
+   *                         {USER_NOT_FOUND} - 유저가 데이터베이스에 존재하지 않을 경우
+   *                         {PLAYLIST_NOT_FOUND} - 주어진 플레이리스트 ID로 플레이리스트를 찾을 수 없을 경우
    */
   @Transactional
   public Long createPost(PostCreateRequestDto requestDto) {
-    Long currentUserId  = getAuthenticatedUserIdOrThrow();
+    Long currentUserId = getAuthenticatedUserIdOrThrow();
 
     User user = userRepository.findById(currentUserId)
         .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
@@ -103,7 +103,6 @@ public class PostServiceImpl implements PostService {
 
     return savedPost.getId();
   }
-
 
 
   // 게시글 수정
@@ -128,13 +127,11 @@ public class PostServiceImpl implements PostService {
   }
 
 
-
   // 게시글 삭제
   @Transactional
   public void deletePost(Long postId) {
     // 삭제하려는 유저 정보를 가져온다.
     Long currentUserId = getAuthenticatedUserIdOrThrow();
-
 
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
@@ -154,7 +151,7 @@ public class PostServiceImpl implements PostService {
         .toList();
 
     List<Hashtag> hashtags = hashtagRepository.findByIdIn(hashtagIds);
-    for(Hashtag hashtag : hashtags){
+    for (Hashtag hashtag : hashtags) {
       hashtag.setTotalLikes(hashtag.getTotalLikes() - postLikeCount);
 
     }
@@ -194,7 +191,8 @@ public class PostServiceImpl implements PostService {
 
     List<HashtagResponseDto> hashtagResponseDtos = hashtagService.getHashtagsOfPost(postId);
 
-    UserInfoResponseDto userInfoResponseDto = userMapper.userToUserInfoResponseDto(user, hashtagResponseDtos);
+    UserInfoResponseDto userInfoResponseDto = userMapper.userToUserInfoResponseDto(user,
+        hashtagResponseDtos);
 
     List<PlaylistTrackResponseDto> playlistTrackResponseDtos = playlistTrackMapper.toDtoList(
         playlist.getTracks());
@@ -251,7 +249,7 @@ public class PostServiceImpl implements PostService {
    * @param hashtagId 조회할 해시태그의 ID
    * @param pageable  페이지네이션 정보를 담고 있는 객체 (페이지 번호, 페이지 크기 등)
    * @return 주어진 해시태그에 매핑된 포스트들을 포함하는 페이지 객체, 각 포스트는 {PostRequestDto}로 변환됨
-   * @throws ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
+   * @exception ApiException 해당 해시태그 ID에 매핑된 포스트가 없는 경우
    */
   public Page<PostListResponseDto> getPostsByHashtagId(String sortBy, Long hashtagId,
       Pageable pageable) {
@@ -277,7 +275,6 @@ public class PostServiceImpl implements PostService {
   }
 
 
-
   public Page<PostListResponseDto> getPostSearchResults(String query, Pageable pageable) {
 
     // 제목에 검색어가 포함된 게시글을 대소문자 구분 없이 검색
@@ -287,7 +284,6 @@ public class PostServiceImpl implements PostService {
     // Post 엔티티를 PostListResponseDto로 변환
     return postPage.map(postMapper::toPostListDto);
   }
-
 
 
   // 사용자가 좋아요한 게시글 리스트 조회 (마이페이지)
@@ -317,4 +313,12 @@ public class PostServiceImpl implements PostService {
     return postPage.map(postMapper::toPostListDto);
   }
 
+  // 댓글 수 업데이트 메서드
+  public void updateCommentCount(Long postId) {
+    Post post = postRepository.findById(postId)
+        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
+
+    post.setCommentCount(post.getComments().size());
+    postRepository.save(post);
+  }
 }

@@ -39,4 +39,7 @@ public class PostListResponseDto {
 
   @Schema(description = "게시글에 포함된 트랙의 썸네일 URL")
   private String thumbnailUrl;
+
+  @Schema(description = "게시글에 추가된 comment 갯수")
+  private Integer commentCount;
 }

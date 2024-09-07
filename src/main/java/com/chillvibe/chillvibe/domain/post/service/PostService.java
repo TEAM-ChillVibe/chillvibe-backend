@@ -4,6 +4,7 @@ import com.chillvibe.chillvibe.domain.post.dto.PostCreateRequestDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostDetailResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostListResponseDto;
 import com.chillvibe.chillvibe.domain.post.dto.PostUpdateRequestDto;
+import com.chillvibe.chillvibe.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -42,4 +43,7 @@ public interface PostService {
 
   // 메인 페이지 - 전체 게시글 좋아요 순으로 6개씩 페이지네이션
   Page<PostListResponseDto> getMainPostsByLikes(int page, int size);
+
+  // 댓글 수 업데이트 메서드
+  void updateCommentCount(Long postId);
 }
