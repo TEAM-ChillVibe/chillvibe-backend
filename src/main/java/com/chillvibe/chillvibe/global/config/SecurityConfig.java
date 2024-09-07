@@ -80,7 +80,7 @@ public class SecurityConfig {
                 CorsConfiguration configuration = new CorsConfiguration();
 
 //                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://kdt-cloud-3-team02-final.elicecoding.com"));
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://chillvibe.site"));
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
