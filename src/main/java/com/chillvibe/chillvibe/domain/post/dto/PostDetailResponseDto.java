@@ -46,4 +46,6 @@ public class PostDetailResponseDto {
 
   @Schema(description = "게시글에 달린 댓글")
   private List<CommentResponseDto> comments;
+
+  private boolean isDeleted;
 }

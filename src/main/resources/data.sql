@@ -156,15 +156,20 @@ VALUES (1, '0qsv5I5fEnRoX2Enb3mBNr', 'V (Peace) (feat. AKMU)', 'Zion.T', '02:28'
 
 -- POST
 
-INSERT INTO post (title, description, like_count, created_at, modified_at, playlist_id, user_id)
+INSERT INTO post (title, description, like_count, created_at, modified_at, playlist_id, user_id, report_count, is_deleted)
 VALUES
-('첫 번째 게시글 제목', '첫 번째 게시글 설명', 10, NOW(), NOW(), 1, 1),
-('두 번째 게시글 제목', '두 번째 게시글 설명', 5, NOW(), NOW(), 1, 2),
-('세 번째 게시글 제목', '세 번째 게시글 설명', 20, NOW(), NOW(), 2, 3),
-('네 번째 게시글 제목', '네 번째 게시글 설명',  15, NOW(), NOW(), 2, 4),
-('다섯 번째 게시글 제목', '다섯 번째 게시글 설명', 25, NOW(), NOW(), 3, 5),
-('여섯 번째 게시글 제목', '여섯 번째 게시글 설명',  2, NOW(), NOW(), 2, 5),
-('일곱 번째 게시글 제목', '일곱 번째 게시글 설명',  1, NOW(), NOW(), 2, 5);
+('첫 번째 게시글 제목', '첫 번째 게시글 설명', 10, NOW(), NOW(), 1, 1, 10, true),
+('두 번째 게시글 제목', '두 번째 게시글 설명', 5, NOW(), NOW(), 1, 2, 0, false),
+('세 번째 게시글 제목', '세 번째 게시글 설명', 20, NOW(), NOW(), 2, 3, 0, false),
+('네 번째 게시글 제목', '네 번째 게시글 설명',  15, NOW(), NOW(), 2, 4, 0, false),
+('다섯 번째 게시글 제목', '다섯 번째 게시글 설명', 25, NOW(), NOW(), 3, 5, 0, false),
+('여섯 번째 게시글 제목', '여섯 번째 게시글 설명',  2, NOW(), NOW(), 2, 5, 0, false),
+('일곱 번째 게시글 제목', '일곱 번째 게시글 설명',  1, NOW(), NOW(), 2, 5, 0, false);
+
+-- report
+INSERT INTO report(post_id, user_id)
+VALUES
+    (1, 1);
 
 -- post_hashtag
 INSERT INTO post_hashtag (post_id, hashtag_id)
@@ -214,3 +219,4 @@ VALUES (1, 1, NOW(), NOW()), -- user_id 1번 유저가 post_id 1번 게시글에
        (2, 1, NOW(), NOW()), -- user_id 2번 유저가 post_id 1번 게시글에 좋아요
        (1, 2, NOW(), NOW()), -- user_id 1번 유저가 post_id 2번 게시글에 좋아요
        (3, 3, NOW(), NOW()); -- user_id 3번 유저가 post_id 3번 게시글에 좋아요
+
