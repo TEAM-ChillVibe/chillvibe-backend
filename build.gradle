@@ -62,6 +62,9 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-annotations'
 	implementation 'com.fasterxml.jackson.core:jackson-core'
 
+	// Log
+	implementation 'com.github.napstr:logback-discord-appender:1.0.0'
+
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
