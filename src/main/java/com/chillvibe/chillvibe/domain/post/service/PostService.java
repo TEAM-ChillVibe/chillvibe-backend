@@ -42,4 +42,7 @@ public interface PostService {
 
   // 메인 페이지 - 전체 게시글 좋아요 순으로 6개씩 페이지네이션
   Page<PostListResponseDto> getMainPostsByLikes(int page, int size);
+
+  // 게시글 신고
+  void reportPost(Long postId);
 }

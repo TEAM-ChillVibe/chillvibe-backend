@@ -39,4 +39,6 @@ public class PostListResponseDto {
 
   @Schema(description = "게시글에 포함된 트랙의 썸네일 URL")
   private String thumbnailUrl;
+
+  private boolean isDeleted;
 }
