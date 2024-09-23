@@ -35,7 +35,6 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @Table(name = "post")
 @Entity
-//@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE id = ?") // soft delete 쿼리
 public class Post extends BaseTimeEntity {
 
   @Id
@@ -69,13 +68,6 @@ public class Post extends BaseTimeEntity {
   @ColumnDefault("0")
   @Column(name = "likeCount", nullable = true)
   private Integer likeCount;
-
-  @ColumnDefault("0")
-  @Column(name = "report_count", nullable = false)
-  private int reportCount = 0; // 신고 횟수
-
-  @Column(name = "is_deleted", nullable = false)
-  private boolean isDeleted = false; // soft delete를 위한 필드 추가
 
   private String thumbnailUrl;
 }

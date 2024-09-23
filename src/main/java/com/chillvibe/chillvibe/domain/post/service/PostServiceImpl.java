@@ -11,9 +11,7 @@ import com.chillvibe.chillvibe.domain.hashtag.service.HashtagService;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.dto.PlaylistTrackResponseDto;
 import com.chillvibe.chillvibe.domain.playlist.entity.Playlist;
-import com.chillvibe.chillvibe.domain.post.entity.Report;
 import com.chillvibe.chillvibe.domain.post.repository.PostLikeRepository;
-import com.chillvibe.chillvibe.domain.post.repository.ReportRepostitory;
 import com.chillvibe.chillvibe.global.mapper.CommentMapper;
 import com.chillvibe.chillvibe.global.mapper.PlaylistMapper;
 import com.chillvibe.chillvibe.global.mapper.PlaylistTrackMapper;
@@ -64,7 +62,6 @@ public class PostServiceImpl implements PostService {
   private final UserMapper userMapper;
 
   private final UserUtil userUtil;
-  private final ReportRepostitory reportRepostitory;
 
   // 유저 검증 로직 모듈화
   private Long getAuthenticatedUserIdOrThrow() {
@@ -190,11 +187,6 @@ public class PostServiceImpl implements PostService {
 
     Post post = postRepository.findById(postId)
         .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
-
-    // 삭제된 게시글일 경우 예외 처리
-    if (post.isDeleted()) {
-      throw new ApiException(ErrorCode.POST_DELETED);
-    }
 
     User user = post.getUser();
     Playlist playlist = post.getPlaylist();
@@ -325,35 +317,4 @@ public class PostServiceImpl implements PostService {
     return postPage.map(postMapper::toPostListDto);
   }
 
-  // 게시글 신고 기능
-  @Transactional
-  public void reportPost(Long postId) {
-    Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new ApiException(ErrorCode.POST_NOT_FOUND));
-
-    Long currentUserId = getAuthenticatedUserIdOrThrow();
-
-    // 이미 신고한 적이 있는지 확인
-    if (reportRepostitory.existsByUserIdAndPostId(currentUserId, postId)) {
-      throw new ApiException(ErrorCode.ALREADY_REPORTED);
-    }
-
-    User user = userRepository.findById(currentUserId)
-        .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-
-    // 신고 기록 추가
-    Report report = new Report();
-    report.setUser(user);
-    report.setPost(post);
-    reportRepostitory.save(report);
-
-    // 신고 횟수 증가
-    post.setReportCount(post.getReportCount() + 1);
-
-    // 신고 횟수가 10 이상이면 게시글 soft delete
-    if (post.getReportCount() >= 10) {
-      post.setDeleted(true); // 소프트 삭제
-      postRepository.save(post);
-    }
-  }
 }

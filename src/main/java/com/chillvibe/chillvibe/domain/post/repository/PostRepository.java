@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,16 +28,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findByUserId(Long userId, Pageable pageable);
 
   // 인기순 내림차순
-  @Query("SELECT p FROM Post p WHERE p.isDeleted = false ORDER BY p.likeCount DESC")
   Page<Post> findByOrderByLikeCountDesc(Pageable pageable);
 
   // 생성일 내림차순
-  @Query("SELECT p FROM Post p WHERE p.isDeleted = false ORDER BY p.createdAt DESC")
   Page<Post> findByOrderByCreatedAtDesc(Pageable pageable);
 //  List<Post> findByIsDeletedFalse();
 
   // 게시글 검색, 좋아요 수에 내림차순으로 가져온다.
-  @Query("SELECT p FROM Post p WHERE p.title LIKE %:title% AND p.isDeleted = false ORDER BY p.likeCount DESC")
   Page<Post> findByTitleContainingIgnoreCaseOrderByLikeCountDesc(String title, Pageable pageable);
 
   // 검색해서 나온 게시글의 갯수
@@ -47,17 +43,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   // ID 목록에 해당하는 포스트를 페이지네이션하여 조회
   Page<Post> findAllByIdIn(List<Long> ids, Pageable pageable);
 
-  @Query("SELECT p FROM Post p WHERE p.id IN :postIds AND p.isDeleted = false ORDER BY p.likeCount DESC")
   Page<Post> findAllByIdInOrderByLikeCountDesc(List<Long> postIds, Pageable pageable);
 
-  @Query("SELECT p FROM Post p WHERE p.id IN :postIds AND p.isDeleted = false ORDER BY p.createdAt DESC")
   Page<Post> findAllByIdInOrderByCreatedAtDesc(List<Long> postIds, Pageable pageable);
 
   // 유저 페이지 조회 / 인기순
-  @Query("SELECT p FROM Post p WHERE p.user.id = :userId AND p.isDeleted = false ORDER BY p.likeCount DESC")
   Page<Post> findByUserIdOrderByLikeCountDesc(Long userId, Pageable pageable);
   // 유저 페이지 조회 / 최신순
-  @Query("SELECT p FROM Post p WHERE p.user.id = :userId AND p.isDeleted = false ORDER BY p.createdAt DESC")
   Page<Post> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
 
 }

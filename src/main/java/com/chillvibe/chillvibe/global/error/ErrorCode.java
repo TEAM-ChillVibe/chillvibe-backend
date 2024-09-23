@@ -41,8 +41,6 @@ public enum ErrorCode {
   USER_POST_NOT_FOUND(404, "p002", "User post not found", LogLevel.ERROR),
   UNLIKE_POST_ERROR(400, "p003", "Users haven't liked this post", LogLevel.ERROR),
   LIKE_POST_ERROR(400, "p004", "User already likes this post", LogLevel.ERROR),
-  ALREADY_REPORTED(400, "p005", "User already reported", LogLevel.ERROR),
-  POST_DELETED(400, "p006", "Post deleted", LogLevel.ERROR),
 
   // TRACK
   TRACK_NOT_FOUND(404, "T001", "Track not found", LogLevel.ERROR),

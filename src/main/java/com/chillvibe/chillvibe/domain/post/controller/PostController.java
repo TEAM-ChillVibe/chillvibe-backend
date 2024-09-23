@@ -184,13 +184,4 @@ public class PostController {
     return ResponseEntity.ok(mainPosts);
   }
 
-  // 게시글 신고
-  @Operation(summary = "게시글 신고", description = "특정 게시글을 신고하는 API")
-  @PostMapping("/report/{postId}")
-  public ResponseEntity<Void> reportPost(
-      @PathVariable Long postId) {
-    postService.reportPost(postId);
-    return ResponseEntity.ok().build();
-  }
-
 }
