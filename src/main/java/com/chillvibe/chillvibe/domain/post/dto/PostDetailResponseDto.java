@@ -46,4 +46,7 @@ public class PostDetailResponseDto {
 
   @Schema(description = "게시글에 달린 댓글")
   private List<CommentResponseDto> comments;
+
+  @Schema(description = "게시글에 추가된 comment 갯수")
+  private Integer commentCount;
 }
