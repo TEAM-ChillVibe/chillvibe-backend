@@ -19,7 +19,8 @@ public enum ErrorCode {
   HANDLE_ACCESS_DENIED(403, "C005", "Access denied", LogLevel.ERROR),
   INTERNAL_SERVER_ERROR(500, "C006", "Internal server error", LogLevel.ERROR),
   INVALID_TYPE_VALUE(400, "C007", "Invalid Type Value", LogLevel.ERROR),
-  UNAUTHORIZED_ACCESS(403, "C008", "user id mismatch", LogLevel.ERROR),
+  // 임시 변경 INFO로
+  UNAUTHORIZED_ACCESS(403, "C008", "user id mismatch", LogLevel.INFO),
   POSITIVE_VALUE_REQUIRED(400, "C009", "Value must be positive", LogLevel.ERROR),
 
   // COMMENT
